@@ -4,7 +4,7 @@ services:
   # neo4j db service
   cp_db:
     # build: ./db
-    image: xhuliodo/couch-potatoes-db
+    image: xhuliodo/couch-potatoes-db:v0.1
     ports:
       - 7474:7474
       - 7687:7687
