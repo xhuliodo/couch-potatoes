@@ -1,0 +1,39 @@
+{
+  "name": "couch-potatoes-api",
+  "version": "1.0.0",
+  "description": "graphql api layer to interact with graph database",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "yarn run build && node build/index.js",
+    "start:dev": "cross-env DEBUG=neo4j-graphql-js ./node_modules/.bin/nodemon --watch src --ext js,graphql --exec babel-node  src/index.js",
+    "build": "babel src --out-dir build && shx cp .env build 2>/dev/null || : && shx cp src/schema.graphql build",
+    "now-build": "babel src --out-dir build && shx cp src/schema.graphql build"
+  },
+  "keywords": [
+    "graphql",
+    "nodejs"
+  ],
+  "author": "xhulio doda",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime-corejs3": "^7.12.5",
+    "babel-plugin-auto-import": "^1.1.0",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.6",
+    "shx": "^0.3.3"
+  },
+  "dependencies": {
+    "apollo-server": "^2.19.1",
+    "dotenv": "^8.2.0",
+    "neo4j-driver": "^4.2.1",
+    "neo4j-graphql-js": "^2.18.0"
+  }
+}

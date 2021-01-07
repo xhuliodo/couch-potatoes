@@ -1,0 +1,54 @@
+type Movie {
+  movieId(limit: Int = 10): ID! @id
+  title: String!
+  releaseYear: Int!
+  imdbLink: String!
+  posterUrl: String!
+  genres: [Genre] @relation(name: "IN_GENRE", direction: "OUT")
+  # this one is still in question whether or not i'm going to crawl for it
+  # plot: String
+}
+
+type Genre {
+  genreId: ID! @id
+  name: String! @unique
+}
+
+# this one is still in question whether or not i'm going to crawl for it
+# type Cast {
+
+# }
+
+type User {
+  userId: ID! @id
+  fullName: String
+  # username: String @unique
+  watchlist(limit: Int = 10): [Movie]!
+    @relation(name: "WATCH_LATER", direction: "OUT")
+}
+
+type Mutation {
+  likeMovie(userId: ID!, movieId: ID!): Movie
+    @cypher(
+      statement: "match (u:User{userId:$userID})-[:RATED{rating:1}]->(m:Movie:{movieId:$movieId}) return m"
+    )
+  dislikeMovie(userId: ID!, movieId: ID!): Movie
+    @cypher(
+      statement: "match (u:User{userId:$userID})-[:RATED{rating:0}]->(m:Movie:{movieId:$movieId}) return m"
+    )
+}
+
+type Query {
+  recommendPopularMoviesBasedOnGenre(
+    genre_1: String!
+    genre_2: String!
+    genre_3: String!
+    limit: Int!
+  ): [Movie]!
+    @cypher(
+      statement: "match (m:Movie)-[:IN_GENRE]->(g:Genre), (:User)-[r:RATED]->(m) where g.name in ['$genre_1','$genre_2','$genre_3'] with  m.title as movie, avg(r.rating) as reviews, count(r.rating) as howMany return movie, howMany,reviews order by howMany desc, reviews desc limit $limit"
+    )
+  recommendFromOtherUsers: [Movie]! @cypher(statement: "")
+  getSomeUsers(limit: Int!): [User]!
+    @cypher(statement: "match (u:User) return u limit toInteger($limit)")
+}
