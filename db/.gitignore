@@ -1,2 +1,4 @@
 /data/*
 !/data/.gitkeep 
+/neo4j
+/recommendations.db
