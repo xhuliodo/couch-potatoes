@@ -10,10 +10,12 @@ import Menu from "@material-ui/core/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import {
   ClickAwayListener,
+  Container,
   Grow,
   MenuList,
   Paper,
   Popper,
+  Switch,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MenuBar() {
+export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -90,6 +92,13 @@ export default function MenuBar() {
           </Typography>
           <div className={classes.grow} />
           <div>
+            {darkThemeIcon}
+            <Switch
+              checked={darkTheme}
+              onChange={() => {
+                setDarkTheme(!darkTheme);
+              }}
+            />
             chulio
             <IconButton
               size="medium"
