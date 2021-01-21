@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Badge, Card, CardContent, Typography } from "@material-ui/core";
 import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
-import "./SelectingGenre.css";
+import "./SelectingGenreProvider.css";
 
 import { useQuery, useQueryClient } from "react-query";
 import { request, gql } from "graphql-request";
