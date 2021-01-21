@@ -37,7 +37,7 @@ export default function App() {
           <SelectingGenre />
         </Container>
       </ThemeProvider>
-      <ReactQueryDevtools />
+      <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   );
 }
