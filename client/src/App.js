@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MenuBar from "./components/MenuBar";
-import SelectingGenre from "./pages/SelectingGenrePage";
+import SelectingGenrePage from "./pages/SelectingGenrePage";
 import Container from "@material-ui/core/Container";
 
 // dark theme importing
@@ -12,6 +12,11 @@ import { createMuiTheme, Paper, ThemeProvider } from "@material-ui/core";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import Footer from "./components/Footer";
+
+// app routing
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import WelcomePage from "./pages/WelcomePage";
+import GettingToKnowUserPage from "./pages/GettingToKnowUserPage";
 
 export default function App() {
   // dark theme setup
@@ -36,7 +41,21 @@ export default function App() {
             setDarkTheme={setDarkTheme}
           />
           <Container maxWidth="md" style={{ marginTop: "5vh" }}>
-            <SelectingGenre />
+            <Router>
+              <Switch>
+                <Route exact path="/" component={WelcomePage} />
+                <Route
+                  exact
+                  path="/getting-to-know-1"
+                  component={SelectingGenrePage}
+                />
+                <Route
+                  exact
+                  path="/getting-to-know-2"
+                  component={GettingToKnowUserPage}
+                />
+              </Switch>
+            </Router>
           </Container>
           <Footer />
         </Paper>

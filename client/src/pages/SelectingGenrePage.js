@@ -2,8 +2,11 @@ import { Button, Container, Paper, Typography } from "@material-ui/core";
 
 import { useQuery } from "react-query";
 import { request, gql } from "graphql-request";
+
 import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
+
+import {useStore} from "../context/genres"
 
 const useGenres = () => {
   return useQuery("genres", async () => {
@@ -23,10 +26,19 @@ const useGenres = () => {
   });
 };
 
-export default function SelectingGenrePage() {
+export default function SelectingGenrePage(props) {
   const { status, data, error } = useGenres();
 
   const [selectedGenres, setSelectedGenres] = useState([]);
+
+  
+
+  const setGenres = useStore((state) => state.setGenres);
+
+  const handleSubmit = () => {
+    setGenres(selectedGenres);
+    props.history.push("/getting-to-know-2");
+  };
 
   return (
     <Paper elevation={0}>
@@ -54,6 +66,7 @@ export default function SelectingGenrePage() {
           size="large"
           color="primary"
           variant="contained"
+          onClick={handleSubmit}
         >
           Next
         </Button>
