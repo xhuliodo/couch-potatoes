@@ -1,9 +1,8 @@
 import { Button, Container, Paper, Typography } from "@material-ui/core";
-import "./SelectingGenreProvider.css";
 
 import { useQuery } from "react-query";
 import { request, gql } from "graphql-request";
-import SingleSelectingGenre from "./SingleSelectingGenre";
+import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
 
 const useGenres = () => {
@@ -24,7 +23,7 @@ const useGenres = () => {
   });
 };
 
-export default function SelectingGenreProvider() {
+export default function SelectingGenrePage() {
   const { status, data, error } = useGenres();
 
   const [selectedGenres, setSelectedGenres] = useState([]);
@@ -39,7 +38,7 @@ export default function SelectingGenreProvider() {
           <span>Error: {error.message}</span>
         ) : (
           data.map((g) => (
-            <SingleSelectingGenre
+            <SelectingGenre
               key={g._id}
               selectedGenres={selectedGenres}
               setSelectedGenres={setSelectedGenres}

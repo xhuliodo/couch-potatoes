@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MenuBar from "./components/MenuBar";
-import SelectingGenre from "./components/SelectingGenreProvider";
+import SelectingGenre from "./pages/SelectingGenrePage";
 import Container from "@material-ui/core/Container";
 
 // dark theme importing

@@ -1,66 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import { Badge, Card, CardContent, Typography } from "@material-ui/core";
 import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
-import "./SelectingGenreProvider.css";
+import "./SelectingGenre.css";
 
-import { useQuery, useQueryClient } from "react-query";
-import { request, gql } from "graphql-request";
-
-const useGenres = () => {
-  return useQuery("genres", async () => {
-    const data = await request(
-      "http://localhost:4001/graphql",
-      gql`
-        query {
-          Genre {
-            _id
-            name
-          }
-        }
-      `
-    );
-    const { Genre } = await data;
-    return Genre;
-  });
-};
-
-export default function SelectingGenre() {
+export default function SelectingGenre({
+  selectedGenres,
+  setSelectedGenres,
+  genre,
+}) {
   const [selected, setSelected] = useState(false);
 
-  const queryClient = useQueryClient();
-  const { status, data, error, isFetching } = useGenres();
+  useEffect(() => {
+    selected
+      ? setSelectedGenres([...selectedGenres, genre.name])
+      : setSelectedGenres([
+          ...selectedGenres.filter((sg) => sg !== genre.name),
+        ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
 
   return (
-    <div>
-      <Typography variant="h4">Select at least 3 genres:</Typography>
-      {status === "loading" ? (
-        <span>Fetching data</span>
-      ) : status === "error" ? (
-        <span>Error: {error.message}</span>
-      ) : (
-        data.map((g) => (
-          <Badge
-            key={g._id}
-            badgeContent={selected ? <DoneOutlineIcon /> : null}
-            onClick={() => {
-              setSelected(!selected);
-            }}
-            color="secondary"
-            style={{ padding: "16px 6px!important" }}
-          >
-            <Card>
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Movie Genre
-                </Typography>
-                <Typography variant="h5" component="h2">
-                  {g.name}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Badge>
-        ))
-      )}
-    </div>
+    <Badge
+      badgeContent={selected ? <DoneOutlineIcon /> : null}
+      onClick={() => {
+        setSelected(!selected);
+      }}
+      color="primary"
+      style={{
+        cursor: "pointer",
+        padding: "2vh 6px!important",
+        margin: "2.5vh",
+      }}
+    >
+      <Card elevation={6}>
+        <CardContent>
+          <Typography color="textSecondary" gutterBottom>
+            Movie Genre
+          </Typography>
+          <Typography variant="h5" component="h2">
+            {genre.name}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Badge>
   );
 }

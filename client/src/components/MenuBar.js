@@ -1,22 +1,25 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
+
+// material ui components
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import Badge from "@material-ui/core/Badge";
 import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import {
+  Button,
   ClickAwayListener,
-  Container,
   Grow,
   MenuList,
   Paper,
   Popper,
   Switch,
 } from "@material-ui/core";
+
+// auth
+import { useAuth0 } from "@auth0/auth0-react";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -29,8 +32,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
+
+  const { isAuthenticated, logout, loginWithRedirect } = useAuth0();
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -44,8 +49,17 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
     setOpen(false);
   };
 
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  const handleLogout = () => {
+    setOpen(false);
+    logout({ returnTo: window.location.origin });
+  };
+
+  const handleLogin = () => {
+    loginWithRedirect();
+  };
+
+  const prevOpen = useRef(open);
+  useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
@@ -74,7 +88,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
               <MenuList autoFocusItem={open} id="menu-list-grow">
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </MenuList>
             </ClickAwayListener>
           </Paper>
@@ -99,18 +113,31 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
                 setDarkTheme(!darkTheme);
               }}
             />
-            chulio
-            <IconButton
-              size="medium"
-              aria-label="account of current user"
-              ref={anchorRef}
-              aria-controls={open ? "menu-list-grow" : undefined}
-              aria-haspopup="true"
-              onClick={handleToggle}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+            {isAuthenticated ? (
+              <>
+                chulio
+                <IconButton
+                  size="medium"
+                  aria-label="account of current user"
+                  ref={anchorRef}
+                  aria-controls={open ? "menu-list-grow" : undefined}
+                  aria-haspopup="true"
+                  onClick={handleToggle}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </>
+            ) : (
+              <Button
+                onClick={handleLogin}
+                size="large"
+                color="default"
+                variant="contained"
+              >
+                Log in
+              </Button>
+            )}
           </div>
         </Toolbar>
       </AppBar>
