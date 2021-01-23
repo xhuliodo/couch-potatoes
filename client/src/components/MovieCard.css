@@ -1,0 +1,44 @@
+.movie_card {
+  position: relative;
+  width: 600px;
+  padding: 20px;
+  max-width: 85vw;
+  height: 80vh;
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.movie_cardContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 5vh;
+}
+
+.movie_swipe {
+  overflow: hidden !important;
+  position: absolute;
+}
+
+.movie_cardText {
+  position: absolute;
+  background-color: rgb(63 81 181) !important;
+  bottom: 20px;
+  left: 20px;
+  margin: 10px;
+  padding: 0 20px;
+  color: #fff !important;
+}
+
+/* testing css for second card component */
+
+.secondMovie_cardText {
+    position: absolute;
+    background-color: rgb(63 81 181) !important;
+    bottom: 10px;
+    left: 10px;
+    margin: 10px;
+    padding: 0 20px;
+    color: #fff !important;
+  }

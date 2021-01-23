@@ -6,7 +6,7 @@ import { request, gql } from "graphql-request";
 import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
 
-import {useStore} from "../context/genres"
+import { useGenreStore } from "../context/genres";
 
 const useGenres = () => {
   return useQuery("genres", async () => {
@@ -31,9 +31,7 @@ export default function SelectingGenrePage(props) {
 
   const [selectedGenres, setSelectedGenres] = useState([]);
 
-  
-
-  const setGenres = useStore((state) => state.setGenres);
+  const setGenres = useGenreStore((state) => state.setGenres);
 
   const handleSubmit = () => {
     setGenres(selectedGenres);
