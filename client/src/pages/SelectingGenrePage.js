@@ -1,4 +1,4 @@
-import { Button, Container, Paper, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Paper, Typography } from "@material-ui/core";
 
 import { useQuery } from "react-query";
 import { request, gql } from "graphql-request";
@@ -41,7 +41,8 @@ export default function SelectingGenrePage(props) {
   return (
     <Paper elevation={0}>
       <Typography variant="h5">Select at least 3 genres:</Typography>
-      <Container disableGutters={true} style={{ marginTop: "2.5vh" }}>
+      {/* <Container disableGutters={true} style={{ marginTop: "2.5vh" }}> */}
+      <Grid container justify="center">
         {status === "loading" ? (
           <span>Fetching data</span>
         ) : status === "error" ? (
@@ -56,7 +57,8 @@ export default function SelectingGenrePage(props) {
             />
           ))
         )}
-      </Container>
+      </Grid>
+      {/* </Container> */}
       <Container disableGutters={true} style={{ marginTop: "2.5vh" }}>
         <Button
           disabled={selectedGenres.length < 3}

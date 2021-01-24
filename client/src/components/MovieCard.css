@@ -10,6 +10,10 @@
   background-repeat: no-repeat;
 }
 
+.container {
+  height: calc(100vh - 10vh) !important;
+}
+
 .movie_cardContainer {
   display: flex;
   justify-content: center;
@@ -34,11 +38,11 @@
 /* testing css for second card component */
 
 .secondMovie_cardText {
-    position: absolute;
-    background-color: rgb(63 81 181) !important;
-    bottom: 10px;
-    left: 10px;
-    margin: 10px;
-    padding: 0 20px;
-    color: #fff !important;
-  }
+  position: absolute;
+  background-color: rgb(63 81 181) !important;
+  bottom: 10px;
+  left: 10px;
+  margin: 10px;
+  padding: 0 20px;
+  color: #fff !important;
+}

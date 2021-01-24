@@ -3,8 +3,9 @@ import { Card, CardWrapper } from "react-swipeable-cards";
 
 import { useMutation } from "react-query";
 import request, { gql } from "graphql-request";
+import { useEffect } from "react";
 
-export default function SecondMovieCard({ movies, nextMovie }) {
+export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
   const rate = useMutation(async ({ movieId, userId, action }) => {
     let data = { rateMovie: null };
     // eslint-disable-next-line default-case
@@ -45,8 +46,30 @@ export default function SecondMovieCard({ movies, nextMovie }) {
       }, 500);
     }
   });
+
+  useEffect(() => {
+    console.log(movies.length);
+    if (movies.length < 1) {
+      increaseSkip();
+    }
+  }, [movies, rate, increaseSkip]);
+  // TODO: implement this card when the ratings are done, for the user to be forwarded to the normal page
+  // const waitForMoreData = () => {
+  //   let titleStyle = {
+  //     textAlign: "center",
+  //     fontWeight: "bold",
+  //     fontSize: "40px",
+  //     fontFamily: "Sans-Serif",
+  //     marginTop: "50px",
+  //   };
+  //   return <div style={titleStyle}>fetching more movies...</div>;
+  // };
+
   return (
-    <CardWrapper style={{ paddingTop: "0px" }}>
+    <CardWrapper
+      // addEndCard={waitForMoreData.bind(this)}
+      style={{ paddingTop: "0px" }}
+    >
       {movies.map((m) => (
         <Card
           key={m.movieId}
