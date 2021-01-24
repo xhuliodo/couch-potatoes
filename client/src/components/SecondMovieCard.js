@@ -4,8 +4,8 @@ import { Card, CardWrapper } from "react-swipeable-cards";
 import { useMutation } from "react-query";
 import request, { gql } from "graphql-request";
 
-const useLikeMovie = (movieId, userId = "1", nextMovie) => {
-  return useMutation(["like-movie", movieId, userId], async () => {
+export default function SecondMovieCard({ movies, nextMovie }) {
+  const mutation = useMutation(async ({ movieId, userId }) => {
     const data = await request(
       "http://localhost:4001/graphql",
       gql`
@@ -17,23 +17,16 @@ const useLikeMovie = (movieId, userId = "1", nextMovie) => {
       `
     );
     const { likeMovie } = data;
-    if (likeMovie.length === 1) {
+    if (likeMovie === null) {
+      // TODO: you should implement some error logic, when the rating did not happen
+      console.log("the rating didn't do shit");
+    } else {
       console.log("the movie was rated succesfully", movieId);
       setTimeout(() => {
         nextMovie();
       }, 500);
-    } else {
-      // TODO: you should implement some error logic, when the rating did not happen
-      console.log("the rating didn't do shit");
     }
   });
-};
-
-export default function SecondMovieCard({ movies, nextMovie }) {
-  const handleLikeMovie = ()=>{
-    useLikeMovie(m.movieId, )
-
-  }
   return (
     <CardWrapper style={{ paddingTop: "0px" }}>
       {movies.map((m) => (
@@ -43,6 +36,9 @@ export default function SecondMovieCard({ movies, nextMovie }) {
             console.log("you hated the movie: ", m.title);
           }}
           onSwipeRight={() => {
+            const mutationData = { movieId: m.movieId, userId: 1 };
+
+            mutation.mutate(mutationData);
           }}
           style={{
             backgroundImage: `url(${m.posterUrl})`,
