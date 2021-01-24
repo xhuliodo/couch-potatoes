@@ -5,23 +5,41 @@ import { useMutation } from "react-query";
 import request, { gql } from "graphql-request";
 
 export default function SecondMovieCard({ movies, nextMovie }) {
-  const mutation = useMutation(async ({ movieId, userId }) => {
-    const data = await request(
-      "http://localhost:4001/graphql",
-      gql`
-        mutation {
-          likeMovie(movieId: "${movieId}", userId: "${userId}") {
-            movieId
-          }
-        }
-      `
-    );
-    const { likeMovie } = data;
-    if (likeMovie === null) {
+  const rate = useMutation(async ({ movieId, userId, action }) => {
+    let data = { rateMovie: null };
+    // eslint-disable-next-line default-case
+    switch (action) {
+      case "love":
+        data = await request(
+          "http://localhost:4001/graphql",
+          gql`
+            mutation {
+              rateMovie(movieId: "${movieId}", userId: "${userId}", rating:1) {
+                movieId
+              }
+            }
+          `
+        );
+        break;
+      case "hate":
+        data = await request(
+          "http://localhost:4001/graphql",
+          gql`
+            mutation {
+              rateMovie(movieId: "${movieId}", userId: "${userId}", rating:0) {
+                movieId
+              }
+            }
+          `
+        );
+        break;
+    }
+    const { rateMovie } = await data;
+    if (rateMovie === null) {
       // TODO: you should implement some error logic, when the rating did not happen
       console.log("the rating didn't do shit");
     } else {
-      console.log("the movie was rated succesfully", movieId);
+      console.log("you rated the movie with id", rateMovie.movieId);
       setTimeout(() => {
         nextMovie();
       }, 500);
@@ -33,12 +51,20 @@ export default function SecondMovieCard({ movies, nextMovie }) {
         <Card
           key={m.movieId}
           onSwipeLeft={() => {
-            console.log("you hated the movie: ", m.title);
+            const mutationData = {
+              movieId: m.movieId,
+              userId: 1,
+              action: "hate",
+            };
+            rate.mutate(mutationData);
           }}
           onSwipeRight={() => {
-            const mutationData = { movieId: m.movieId, userId: 1 };
-
-            mutation.mutate(mutationData);
+            const mutationData = {
+              movieId: m.movieId,
+              userId: 1,
+              action: "love",
+            };
+            rate.mutate(mutationData);
           }}
           style={{
             backgroundImage: `url(${m.posterUrl})`,

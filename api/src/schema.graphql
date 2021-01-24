@@ -28,14 +28,18 @@ type User {
 }
 
 type Mutation {
-  likeMovie(userId: ID!, movieId: ID!): Movie
+  rateMovie(userId: ID!, movieId: ID!, rating: Int!): Movie
     @cypher(
-      statement: "match (u:User{userId:$userId}), (m:Movie{movieId:$movieId}) merge (u)-[r:RATED]->(m) on create set r.rating=1 return m"
+      statement: "match (u:User{userId:$userId}), (m:Movie{movieId:$movieId}) merge (u)-[r:RATED]->(m) on create set r.rating=toInteger($rating) return m"
     )
-  dislikeMovie(userId: ID!, movieId: ID!): Movie
-    @cypher(
-      statement: "match (u:User{userId:$userId}), (m:Movie{movieId:$movieId}) merge (u)-[r:RATED]->(m) on create set r.rating=0 return m"
-    )
+  # likeMovie(userId: ID!, movieId: ID!): Movie
+  #   @cypher(
+  #     statement: "match (u:User{userId:$userId}), (m:Movie{movieId:$movieId}) merge (u)-[r:RATED]->(m) on create set r.rating=1 return m"
+  #   )
+  # dislikeMovie(userId: ID!, movieId: ID!): Movie
+  #   @cypher(
+  #     statement: "match (u:User{userId:$userId}), (m:Movie{movieId:$movieId}) merge (u)-[r:RATED]->(m) on create set r.rating=0 return m"
+  #   )
 }
 
 type Query {
