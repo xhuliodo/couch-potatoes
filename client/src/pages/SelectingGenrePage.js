@@ -42,7 +42,7 @@ export default function SelectingGenrePage(props) {
     <Paper elevation={0}>
       <Typography variant="h5">Select at least 3 genres:</Typography>
       {/* <Container disableGutters={true} style={{ marginTop: "2.5vh" }}> */}
-      <Grid container justify="center">
+      <Grid container justify="center" style={{ marginTop: "2.5vh" }}>
         {status === "loading" ? (
           <span>Fetching data</span>
         ) : status === "error" ? (

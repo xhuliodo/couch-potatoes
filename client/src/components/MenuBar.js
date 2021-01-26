@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import MenuItem from "@material-ui/core/MenuItem";
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -69,6 +68,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
 
   const renderMenu = (
     <Popper
+      style={{ zIndex: "2" }}
       open={open}
       anchorEl={anchorRef.current}
       role={undefined}
@@ -115,26 +115,20 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
             />
             {isAuthenticated ? (
               <>
-                chulio
-                <IconButton
-                  size="medium"
+                <Button
                   aria-label="account of current user"
                   ref={anchorRef}
                   aria-controls={open ? "menu-list-grow" : undefined}
                   aria-haspopup="true"
                   onClick={handleToggle}
                   color="inherit"
+                  startIcon={<AccountCircle />}
                 >
-                  <AccountCircle />
-                </IconButton>
+                  chulio
+                </Button>
               </>
             ) : (
-              <Button
-                onClick={handleLogin}
-                size="large"
-                color="default"
-                variant="contained"
-              >
+              <Button onClick={handleLogin} color="default" variant="contained">
                 Log in
               </Button>
             )}

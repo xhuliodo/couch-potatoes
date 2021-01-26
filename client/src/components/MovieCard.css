@@ -11,7 +11,11 @@
 }
 
 .container {
-  height: calc(100vh - 10vh) !important;
+  height: calc(100vh - 7vh) !important;
+}
+
+.MuiTooltip-tooltip {
+  font-size: 16px !important;
 }
 
 .movie_cardContainer {

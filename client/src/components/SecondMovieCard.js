@@ -1,9 +1,11 @@
-import { Paper } from "@material-ui/core";
+import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
 import { Card, CardWrapper } from "react-swipeable-cards";
 
 import { useMutation } from "react-query";
 import request, { gql } from "graphql-request";
 import { useEffect } from "react";
+import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
+import { useMovieStore } from "../context/movies";
 
 export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
   const rate = useMutation(async ({ movieId, userId, action }) => {
@@ -47,12 +49,19 @@ export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
     }
   });
 
+  const { currentMovie, setCurrentMovie } = useMovieStore();
   useEffect(() => {
-    console.log(movies.length);
     if (movies.length < 1) {
       increaseSkip();
     }
   }, [movies, rate, increaseSkip]);
+
+  useEffect(() => {
+    console.log("current movie updated");
+    if (currentMovie !== movies[0]) {
+      setCurrentMovie();
+    }
+  }, [movies, rate, currentMovie, setCurrentMovie]);
   // TODO: implement this card when the ratings are done, for the user to be forwarded to the normal page
   // const waitForMoreData = () => {
   //   let titleStyle = {
@@ -103,6 +112,66 @@ export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
           </Paper>
         </Card>
       ))}
+
+      <Grid
+        style={{ position: "absolute", bottom: "5px" }}
+        container
+        justify="center"
+      >
+        <Tooltip placement="top" arrow title="Ignore, I have not seen it">
+          <Button
+            style={buttonStyling}
+            onClick={() => {
+              nextMovie();
+            }}
+            variant="contained"
+          >
+            <VisibilityOff fontSize="inherit" />
+          </Button>
+        </Tooltip>
+        <Tooltip placement="top" arrow title="I loved it!!!">
+          <Button
+            style={buttonStyling}
+            onClick={() => {
+              const mutationData = {
+                movieId: currentMovie.movieId,
+                userId: 1,
+                action: "love",
+              };
+              rate.mutate(mutationData);
+            }}
+            variant="contained"
+            color="primary"
+          >
+            <ThumbUp fontSize="inherit" />
+          </Button>
+        </Tooltip>
+        <Tooltip placement="top" arrow title="Hated it!!!">
+          <Button
+            style={buttonStyling}
+            onClick={() => {
+              const mutationData = {
+                movieId: currentMovie.movieId,
+                userId: 1,
+                action: "hate",
+              };
+              rate.mutate(mutationData);
+            }}
+            variant="contained"
+            color="secondary"
+          >
+            <ThumbDown fontSize="inherit" />
+          </Button>
+        </Tooltip>
+      </Grid>
     </CardWrapper>
   );
 }
+
+const buttonStyling = {
+  marginLeft: "1.5vw",
+  marginRight: "1.5vw",
+  fontSize: "40px",
+  maxWidth: "100px",
+  width: "30vw",
+};

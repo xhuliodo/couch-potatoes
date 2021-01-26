@@ -10,6 +10,7 @@ import request, { gql } from "graphql-request";
 import { useGenreStore } from "../context/genres";
 import { useMovieStore } from "../context/movies";
 import SecondMovieCard from "../components/SecondMovieCard";
+import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
 
 const useMovies = (genre_1, genre_2, genre_3, skip, limit) => {
   return useQuery(
@@ -53,7 +54,7 @@ export default function GettingToKnowUserPage() {
     increaseSkip,
   } = useMovieStore();
 
-  const { status, data = [], error } = useMovies(
+  const { isLoading, isError, data = [], error } = useMovies(
     genres[0],
     genres[1],
     genres[2],
@@ -62,20 +63,24 @@ export default function GettingToKnowUserPage() {
   );
 
   useEffect(() => {
-    status === "success" ? setMovies(data) : console.log("waiting for data");
-  }, [data, setMovies, status, skip]);
+    isLoading
+      ? console.log("waiting for data")
+      : isError
+      ? console.log(error.message)
+      : setMovies(data);
+  }, [data, setMovies, isLoading, isError, error, skip]);
 
   return (
-    <Paper elevation={0}>
-      <Typography variant="h5">
-        Please rate at least ${requiredMovies} movies
+    <Paper elevation={0} style={{ height: "90vh" }}>
+      <Typography variant="h4">
+        Please rate at least {requiredMovies} movies
         <i>(ignored movies will not count)</i>
       </Typography>
       <Container disableGutters={true}>
-        {status === "loading" ? (
-          <span>Fetching data</span>
-        ) : status === "error" ? (
-          <span>Error: {error.message}</span>
+        {isLoading ? (
+          <UserFeedbackMovieCard message={"Fetching movies..."} />
+        ) : isError ? (
+          <UserFeedbackMovieCard message={"Something went wrong..."} />
         ) : (
           <SecondMovieCard
             increaseSkip={increaseSkip}
@@ -83,7 +88,7 @@ export default function GettingToKnowUserPage() {
             nextMovie={nextMovie}
           />
         )}
-        <Grid container justify="center">
+        {/* <Grid container justify="center">
           <Button
             size="large"
             onClick={() => {
@@ -94,7 +99,7 @@ export default function GettingToKnowUserPage() {
           >
             Have not seen
           </Button>
-        </Grid>
+        </Grid> */}
       </Container>
     </Paper>
   );
