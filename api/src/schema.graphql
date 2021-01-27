@@ -50,7 +50,7 @@ type Query {
     skip: Int!
   ): [Movie]!
     @cypher(
-      statement: "match (u:User)-[:FAVORITE]->(g:Genre) where u.userId=$userId with g match (m:Movie)-[:IN_GENRE]->(g) with  distinct(m) as movie match (:User)-[r:RATED]->(movie) with movie, count(r.rating) as howMany,avg(r.rating) as reviews return movie order by howMany desc, reviews desc skip toInteger($skip) limit toInteger($limit)"
+      statement: "match (u:User)-[:FAVORITE]->(g:Genre) where u.userId=$userId with g, u match (m:Movie)-[:IN_GENRE]->(g) where not exists((u)-[:RATED]->(m)) with  distinct(m) as movie match (:User)-[r:RATED]->(movie) with movie, count(r.rating) as howMany,avg(r.rating) as reviews return movie order by howMany desc, reviews desc skip toInteger($skip) limit toInteger($limit)"
     )
   recommendFromOtherUsers(
     userId: ID!
