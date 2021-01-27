@@ -25,6 +25,7 @@ type User {
   # username: String @unique
   watchlist(limit: Int = 10): [Movie]!
     @relation(name: "WATCH_LATER", direction: "OUT")
+  favoriteGenres: [Genre]! @relation(name: "FAVORITE", direction: "OUT")
 }
 
 type Mutation {

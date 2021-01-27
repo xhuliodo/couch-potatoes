@@ -30,9 +30,9 @@ const useMovies = (genre_1, genre_2, genre_3, skip, limit) => {
         gql`
         query {
             recommendPopularMoviesBasedOnGenre(
-              genre_1: "${genre_1}" 
-              genre_2: "${genre_2}" 
-              genre_3: "${genre_3}" 
+              genre_1: ${genre_1}
+              genre_2: ${genre_2} 
+              genre_3: ${genre_3}
               limit: ${limit}
               skip: ${skip}
             ) {

@@ -13,9 +13,9 @@ export default function SelectingGenre({
 
   useEffect(() => {
     selected
-      ? setSelectedGenres([...selectedGenres, genre.name])
+      ? setSelectedGenres([...selectedGenres, `${genre.genreId}`])
       : setSelectedGenres([
-          ...selectedGenres.filter((sg) => sg !== genre.name),
+          ...selectedGenres.filter((sg) => sg !== `${genre.genreId}`),
         ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
