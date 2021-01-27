@@ -14,7 +14,7 @@ MERGE (m:Movie {movieId: row.movieId})
 ON CREATE SET m.title = row.title, m.releaseYear = row.year, m.imdbLink=row.imdbUrl, m.posterUrl = row.posterUrl
 WITH *
 UNWIND split(row.genres, "|") AS genre
-MERGE (g:Genre {name: genre})
+MERGE (g:Genre {name: genre, genreId: apoc.create.uuid()})
 MERGE (m)-[:IN_GENRE]->(g);
 
 // Load users / ratings
