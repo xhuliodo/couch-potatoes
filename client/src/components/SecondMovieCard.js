@@ -12,6 +12,7 @@ export default function SecondMovieCard({
   nextMovie,
   increaseSkip,
   setOpen,
+  startedFromTheBottomNowWeHere = false,
 }) {
   const rate = useMutation(async ({ movieId, userId, action }) => {
     let data = { rateMovie: null };
@@ -48,13 +49,8 @@ export default function SecondMovieCard({
       console.log("the rating didn't do shit");
     } else {
       console.log("you rated the movie with id", rateMovie.movieId);
-      setTimeout(() => {
-        nextMovie();
-        increaseRatedMovies();
-        if (ratedMovies === requiredMovies) {
-          setOpen(true);
-        }
-      }, 250);
+      nextMovie();
+      increaseRatedMovies();
     }
   });
 
@@ -62,8 +58,6 @@ export default function SecondMovieCard({
     currentMovie,
     setCurrentMovie,
     increaseRatedMovies,
-    ratedMovies,
-    requiredMovies,
   } = useMovieStore();
   useEffect(() => {
     if (movies.length < 1) {
@@ -96,12 +90,11 @@ export default function SecondMovieCard({
     >
       {movies.map((m) => (
         <Card
-          superOnSwipe={null}
           key={m.movieId}
           onSwipeLeft={() => {
             const mutationData = {
               movieId: m.movieId,
-              userId: 1,
+              userId: 2,
               action: "hate",
             };
             rate.mutate(mutationData);
@@ -109,7 +102,7 @@ export default function SecondMovieCard({
           onSwipeRight={() => {
             const mutationData = {
               movieId: m.movieId,
-              userId: 1,
+              userId: 2,
               action: "love",
             };
             rate.mutate(mutationData);
@@ -135,24 +128,27 @@ export default function SecondMovieCard({
         justify="center"
         superonswipe={null}
       >
-        <Tooltip placement="top" arrow title="Ignore, I have not seen it">
-          <Button
-            style={buttonStyling}
-            onClick={() => {
-              nextMovie();
-            }}
-            variant="contained"
-          >
-            <VisibilityOff fontSize="inherit" />
-          </Button>
-        </Tooltip>
-        <Tooltip placement="top" arrow title="I loved it!!!">
+        {startedFromTheBottomNowWeHere ? null : (
+          <Tooltip placement="top" arrow title="Ignore...">
+            <Button
+              style={buttonStyling}
+              onClick={() => {
+                nextMovie();
+              }}
+              variant="contained"
+            >
+              <VisibilityOff fontSize="inherit" />
+            </Button>
+          </Tooltip>
+        )}
+
+        <Tooltip placement="top" arrow title="Loved it!">
           <Button
             style={buttonStyling}
             onClick={() => {
               const mutationData = {
                 movieId: currentMovie.movieId,
-                userId: 1,
+                userId: 2,
                 action: "love",
               };
               rate.mutate(mutationData);
@@ -163,13 +159,13 @@ export default function SecondMovieCard({
             <ThumbUp fontSize="inherit" />
           </Button>
         </Tooltip>
-        <Tooltip placement="top" arrow title="Hated it!!!">
+        <Tooltip placement="top" arrow title="Hated it!">
           <Button
             style={buttonStyling}
             onClick={() => {
               const mutationData = {
                 movieId: currentMovie.movieId,
-                userId: 1,
+                userId: 2,
                 action: "hate",
               };
               rate.mutate(mutationData);
@@ -180,7 +176,6 @@ export default function SecondMovieCard({
             <ThumbDown fontSize="inherit" />
           </Button>
         </Tooltip>
-        
       </Grid>
     </CardWrapper>
   );

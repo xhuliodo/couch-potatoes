@@ -21,12 +21,10 @@ import SecondMovieCard from "../components/SecondMovieCard";
 import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
 
 const useMovies = (userId, skip, limit) => {
-  return useQuery(
-    ["movies", userId, skip, limit],
-    async () => {
-      const data = await request(
-        "http://localhost:4001/graphql",
-        gql`
+  return useQuery(["movies", userId, skip, limit], async () => {
+    const data = await request(
+      "http://localhost:4001/graphql",
+      gql`
         query {
             recommendPopularMoviesBasedOnGenre(
               userId: ${userId}
@@ -41,11 +39,10 @@ const useMovies = (userId, skip, limit) => {
             }
         }
       `
-      );
-      const { recommendPopularMoviesBasedOnGenre } = await data;
-      return recommendPopularMoviesBasedOnGenre;
-    }
-  );
+    );
+    const { recommendPopularMoviesBasedOnGenre } = await data;
+    return recommendPopularMoviesBasedOnGenre;
+  });
 };
 
 export default function GettingToKnowUserPage(props) {
@@ -60,11 +57,7 @@ export default function GettingToKnowUserPage(props) {
     requiredMovies,
   } = useMovieStore();
 
-  const { isLoading, isError, data = [], error } = useMovies(
-    "2",
-    skip,
-    limit
-  );
+  const { isLoading, isError, data = [], error } = useMovies("2", skip, limit);
 
   useEffect(() => {
     isLoading
@@ -78,6 +71,10 @@ export default function GettingToKnowUserPage(props) {
   const handleClose = () => {
     setOpen(false);
   };
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    ratedMovies === requiredMovies ? setOpen(true) : null;
+  }, [ratedMovies, requiredMovies]);
   const handleNext = () => {
     handleClose();
     props.history.push("/recommendations");
@@ -117,7 +114,7 @@ export default function GettingToKnowUserPage(props) {
             onClick={handleNext}
             disabled={ratedMovies >= requiredMovies ? false : true}
           >
-            Continue
+            Next
           </Button>
         </Container>
 
