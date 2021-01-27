@@ -7,7 +7,12 @@ import { useEffect } from "react";
 import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
 
-export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
+export default function SecondMovieCard({
+  movies,
+  nextMovie,
+  increaseSkip,
+  setOpen,
+}) {
   const rate = useMutation(async ({ movieId, userId, action }) => {
     let data = { rateMovie: null };
     // eslint-disable-next-line default-case
@@ -45,11 +50,21 @@ export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
       console.log("you rated the movie with id", rateMovie.movieId);
       setTimeout(() => {
         nextMovie();
-      }, 500);
+        increaseRatedMovies();
+        if (ratedMovies === requiredMovies) {
+          setOpen(true);
+        }
+      }, 250);
     }
   });
 
-  const { currentMovie, setCurrentMovie } = useMovieStore();
+  const {
+    currentMovie,
+    setCurrentMovie,
+    increaseRatedMovies,
+    ratedMovies,
+    requiredMovies,
+  } = useMovieStore();
   useEffect(() => {
     if (movies.length < 1) {
       increaseSkip();
@@ -81,6 +96,7 @@ export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
     >
       {movies.map((m) => (
         <Card
+          superOnSwipe={null}
           key={m.movieId}
           onSwipeLeft={() => {
             const mutationData = {
@@ -114,9 +130,10 @@ export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
       ))}
 
       <Grid
-        style={{ position: "absolute", bottom: "5px" }}
+        style={{ position: "absolute", bottom: "3px" }}
         container
         justify="center"
+        superonswipe={null}
       >
         <Tooltip placement="top" arrow title="Ignore, I have not seen it">
           <Button
@@ -163,6 +180,7 @@ export default function SecondMovieCard({ movies, nextMovie, increaseSkip }) {
             <ThumbDown fontSize="inherit" />
           </Button>
         </Tooltip>
+        
       </Grid>
     </CardWrapper>
   );

@@ -1,22 +1,29 @@
 import { useState } from "react";
-import MenuBar from "./components/MenuBar";
-import SelectingGenrePage from "./pages/SelectingGenrePage";
-import Container from "@material-ui/core/Container";
 
 // dark theme importing
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import Brightness3Icon from "@material-ui/icons/Brightness3";
-import { createMuiTheme, Paper, ThemeProvider } from "@material-ui/core";
+import {
+  createMuiTheme,
+  Paper,
+  ThemeProvider,
+  Container,
+} from "@material-ui/core";
 
 // react query importing
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import Footer from "./components/Footer";
 
 // app routing
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
+// pages and components
+import MenuBar from "./components/MenuBar";
+import Footer from "./components/Footer";
 import WelcomePage from "./pages/WelcomePage";
 import GettingToKnowUserPage from "./pages/GettingToKnowUserPage";
+import SelectingGenrePage from "./pages/SelectingGenrePage";
+import UserToUserRecommendations from "./pages/UserToUserRecommendations";
 
 export default function App() {
   // dark theme setup
@@ -53,6 +60,11 @@ export default function App() {
                   exact
                   path="/getting-to-know-2"
                   component={GettingToKnowUserPage}
+                />
+                <Route
+                  exact
+                  path="/recommendations"
+                  component={UserToUserRecommendations}
                 />
               </Switch>
             </Router>

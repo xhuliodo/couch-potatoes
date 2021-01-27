@@ -1,7 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { Button, Container, Grid, Paper, Typography } from "@material-ui/core";
-import { VisibilityOff } from "@material-ui/icons";
+import {
+  Button,
+  Container,
+  Paper,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@material-ui/core";
 import "../components/MovieCard.css";
 
 import { useQuery } from "react-query";
@@ -42,7 +51,7 @@ const useMovies = (genre_1, genre_2, genre_3, skip, limit) => {
   );
 };
 
-export default function GettingToKnowUserPage() {
+export default function GettingToKnowUserPage(props) {
   const genres = useGenreStore((state) => state.genres);
   const {
     movies,
@@ -50,8 +59,9 @@ export default function GettingToKnowUserPage() {
     nextMovie,
     skip,
     limit,
-    requiredMovies,
     increaseSkip,
+    ratedMovies,
+    requiredMovies,
   } = useMovieStore();
 
   const { isLoading, isError, data = [], error } = useMovies(
@@ -70,11 +80,26 @@ export default function GettingToKnowUserPage() {
       : setMovies(data);
   }, [data, setMovies, isLoading, isError, error, skip]);
 
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleNext = () => {
+    handleClose();
+    props.history.push("/recommendations");
+  };
+
   return (
     <Paper elevation={0} style={{ height: "90vh" }}>
-      <Typography variant="h4">
-        Please rate at least {requiredMovies} movies
+      <Typography style={{ textAlign: "center" }} variant="h6">
+        Please rate at least {requiredMovies} movies {" "}
         <i>(ignored movies will not count)</i>
+      </Typography>
+      <Typography
+        style={{ textAlign: "center", fontWeight: "bold" }}
+        variant="h6"
+      >
+        You have rated {ratedMovies} / {requiredMovies}
       </Typography>
       <Container disableGutters={true}>
         {isLoading ? (
@@ -86,20 +111,41 @@ export default function GettingToKnowUserPage() {
             increaseSkip={increaseSkip}
             movies={movies}
             nextMovie={nextMovie}
+            setOpen={setOpen}
           />
         )}
-        {/* <Grid container justify="center">
+        <Container maxWidth="sm">
           <Button
-            size="large"
-            onClick={() => {
-              nextMovie();
-            }}
-            startIcon={<VisibilityOff />}
+            style={{ marginTop: "3.4vh" }}
+            color="primary"
+            fullWidth
             variant="contained"
+            onClick={handleNext}
+            disabled={ratedMovies >= requiredMovies ? false : true}
           >
-            Have not seen
+            Continue
           </Button>
-        </Grid> */}
+        </Container>
+
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>We've gotten to know you enough 😃</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              You can either click next to get recommendations based on other
+              users ratings or continue to rate movies in the genre you selected
+              as well (you can always click the continue button at the end to go
+              to the next step)
+            </DialogContentText>
+            <DialogActions>
+              <Button onClick={handleClose} color="secondary">
+                Continue
+              </Button>
+              <Button onClick={handleNext} color="primary">
+                Next
+              </Button>
+            </DialogActions>
+          </DialogContent>
+        </Dialog>
       </Container>
     </Paper>
   );

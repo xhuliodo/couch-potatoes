@@ -5,7 +5,7 @@ export const useMovieStore = create((set) => ({
   skip: 0,
   limit: 5,
   ratedMovies: 0,
-  requiredMovies: 15,
+  requiredMovies: 5,
   currentMovie: null,
   setMovies: (ms) => set(() => ({ movies: [...ms] })),
   nextMovie: () =>
@@ -16,6 +16,6 @@ export const useMovieStore = create((set) => ({
     }),
   setCurrentMovie: () => set((state) => ({ currentMovie: state.movies[0] })),
   increaseSkip: () => set((state) => ({ skip: state.skip + state.limit })),
-  increaseRequiredMovies: () =>
-    set((state) => ({ requiredMovies: state.requiredMovies++ })),
+  increaseRatedMovies: () =>
+    set((state) => ({ ratedMovies: state.ratedMovies + 1 })),
 }));
