@@ -6,8 +6,6 @@ import { request, gql } from "graphql-request";
 import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
 
-import { useGenreStore } from "../context/genres";
-
 const useGenres = () => {
   return useQuery("genres", async () => {
     const data = await request(
@@ -31,10 +29,7 @@ export default function SelectingGenrePage(props) {
 
   const [selectedGenres, setSelectedGenres] = useState([]);
 
-  const setGenres = useGenreStore((state) => state.setGenres);
-
   const handleSubmit = useMutation(async ({ userId, genres }) => {
-    console.log(genres);
     const data = await request(
       "http://localhost:4001/graphql",
       gql`
@@ -42,7 +37,7 @@ export default function SelectingGenrePage(props) {
           MergeUserFavoriteGenres(
             from: { userId: "${userId}" }
             to: {
-              genreId_in: ["${...genres}"]
+              genreId_in: [${genres.map((g) => `"${g}"`)}]
             }
           ) {
             from {
@@ -52,14 +47,12 @@ export default function SelectingGenrePage(props) {
         }
       `
     );
-    console.log(data);
-    setGenres(selectedGenres);
-    props.history.push("/getting-to-know-2");
+
+    const { MergeUserFavoriteGenres } = data;
+    if (MergeUserFavoriteGenres.userId !== null) {
+      props.history.push("/getting-to-know-2");
+    }
   });
-
-  // setGenres(selectedGenres);
-
-  // props.history.push("/getting-to-know-2");
 
   return (
     <Paper elevation={0}>
@@ -88,7 +81,7 @@ export default function SelectingGenrePage(props) {
           color="primary"
           variant="contained"
           onClick={() =>
-            handleSubmit.mutate({ userId: "1", genres: selectedGenres })
+            handleSubmit.mutate({ userId: "2", genres: selectedGenres })
           }
         >
           Next

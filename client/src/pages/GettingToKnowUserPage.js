@@ -16,7 +16,6 @@ import "../components/MovieCard.css";
 import { useQuery } from "react-query";
 import request, { gql } from "graphql-request";
 
-import { useGenreStore } from "../context/genres";
 import { useMovieStore } from "../context/movies";
 import SecondMovieCard from "../components/SecondMovieCard";
 import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
@@ -52,7 +51,7 @@ const useMovies = (genre_1, genre_2, genre_3, skip, limit) => {
 };
 
 export default function GettingToKnowUserPage(props) {
-  const genres = useGenreStore((state) => state.genres);
+  const genres = ["1", "2", "3"];
   const {
     movies,
     setMovies,
@@ -92,7 +91,7 @@ export default function GettingToKnowUserPage(props) {
   return (
     <Paper elevation={0} style={{ height: "90vh" }}>
       <Typography style={{ textAlign: "center" }} variant="h6">
-        Please rate at least {requiredMovies} movies {" "}
+        Please rate at least {requiredMovies} movies{" "}
         <i>(ignored movies will not count)</i>
       </Typography>
       <Typography
