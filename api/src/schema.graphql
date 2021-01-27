@@ -45,14 +45,12 @@ type Mutation {
 
 type Query {
   recommendPopularMoviesBasedOnGenre(
-    genre_1: String!
-    genre_2: String!
-    genre_3: String!
+    userId: ID!
     limit: Int!
     skip: Int!
   ): [Movie]!
     @cypher(
-      statement: "match (m:Movie)-[:IN_GENRE]->(g:Genre) where g.name in [$genre_1,$genre_2,$genre_3] with  distinct(m) as movie match (:User)-[r:RATED]->(movie) with movie, count(r.rating) as howMany,avg(r.rating) as reviews return movie order by howMany desc, reviews desc skip toInteger($skip) limit toInteger($limit)"
+      statement: "match (u:User)-[:FAVORITE]->(g:Genre) where u.userId=$userId with g match (m:Movie)-[:IN_GENRE]->(g) with  distinct(m) as movie match (:User)-[r:RATED]->(movie) with movie, count(r.rating) as howMany,avg(r.rating) as reviews return movie order by howMany desc, reviews desc skip toInteger($skip) limit toInteger($limit)"
     )
   recommendFromOtherUsers(
     userId: ID!
