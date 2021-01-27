@@ -20,18 +20,16 @@ import { useMovieStore } from "../context/movies";
 import SecondMovieCard from "../components/SecondMovieCard";
 import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
 
-const useMovies = (genre_1, genre_2, genre_3, skip, limit) => {
+const useMovies = (userId, skip, limit) => {
   return useQuery(
-    ["movies", genre_1, genre_2, genre_3, skip, limit],
+    ["movies", userId, skip, limit],
     async () => {
       const data = await request(
         "http://localhost:4001/graphql",
         gql`
         query {
             recommendPopularMoviesBasedOnGenre(
-              genre_1: ${genre_1}
-              genre_2: ${genre_2} 
-              genre_3: ${genre_3}
+              userId: ${userId}
               limit: ${limit}
               skip: ${skip}
             ) {
@@ -51,7 +49,6 @@ const useMovies = (genre_1, genre_2, genre_3, skip, limit) => {
 };
 
 export default function GettingToKnowUserPage(props) {
-  const genres = ["1", "2", "3"];
   const {
     movies,
     setMovies,
@@ -64,9 +61,7 @@ export default function GettingToKnowUserPage(props) {
   } = useMovieStore();
 
   const { isLoading, isError, data = [], error } = useMovies(
-    genres[0],
-    genres[1],
-    genres[2],
+    "2",
     skip,
     limit
   );
