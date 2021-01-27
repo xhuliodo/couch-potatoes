@@ -16,7 +16,7 @@ WITH *
 UNWIND split(row.genres, "|") AS genre
 MERGE (g:Genre {name: genre})
 ON CREATE SET g.genreId = apoc.create.uuid()
-MERGE (m)-[:IN_GENRE]->(g);
+MERGE (m)-[:IN_GENRE]->(g); 
 
 // Load users / ratings
 LOAD CSV WITH HEADERS FROM "file:///ratings.csv" AS row
