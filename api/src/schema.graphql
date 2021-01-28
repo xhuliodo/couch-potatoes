@@ -50,7 +50,7 @@ type Query {
     skip: Int!
   ): [Movie]!
     @cypher(
-      statement: "match (u:User)-[:FAVORITE]->(g:Genre) where u.userId=$userId with g, u match (m:Movie)-[:IN_GENRE]->(g) where not exists((u)-[:RATED]->(m)) with  distinct(m) as movie match (:User)-[r:RATED]->(movie) with movie, count(r.rating) as howMany,avg(r.rating) as reviews return movie order by howMany desc, reviews desc skip toInteger($skip) limit toInteger($limit)"
+      statement: "match (u:User)-[:FAVORITE]->(g:Genre) where u.userId=$userId with g, u match (m:Movie)-[:IN_GENRE]->(g) where not exists( (u)-[:RATED]->(m) ) and not exists ( (u)-[:WATCH_LATER]->(m) ) with  distinct(m) as movie match (:User)-[r:RATED]->(movie) with movie, count(r.rating) as howMany,avg(r.rating) as reviews return movie order by howMany desc, reviews desc skip toInteger($skip) limit toInteger($limit)"
     )
   recommendFromOtherUsers(
     userId: ID!
@@ -59,7 +59,7 @@ type Query {
     moviesToRecommend: Int = 25
   ): [Movie]!
     @cypher(
-      statement: "match (u1:User {userId:$userId})-[r:RATED]->(m:Movie) with u1, avg(r.rating) AS u1_mean match (u1)-[r1:RATED]->(m:Movie)<-[r2:RATED]-(u2) with u1, u1_mean, u2, collect({r1: r1, r2: r2}) as ratings where size(ratings) > toInteger($minimumRatings) match (u2)-[r:RATED]->(m:Movie) with u1, u1_mean, u2, avg(r.rating) as u2_mean, ratings unwind ratings as r with sum( (r.r1.rating-u1_mean) * (r.r2.rating-u2_mean) ) as nom, sqrt( sum( (r.r1.rating - u1_mean)^2) * sum( (r.r2.rating - u2_mean) ^2)) as denom, u1, u2 where denom <> 0 with u1, u2, nom/denom as pearson order by pearson desc limit toInteger($peopleToCompare) match (u2)-[r:RATED]->(m:Movie) where not exists( (u1)-[:RATED]->(m) ) and not exists ( (u1)-[:WATCH_LATER]->(m) )return m, sum( pearson * r.rating) as score order by score desc limit toInteger($moviesToRecommend)"
+      statement: "match (u1:User {userId:$userId})-[r:RATED]->(m:Movie) with u1, avg(r.rating) AS u1_mean match (u1)-[r1:RATED]->(m:Movie)<-[r2:RATED]-(u2) with u1, u1_mean, u2, collect({r1: r1, r2: r2}) as ratings where size(ratings) > toInteger($minimumRatings) match (u2)-[r:RATED]->(m:Movie) with u1, u1_mean, u2, avg(r.rating) as u2_mean, ratings unwind ratings as r with sum( (r.r1.rating-u1_mean) * (r.r2.rating-u2_mean) ) as nom, sqrt( sum( (r.r1.rating - u1_mean)^2) * sum( (r.r2.rating - u2_mean) ^2)) as denom, u1, u2 where denom <> 0 with u1, u2, nom/denom as pearson order by pearson desc limit toInteger($peopleToCompare) match (u2)-[r:RATED]->(m:Movie) where not exists( (u1)-[:RATED]->(m) ) and not exists ( (u1)-[:WATCH_LATER]->(m) ) return m, sum( pearson * r.rating) as score order by score desc limit toInteger($moviesToRecommend)"
     )
   recommendToGroup(
     userId_1: ID!
