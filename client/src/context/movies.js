@@ -16,6 +16,9 @@ export const useMovieStore = create((set) => ({
     }),
   setCurrentMovie: () => set((state) => ({ currentMovie: state.movies[0] })),
   increaseSkip: () => set((state) => ({ skip: state.skip + state.limit })),
+  resetSkip: () => set(() => ({ skip: 0 })),
   increaseRatedMovies: () =>
     set((state) => ({ ratedMovies: state.ratedMovies + 1 })),
+  minimumRatings: 25,
+  peopleToCompare: 10,
 }));

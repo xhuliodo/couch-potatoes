@@ -17,7 +17,7 @@ import { useQuery } from "react-query";
 import request, { gql } from "graphql-request";
 
 import { useMovieStore } from "../context/movies";
-import SecondMovieCard from "../components/SecondMovieCard";
+import MovieCard from "../components/MovieCard";
 import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
 
 const useMovies = (userId, skip, limit) => {
@@ -55,6 +55,7 @@ export default function GettingToKnowUserPage(props) {
     increaseSkip,
     ratedMovies,
     requiredMovies,
+    resetSkip,
   } = useMovieStore();
 
   const { isLoading, isError, data = [], error } = useMovies("2", skip, limit);
@@ -66,6 +67,11 @@ export default function GettingToKnowUserPage(props) {
       ? console.log(error.message)
       : setMovies(data);
   }, [data, setMovies, isLoading, isError, error, skip]);
+
+  useEffect(() => {
+    resetSkip();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
@@ -94,11 +100,14 @@ export default function GettingToKnowUserPage(props) {
       </Typography>
       <Container disableGutters={true}>
         {isLoading ? (
-          <UserFeedbackMovieCard message={"Fetching movies..."} />
+          <UserFeedbackMovieCard
+            message={"Fetching movies..."}
+            type={"loading"}
+          />
         ) : isError ? (
           <UserFeedbackMovieCard message={"Something went wrong..."} />
         ) : (
-          <SecondMovieCard
+          <MovieCard
             increaseSkip={increaseSkip}
             movies={movies}
             nextMovie={nextMovie}
