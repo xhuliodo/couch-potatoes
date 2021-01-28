@@ -20,45 +20,45 @@ import { useMovieStore } from "../context/movies";
 import MovieCard from "../components/MovieCard";
 import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
 
-const useMovies = (userId, skip, limit) => {
-  return useQuery(["movies", userId, skip, limit], async () => {
-    const data = await request(
-      "http://localhost:4001/graphql",
-      gql`
-        query {
-            recommendPopularMoviesBasedOnGenre(
-              userId: ${userId}
-              limit: ${limit}
-              skip: ${skip}
-            ) {
-              movieId
-              posterUrl
-              title
-              releaseYear
-              imdbLink
-            }
-        }
-      `
-    );
-    const { recommendPopularMoviesBasedOnGenre } = await data;
-    return recommendPopularMoviesBasedOnGenre;
-  });
-};
-
 export default function GettingToKnowUserPage(props) {
+  const [skip, setSkip] = useState(0);
+  const useMovies = (userId, limit) => {
+    return useQuery(["movies", userId, limit], async () => {
+      const data = await request(
+        "http://localhost:4001/graphql",
+        gql`
+          query {
+              recommendPopularMoviesBasedOnGenre(
+                userId: ${userId}
+                limit: ${limit}
+                skip: ${skip}
+              ) {
+                movieId
+                posterUrl
+                title
+                releaseYear
+                imdbLink
+              }
+          }
+        `
+      );
+      const { recommendPopularMoviesBasedOnGenre } = await data;
+      return recommendPopularMoviesBasedOnGenre;
+    });
+  };
   const {
     movies,
     setMovies,
     nextMovie,
-    skip,
     limit,
-    increaseSkip,
     ratedMovies,
     requiredMovies,
-    resetSkip,
   } = useMovieStore();
 
-  const { isLoading, isError, data = [], error } = useMovies("2", skip, limit);
+  const { isLoading, isError, data = [], error, refetch } = useMovies(
+    "2",
+    limit
+  );
 
   useEffect(() => {
     isLoading
@@ -66,12 +66,7 @@ export default function GettingToKnowUserPage(props) {
       : isError
       ? console.log(error.message)
       : setMovies(data);
-  }, [data, setMovies, isLoading, isError, error, skip]);
-
-  useEffect(() => {
-    resetSkip();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data, setMovies, isLoading, isError, error]);
 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
@@ -108,10 +103,11 @@ export default function GettingToKnowUserPage(props) {
           <UserFeedbackMovieCard message={"Something went wrong..."} />
         ) : (
           <MovieCard
-            increaseSkip={increaseSkip}
+            skip={skip}
+            setSkip={setSkip}
+            refetch={refetch}
             movies={movies}
             nextMovie={nextMovie}
-            setOpen={setOpen}
           />
         )}
         <Container maxWidth="sm">

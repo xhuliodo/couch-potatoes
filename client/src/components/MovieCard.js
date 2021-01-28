@@ -10,8 +10,9 @@ import { useMovieStore } from "../context/movies";
 export default function MovieCard({
   movies,
   nextMovie,
-  increaseSkip,
-  setOpen,
+  skip,
+  setSkip,
+  refetch,
   startedFromTheBottomNowWeHere = false,
 }) {
   const rate = useMutation(async ({ movieId, userId, action }) => {
@@ -59,11 +60,12 @@ export default function MovieCard({
     setCurrentMovie,
     increaseRatedMovies,
   } = useMovieStore();
+
   useEffect(() => {
     if (movies.length < 1) {
-      increaseSkip();
+      refetch();
     }
-  }, [movies, rate, increaseSkip]);
+  }, [movies, rate, refetch]);
 
   useEffect(() => {
     console.log("current movie updated");
@@ -71,6 +73,7 @@ export default function MovieCard({
       setCurrentMovie();
     }
   }, [movies, rate, currentMovie, setCurrentMovie]);
+  
   // TODO: implement this card when the ratings are done, for the user to be forwarded to the normal page
   // const waitForMoreData = () => {
   //   let titleStyle = {
@@ -100,6 +103,7 @@ export default function MovieCard({
               style={buttonStyling}
               onClick={() => {
                 nextMovie();
+                setSkip(skip + 1);
               }}
               variant="contained"
             >

@@ -1,4 +1,4 @@
-import { Container, Paper, Typography } from "@material-ui/core";
+import { Button, Container, Paper, Typography } from "@material-ui/core";
 
 import "../components/MovieCard.css";
 
@@ -14,23 +14,27 @@ const useUserBasedRec = (
   userId,
   minimumRatings,
   peopleToCompare,
-  limit,
-  skip
+  moviesToRecommend
 ) => {
   return useQuery(
-    ["userBasedRec", userId, minimumRatings, peopleToCompare, limit, skip],
+    [
+      "userBasedRec",
+      userId,
+      minimumRatings,
+      peopleToCompare,
+      moviesToRecommend,
+    ],
     async () => {
       const data = await request(
         "http://localhost:4001/graphql",
         gql`
       query {
-        {
+        
   recommendFromOtherUsers(
     userId: ${userId}
     minimumRatings: ${minimumRatings}
     peopleToCompare: ${peopleToCompare}
-    moviesToRecommend: ${limit}
-    offset:${skip}
+    moviesToRecommend: ${moviesToRecommend}
   ) {
     movieId
     posterUrl
@@ -39,7 +43,7 @@ const useUserBasedRec = (
     imdbLink
   }
 }
-      }
+      
       `
       );
       const { recommendFromOtherUsers } = await data;
@@ -50,27 +54,22 @@ const useUserBasedRec = (
 
 export default function UserToUserRecommendations() {
   const {
-    minimumRatings,
     peopleToCompare,
     limit,
-    skip,
     movies,
     setMovies,
-    resetSkip,
+    nextMovie,
+    requiredMovies,
   } = useMovieStore();
 
-  const { isLoading, isError, data = [], error } = useUserBasedRec(
+  const minimumRatings = requiredMovies / 1.5;
+
+  const { isLoading, isError, data = [], error, refetch } = useUserBasedRec(
     "2",
     minimumRatings,
     peopleToCompare,
-    limit,
-    skip
+    limit
   );
-
-  useEffect(() => {
-    resetSkip();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     isLoading
@@ -78,7 +77,7 @@ export default function UserToUserRecommendations() {
       : isError
       ? console.log(error.message)
       : setMovies(data);
-  }, [data, setMovies, isLoading, isError, error, skip]);
+  }, [data, setMovies, isLoading, isError, error]);
 
   return (
     <Paper elevation={0} style={{ height: "90vh" }}>
@@ -95,10 +94,10 @@ export default function UserToUserRecommendations() {
           <UserFeedbackMovieCard message={"Something went wrong..."} />
         ) : (
           <MovieCard
-            increaseSkip={increaseSkip}
+            startedFromTheBottomNowWeHere={true}
             movies={movies}
             nextMovie={nextMovie}
-            setOpen={setOpen}
+            refetch={refetch}
           />
         )}
         <Container maxWidth="sm">
@@ -107,10 +106,9 @@ export default function UserToUserRecommendations() {
             color="primary"
             fullWidth
             variant="contained"
-            onClick={handleNext}
-            disabled={ratedMovies >= requiredMovies ? false : true}
+            // onClick={handleNext}
           >
-            Next
+            Add to watchlist
           </Button>
         </Container>
       </Container>
