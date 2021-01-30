@@ -13,60 +13,14 @@ import {
 } from "@material-ui/core";
 import "../components/MovieCard.css";
 
-import { useQuery } from "react-query";
-import request, { gql } from "graphql-request";
-
 import { useMovieStore } from "../context/movies";
-import MovieCard from "../components/MovieCard";
-import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
+
+import GenreBasedRec from "../components/GenreBasedRec";
 
 export default function GettingToKnowUserPage(props) {
   const [skip, setSkip] = useState(0);
-  const useMovies = (userId, limit) => {
-    return useQuery(["movies", userId, limit], async () => {
-      const data = await request(
-        "http://localhost:4001/graphql",
-        gql`
-          query {
-              recommendPopularMoviesBasedOnGenre(
-                userId: ${userId}
-                limit: ${limit}
-                skip: ${skip}
-              ) {
-                movieId
-                posterUrl
-                title
-                releaseYear
-                imdbLink
-              }
-          }
-        `
-      );
-      const { recommendPopularMoviesBasedOnGenre } = await data;
-      return recommendPopularMoviesBasedOnGenre;
-    });
-  };
-  const {
-    movies,
-    setMovies,
-    nextMovie,
-    limit,
-    ratedMovies,
-    requiredMovies,
-  } = useMovieStore();
 
-  const { isLoading, isError, data = [], error, refetch } = useMovies(
-    "2",
-    limit
-  );
-
-  useEffect(() => {
-    isLoading
-      ? console.log("waiting for data")
-      : isError
-      ? console.log(error.message)
-      : setMovies(data);
-  }, [data, setMovies, isLoading, isError, error]);
+  const { ratedMovies, requiredMovies } = useMovieStore();
 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
@@ -94,22 +48,7 @@ export default function GettingToKnowUserPage(props) {
         You have rated {ratedMovies} / {requiredMovies}
       </Typography>
       <Container disableGutters={true}>
-        {isLoading ? (
-          <UserFeedbackMovieCard
-            message={"Fetching movies..."}
-            type={"loading"}
-          />
-        ) : isError ? (
-          <UserFeedbackMovieCard message={"Something went wrong..."} />
-        ) : (
-          <MovieCard
-            skip={skip}
-            setSkip={setSkip}
-            refetch={refetch}
-            movies={movies}
-            nextMovie={nextMovie}
-          />
-        )}
+        <GenreBasedRec skip={skip} setSkip={setSkip} />
         <Container maxWidth="sm">
           <Button
             style={{ marginTop: "3.4vh" }}
@@ -122,7 +61,6 @@ export default function GettingToKnowUserPage(props) {
             Next
           </Button>
         </Container>
-
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>We've gotten to know you enough 😃</DialogTitle>
           <DialogContent>

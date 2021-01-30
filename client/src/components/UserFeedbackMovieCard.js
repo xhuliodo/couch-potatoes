@@ -1,4 +1,4 @@
-import { CircularProgress, LinearProgress } from "@material-ui/core";
+import { LinearProgress } from "@material-ui/core";
 import { Card, CardWrapper } from "react-swipeable-cards";
 
 export default function UserFeedbackMovieCard({ message, type }) {

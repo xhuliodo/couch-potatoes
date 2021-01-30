@@ -6,7 +6,7 @@ export const useMovieStore = create((set) => ({
   ratedMovies: 0,
   requiredMovies: 15,
   currentMovie: null,
-  setMovies: (ms) => set(() => ({ movies: [...ms] })),
+  // setMovies: (ms) => set(() => ({ movies: [...ms] })),
   nextMovie: () =>
     set((state) => {
       const currentMovies = state.movies;

@@ -36,7 +36,9 @@ export default function App() {
   const appliedTheme = createMuiTheme(!darkTheme ? light : dark);
 
   // react query setup
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { refetchOnWindowFocus: false } },
+  });
 
   return (
     <QueryClientProvider client={queryClient}>

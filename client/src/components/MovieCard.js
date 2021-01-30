@@ -9,7 +9,6 @@ import { useMovieStore } from "../context/movies";
 
 export default function MovieCard({
   movies,
-  nextMovie,
   skip,
   setSkip,
   refetch,
@@ -55,25 +54,19 @@ export default function MovieCard({
     }
   });
 
-  const {
-    currentMovie,
-    setCurrentMovie,
-    increaseRatedMovies,
-  } = useMovieStore();
+  const nextMovie = () => {
+    movies.shift();
+  };
+
+  const { increaseRatedMovies } = useMovieStore();
 
   useEffect(() => {
-    if (movies.length < 1) {
+    if (movies.length === 0) {
+      console.log(("movies length is: ", movies.length));
       refetch();
     }
   }, [movies, rate, refetch]);
 
-  useEffect(() => {
-    console.log("current movie updated");
-    if (currentMovie !== movies[0]) {
-      setCurrentMovie();
-    }
-  }, [movies, rate, currentMovie, setCurrentMovie]);
-  
   // TODO: implement this card when the ratings are done, for the user to be forwarded to the normal page
   // const waitForMoreData = () => {
   //   let titleStyle = {
@@ -117,7 +110,7 @@ export default function MovieCard({
             style={buttonStyling}
             onClick={() => {
               const mutationData = {
-                movieId: currentMovie.movieId,
+                movieId: movies[0].movieId,
                 userId: 2,
                 action: "love",
               };
@@ -134,7 +127,7 @@ export default function MovieCard({
             style={buttonStyling}
             onClick={() => {
               const mutationData = {
-                movieId: currentMovie.movieId,
+                movieId: movies[0].movieId,
                 userId: 2,
                 action: "hate",
               };
