@@ -38,13 +38,10 @@ export default function GenreBasedRec({
 
   const { limit } = useMovieStore();
 
-  const { isLoading, isError, data, refetch } = useMovies(
-    "2",
-    limit
-  );
+  const { isLoading, isError, data, refetch } = useMovies("2", limit);
 
   return isLoading ? (
-    <UserFeedbackMovieCard message="Fetching movies..." type={"loading"} />
+    <UserFeedbackMovieCard message="Fetching movies..." type="loading" />
   ) : isError ? (
     <UserFeedbackMovieCard message="Something went wrong..." />
   ) : (

@@ -23,7 +23,7 @@ import Footer from "./components/Footer";
 import WelcomePage from "./pages/WelcomePage";
 import GettingToKnowUserPage from "./pages/GettingToKnowUserPage";
 import SelectingGenrePage from "./pages/SelectingGenrePage";
-import UserToUserRecommendations from "./pages/UserToUserRecommendations";
+import UserToUserRecommendations from "./components/UserBasedRec";
 
 export default function App() {
   // dark theme setup

@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
+import { Button, Container, Grid, Paper, Tooltip } from "@material-ui/core";
 import { Card, CardWrapper } from "react-swipeable-cards";
 
 import { useMutation } from "react-query";
@@ -54,6 +54,32 @@ export default function MovieCard({
     }
   });
 
+  const addToWatchlist = useMutation(async ({ movieId, userId }) => {
+    const data = await request(
+      "http://localhost:4001/graphql",
+      gql`
+        mutation {
+          AddUserWatchlist(from: { userId: "${userId}" }, to: { movieId: "${movieId}" }) {
+            to {
+              movieId
+            }
+          }
+        }
+      `
+    );
+
+    const { AddUserWatchlist } = data;
+    if (AddUserWatchlist === null) {
+      console.log("the watchlist did not get filled 😏");
+    } else {
+      console.log(
+        "you added to playlist the movie with id",
+        AddUserWatchlist.to.movieId
+      );
+      nextMovie();
+    }
+  });
+
   const nextMovie = () => {
     movies.shift();
   };
@@ -62,134 +88,144 @@ export default function MovieCard({
 
   useEffect(() => {
     if (movies.length === 0) {
-      console.log(("movies length is: ", movies.length));
       refetch();
     }
   }, [movies, rate, refetch]);
-
-  // TODO: implement this card when the ratings are done, for the user to be forwarded to the normal page
-  // const waitForMoreData = () => {
-  //   let titleStyle = {
-  //     textAlign: "center",
-  //     fontWeight: "bold",
-  //     fontSize: "40px",
-  //     fontFamily: "Sans-Serif",
-  //     marginTop: "50px",
-  //   };
-  //   return <div style={titleStyle}>fetching more movies...</div>;
-  // };
 
   const ActionButtons = (props) => {
     const newProps = {};
 
     return (
-      <Grid
-        {...newProps}
-        style={{ position: "absolute", bottom: "3px" }}
-        container
-        justify="center"
-        className="cards_container"
-      >
-        {startedFromTheBottomNowWeHere ? null : (
-          <Tooltip placement="top" arrow title="Ignore...">
+      <>
+        <Grid
+          {...newProps}
+          style={{ position: "absolute", bottom: "50px" }}
+          container
+          justify="center"
+          className="cards_container"
+        >
+          {startedFromTheBottomNowWeHere ? null : (
+            <Tooltip placement="top" arrow title="Ignore...">
+              <Button
+                style={buttonStyling}
+                onClick={() => {
+                  nextMovie();
+                  setSkip(skip + 1);
+                }}
+                variant="contained"
+              >
+                <VisibilityOff fontSize="inherit" />
+              </Button>
+            </Tooltip>
+          )}
+
+          <Tooltip placement="top" arrow title="Loved it!">
             <Button
               style={buttonStyling}
               onClick={() => {
-                nextMovie();
-                setSkip(skip + 1);
+                const mutationData = {
+                  movieId: movies[0].movieId,
+                  userId: 2,
+                  action: "love",
+                };
+                rate.mutate(mutationData);
               }}
               variant="contained"
+              color="primary"
             >
-              <VisibilityOff fontSize="inherit" />
+              <ThumbUp fontSize="inherit" />
             </Button>
           </Tooltip>
-        )}
+          <Tooltip placement="top" arrow title="Hated it!">
+            <Button
+              style={buttonStyling}
+              onClick={() => {
+                const mutationData = {
+                  movieId: movies[0].movieId,
+                  userId: 2,
+                  action: "hate",
+                };
+                rate.mutate(mutationData);
+              }}
+              variant="contained"
+              color="secondary"
+            >
+              <ThumbDown fontSize="inherit" />
+            </Button>
+          </Tooltip>
+        </Grid>
+        {startedFromTheBottomNowWeHere ? (
+          <Container style={{ position: "absolute", bottom: "2px" }} maxWidth="sm">
+            <Button
+              style={{ marginTop: "15px" }}
+              color="primary"
+              fullWidth
+              variant="contained"
+              onClick={() => {
+                const mutationData = {
+                  userId: 2,
+                  movieId: movies[0].movieId,
+                };
+                addToWatchlist.mutate(mutationData);
+              }}
+            >
+              Add to watchlist
+            </Button>
+          </Container>
+        ) : null}
+      </>
+    );
+  };
 
-        <Tooltip placement="top" arrow title="Loved it!">
-          <Button
-            style={buttonStyling}
-            onClick={() => {
+  return (
+    <>
+      <CardWrapper
+        // addEndCard={waitForMoreData.bind(this)}
+        style={{ paddingTop: "0px" }}
+      >
+        {movies.map((m) => (
+          <Card
+            key={m.movieId}
+            onSwipeLeft={() => {
               const mutationData = {
-                movieId: movies[0].movieId,
-                userId: 2,
-                action: "love",
-              };
-              rate.mutate(mutationData);
-            }}
-            variant="contained"
-            color="primary"
-          >
-            <ThumbUp fontSize="inherit" />
-          </Button>
-        </Tooltip>
-        <Tooltip placement="top" arrow title="Hated it!">
-          <Button
-            style={buttonStyling}
-            onClick={() => {
-              const mutationData = {
-                movieId: movies[0].movieId,
+                movieId: m.movieId,
                 userId: 2,
                 action: "hate",
               };
               rate.mutate(mutationData);
             }}
-            variant="contained"
-            color="secondary"
+            onSwipeRight={() => {
+              const mutationData = {
+                movieId: m.movieId,
+                userId: 2,
+                action: "love",
+              };
+              rate.mutate(mutationData);
+            }}
+            style={{
+              backgroundImage: `url(${m.posterUrl})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }}
           >
-            <ThumbDown fontSize="inherit" />
-          </Button>
-        </Tooltip>
-      </Grid>
-    );
-  };
-
-  return (
-    <CardWrapper
-      // addEndCard={waitForMoreData.bind(this)}
-      style={{ paddingTop: "0px" }}
-    >
-      {movies.map((m) => (
-        <Card
-          key={m.movieId}
-          onSwipeLeft={() => {
-            const mutationData = {
-              movieId: m.movieId,
-              userId: 2,
-              action: "hate",
-            };
-            rate.mutate(mutationData);
-          }}
-          onSwipeRight={() => {
-            const mutationData = {
-              movieId: m.movieId,
-              userId: 2,
-              action: "love",
-            };
-            rate.mutate(mutationData);
-          }}
-          style={{
-            backgroundImage: `url(${m.posterUrl})`,
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-          }}
-        >
-          <Paper className="secondMovie_cardText">
-            <h3>
-              {m.title} <i>({m.releaseYear})</i>
-            </h3>
-          </Paper>
-        </Card>
-      ))}
-      <ActionButtons />
-    </CardWrapper>
+            <Paper className="secondMovie_cardText">
+              <h3>
+                {m.title} <i>({m.releaseYear})</i>
+              </h3>
+            </Paper>
+          </Card>
+        ))}
+        <ActionButtons />
+      </CardWrapper>
+    </>
   );
 }
 
 const buttonStyling = {
   marginLeft: "1.5vw",
   marginRight: "1.5vw",
-  fontSize: "40px",
+  fontSize: "35px",
   maxWidth: "100px",
   width: "30vw",
 };

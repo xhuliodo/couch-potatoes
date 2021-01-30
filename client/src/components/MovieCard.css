@@ -12,6 +12,25 @@
 
 .container {
   height: calc(100vh - 10vh) !important;
+  /* height: 900px!important; */
+  /* max-height: calc(100vh - 8vh); */
+  /* height: calc(100vh + 30px); */
+}
+
+.card_container {
+  top: 30px;
+}
+
+@media (min-height: 730px) {
+  .container {
+    height: calc(100vh - 13vh) !important;
+  }
+}
+
+@media (min-height: 900px) {
+  .container {
+    height: calc(100vh - 15vh) !important;
+  }
 }
 
 .MuiTooltip-tooltip {
