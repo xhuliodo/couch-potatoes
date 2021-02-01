@@ -32,7 +32,7 @@ export default function GettingToKnowUserPage(props) {
   }, [ratedMovies, requiredMovies]);
   const handleNext = () => {
     handleClose();
-    props.history.push("/recommendations");
+    props.history.push("/solo");
   };
 
   return (
@@ -47,11 +47,10 @@ export default function GettingToKnowUserPage(props) {
       >
         You have rated {ratedMovies} / {requiredMovies}
       </Typography>
-      <Container disableGutters={true}>
+      <Container style={{marginTop:"2.5vh"}} disableGutters={true}>
         <GenreBasedRec skip={skip} setSkip={setSkip} />
         <Container maxWidth="sm">
           <Button
-            style={{ marginTop: "3.4vh" }}
             color="primary"
             fullWidth
             variant="contained"

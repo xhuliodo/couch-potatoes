@@ -23,7 +23,7 @@ import Footer from "./components/Footer";
 import WelcomePage from "./pages/WelcomePage";
 import GettingToKnowUserPage from "./pages/GettingToKnowUserPage";
 import SelectingGenrePage from "./pages/SelectingGenrePage";
-import UserToUserRecommendations from "./components/UserBasedRec";
+import Solo from "./pages/Solo";
 
 export default function App() {
   // dark theme setup
@@ -63,11 +63,7 @@ export default function App() {
                   path="/getting-to-know-2"
                   component={GettingToKnowUserPage}
                 />
-                <Route
-                  exact
-                  path="/recommendations"
-                  component={UserToUserRecommendations}
-                />
+                <Route exact path="/solo" component={Solo} />
               </Switch>
             </Router>
           </Container>

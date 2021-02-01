@@ -11,7 +11,7 @@ export default function GenreBasedRec({
   setSkip,
   startedFromTheBottomNowWeHere = false,
 }) {
-  const useMovies = (userId, limit) => {
+  const useMovies = (userId, limit, skip = 0) => {
     return useQuery(["movies", userId, limit], async () => {
       const data = await request(
         "http://localhost:4001/graphql",

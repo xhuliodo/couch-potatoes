@@ -6,6 +6,7 @@ import request, { gql } from "graphql-request";
 import { useEffect } from "react";
 import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
+import { rateMovie } from "../utils/requests";
 
 export default function MovieCard({
   movies,
@@ -14,45 +15,24 @@ export default function MovieCard({
   refetch,
   startedFromTheBottomNowWeHere = false,
 }) {
-  const rate = useMutation(async ({ movieId, userId, action }) => {
-    let data = { rateMovie: null };
-    // eslint-disable-next-line default-case
-    switch (action) {
-      case "love":
-        data = await request(
-          "http://localhost:4001/graphql",
-          gql`
-            mutation {
-              rateMovie(movieId: "${movieId}", userId: "${userId}", rating:1) {
-                movieId
-              }
-            }
-          `
-        );
-        break;
-      case "hate":
-        data = await request(
-          "http://localhost:4001/graphql",
-          gql`
-            mutation {
-              rateMovie(movieId: "${movieId}", userId: "${userId}", rating:0) {
-                movieId
-              }
-            }
-          `
-        );
-        break;
-    }
-    const { rateMovie } = await data;
-    if (rateMovie === null) {
-      // TODO: you should implement some error logic, when the rating did not happen
-      console.log("the rating didn't do shit");
-    } else {
-      console.log("you rated the movie with id", rateMovie.movieId);
-      nextMovie();
-      increaseRatedMovies();
-    }
-  });
+  const { increaseRatedMovies } = useMovieStore();
+
+  const rate = useMutation((mutationData) => rateMovie(mutationData));
+
+  const handleRate = (action) => {
+    const mutationData = {
+      movieId: movies[0].movieId,
+      userId: 2,
+      action,
+      successFunc,
+    };
+    rate.mutate(mutationData);
+  };
+
+  const successFunc = () => {
+    nextMovie();
+    increaseRatedMovies();
+  };
 
   const addToWatchlist = useMutation(async ({ movieId, userId }) => {
     const data = await request(
@@ -83,8 +63,6 @@ export default function MovieCard({
   const nextMovie = () => {
     movies.shift();
   };
-
-  const { increaseRatedMovies } = useMovieStore();
 
   useEffect(() => {
     if (movies.length === 0) {
@@ -122,14 +100,7 @@ export default function MovieCard({
           <Tooltip placement="top" arrow title="Loved it!">
             <Button
               style={buttonStyling}
-              onClick={() => {
-                const mutationData = {
-                  movieId: movies[0].movieId,
-                  userId: 2,
-                  action: "love",
-                };
-                rate.mutate(mutationData);
-              }}
+              onClick={() => handleRate("love")}
               variant="contained"
               color="primary"
             >
@@ -139,14 +110,7 @@ export default function MovieCard({
           <Tooltip placement="top" arrow title="Hated it!">
             <Button
               style={buttonStyling}
-              onClick={() => {
-                const mutationData = {
-                  movieId: movies[0].movieId,
-                  userId: 2,
-                  action: "hate",
-                };
-                rate.mutate(mutationData);
-              }}
+              onClick={() => handleRate("hate")}
               variant="contained"
               color="secondary"
             >
@@ -155,7 +119,10 @@ export default function MovieCard({
           </Tooltip>
         </Grid>
         {startedFromTheBottomNowWeHere ? (
-          <Container style={{ position: "absolute", bottom: "2px" }} maxWidth="sm">
+          <Container
+            style={{ position: "absolute", bottom: "2px" }}
+            maxWidth="sm"
+          >
             <Button
               style={{ marginTop: "15px" }}
               color="primary"
