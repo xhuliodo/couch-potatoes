@@ -14,7 +14,7 @@ export default function Solo() {
   const [nav, setNav] = useState("watchlist");
 
   return (
-    <Paper elevation={0} style={{ height: "90vh" }}>
+    <Paper elevation={0} style={{ height: "fit-content" }}>
       <Paper elevation={5} style={{ padding: "12px 0" }}>
         <BottomNavigation
           value={nav}

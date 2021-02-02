@@ -41,7 +41,7 @@ export default function MovieCardWatchlist({ m }) {
   return movies.map((m) => {
     const image = `${m.posterUrl}`;
     return (
-      <Card key={m.movieId} className={classes.root}>
+      <Card elevation={5} key={m.movieId} className={classes.root}>
         <CardMedia className={classes.cover} image={image} />
         <div className={classes.details}>
           <CardContent className={classes.content}>
@@ -69,7 +69,7 @@ export default function MovieCardWatchlist({ m }) {
             >
               <ThumbDown className={classes.rateIcons} fontSize="inherit" />
             </IconButton>
-            <div className={classes.delete}>
+            <div className={classes.link}>
               <Tooltip title="IMDB Link" arrow placement="top">
                 <IconButton variant="contained">
                   <Link
@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
     height: 32,
     width: 32,
   },
-  delete: {
+  link: {
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",

@@ -1,4 +1,4 @@
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress, Typography } from "@material-ui/core";
 import { Card, CardWrapper } from "react-swipeable-cards";
 
 export default function UserFeedbackMovieCard({ message, type }) {
@@ -11,7 +11,7 @@ export default function UserFeedbackMovieCard({ message, type }) {
           backgroundPosition: "center",
         }}
       >
-        <div style={stylingTitle}>{message}</div>
+        <Typography style={stylingTitle}>{message}</Typography>
         {type === "loading" ? (
           <LinearProgress style={{ width: "85%", margin: "50px auto" }} />
         ) : null}

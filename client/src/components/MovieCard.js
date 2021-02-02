@@ -39,7 +39,7 @@ export default function MovieCard({
       "http://localhost:4001/graphql",
       gql`
         mutation {
-          AddUserWatchlist(from: { userId: "${userId}" }, to: { movieId: "${movieId}" }) {
+          MergeUserWatchlist(from: { userId: "${userId}" }, to: { movieId: "${movieId}" }) {
             to {
               movieId
             }
@@ -48,13 +48,13 @@ export default function MovieCard({
       `
     );
 
-    const { AddUserWatchlist } = data;
-    if (AddUserWatchlist === null) {
+    const { MergeUserWatchlist } = data;
+    if (MergeUserWatchlist === null) {
       console.log("the watchlist did not get filled 😏");
     } else {
       console.log(
         "you added to playlist the movie with id",
-        AddUserWatchlist.to.movieId
+        MergeUserWatchlist.to.movieId
       );
       nextMovie();
     }
@@ -153,22 +153,8 @@ export default function MovieCard({
         {movies.map((m) => (
           <Card
             key={m.movieId}
-            onSwipeLeft={() => {
-              const mutationData = {
-                movieId: m.movieId,
-                userId: 2,
-                action: "hate",
-              };
-              rate.mutate(mutationData);
-            }}
-            onSwipeRight={() => {
-              const mutationData = {
-                movieId: m.movieId,
-                userId: 2,
-                action: "love",
-              };
-              rate.mutate(mutationData);
-            }}
+            onSwipeLeft={() => handleRate("hate")}
+            onSwipeRight={() => handleRate("love")}
             style={{
               backgroundImage: `url(${m.posterUrl})`,
               backgroundSize: "contain",

@@ -34,7 +34,16 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
 
-  const { isAuthenticated, logout, loginWithRedirect } = useAuth0();
+  const {
+    isAuthenticated,
+    logout,
+    loginWithRedirect,
+    getIdTokenClaims,
+  } = useAuth0();
+
+  getIdTokenClaims().then((data) => {
+    console.log(data);
+  });
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
