@@ -7,11 +7,11 @@ import MovieCard from "./MovieCard";
 import UserFeedbackMovieCard from "./UserFeedbackMovieCard";
 
 export default function GenreBasedRec({
-  skip,
+  skip = 0,
   setSkip,
   startedFromTheBottomNowWeHere = false,
 }) {
-  const useMovies = (userId, limit, skip = 0) => {
+  const useMovies = (userId, limit) => {
     return useQuery(["movies", userId, limit], async () => {
       const data = await request(
         "http://localhost:4001/graphql",
