@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 
 // material ui components
 import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import MenuItem from "@material-ui/core/MenuItem";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import {
+  Avatar,
+  MenuItem,
+  Typography,
+  Toolbar,
+  AppBar,
   Button,
   ClickAwayListener,
   Grow,
@@ -27,6 +27,14 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontSize: "2rem",
   },
+  small: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginRight: "5px",
+  },
+  userButton: {
+    textTransform: "none",
+  },
 }));
 
 export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
@@ -34,18 +42,21 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
 
+  const [loggedInUser, setLoggedInUser] = useState({ name: "", picUrl: "" });
+
   const {
     isAuthenticated,
     logout,
     loginWithRedirect,
+    user,
     getIdTokenClaims,
   } = useAuth0();
 
-  getIdTokenClaims().then((data) => {
-    console.log(data);
-  });
-
   const handleToggle = () => {
+    getIdTokenClaims().then((data) => {
+      console.log(data);
+    });
+    console.log(user);
     setOpen((prevOpen) => !prevOpen);
   };
 
@@ -74,6 +85,12 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
 
     prevOpen.current = open;
   }, [open]);
+
+  useEffect(() => {
+    if (user) {
+      setLoggedInUser({ name: user.given_name, picUrl: user.picture });
+    }
+  }, [user]);
 
   const renderMenu = (
     <Popper
@@ -125,15 +142,17 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
             {isAuthenticated ? (
               <>
                 <Button
+                  className={classes.userButton}
                   aria-label="account of current user"
                   ref={anchorRef}
                   aria-controls={open ? "menu-list-grow" : undefined}
                   aria-haspopup="true"
                   onClick={handleToggle}
                   color="inherit"
-                  startIcon={<AccountCircle />}
+                  // startIcon={<AccountCircle />}
                 >
-                  chulio
+                  <Avatar className={classes.small} src={`${loggedInUser.picUrl}`} />
+                  {loggedInUser.name}
                 </Button>
               </>
             ) : (
