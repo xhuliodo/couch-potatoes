@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   small: {
     width: theme.spacing(3),
     height: theme.spacing(3),
-    marginRight: "5px",
+    marginRight: "7px",
   },
   userButton: {
     textTransform: "none",
@@ -41,8 +41,6 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
-
-  const [loggedInUser, setLoggedInUser] = useState({ name: "", picUrl: "" });
 
   const {
     isAuthenticated,
@@ -85,12 +83,6 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
 
     prevOpen.current = open;
   }, [open]);
-
-  useEffect(() => {
-    if (user) {
-      setLoggedInUser({ name: user.given_name, picUrl: user.picture });
-    }
-  }, [user]);
 
   const renderMenu = (
     <Popper
@@ -151,8 +143,11 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
                   color="inherit"
                   // startIcon={<AccountCircle />}
                 >
-                  <Avatar className={classes.small} src={`${loggedInUser.picUrl}`} />
-                  {loggedInUser.name}
+                  <Avatar
+                    className={classes.small}
+                    src={user ? user.picture : ""}
+                  />
+                  {user.given_name}
                 </Button>
               </>
             ) : (

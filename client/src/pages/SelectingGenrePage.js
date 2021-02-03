@@ -5,6 +5,8 @@ import { request, gql } from "graphql-request";
 
 import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
+import AuthLoading from "../components/AuthLoading";
 
 const useGenres = () => {
   return useQuery("genres", async () => {
@@ -24,7 +26,7 @@ const useGenres = () => {
   });
 };
 
-export default function SelectingGenrePage(props) {
+export const SelectingGenrePage = (props) => {
   const { status, data, error } = useGenres();
 
   const [selectedGenres, setSelectedGenres] = useState([]);
@@ -89,4 +91,8 @@ export default function SelectingGenrePage(props) {
       </Container>
     </Paper>
   );
-}
+};
+
+export default withAuthenticationRequired(SelectingGenrePage, {
+  onRedirecting: () => <AuthLoading />,
+});

@@ -16,6 +16,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 
 // app routing
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import history from "./utils/history";
 
 // pages and components
 import MenuBar from "./components/MenuBar";
@@ -33,7 +34,13 @@ export default function App() {
   ) : (
     <Brightness3Icon style={verticalAlign} />
   );
-  const appliedTheme = createMuiTheme(!darkTheme ? light : dark);
+
+  const customTheme = {
+    palette: {
+      type: !darkTheme ? "light" : "dark",
+    },
+  };
+  const appliedTheme = createMuiTheme(customTheme);
 
   // react query setup
   const queryClient = new QueryClient({
@@ -50,7 +57,7 @@ export default function App() {
             setDarkTheme={setDarkTheme}
           />
           <Container maxWidth="md" style={{ marginTop: "5vh" }}>
-            <Router>
+            <Router history={history}>
               <Switch>
                 <Route exact path="/" component={WelcomePage} />
                 <Route
@@ -74,17 +81,6 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-
-export const light = {
-  palette: {
-    type: "light",
-  },
-};
-export const dark = {
-  palette: {
-    type: "dark",
-  },
-};
 
 export const verticalAlign = {
   verticalAlign: "middle",

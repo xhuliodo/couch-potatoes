@@ -16,8 +16,10 @@ import "../components/MovieCard.css";
 import { useMovieStore } from "../context/movies";
 
 import GenreBasedRec from "../components/GenreBasedRec";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
+import AuthLoading from "../components/AuthLoading";
 
-export default function GettingToKnowUserPage(props) {
+export const GettingToKnowUserPage = (props) => {
   const [skip, setSkip] = useState(0);
 
   const { ratedMovies, requiredMovies } = useMovieStore();
@@ -47,7 +49,7 @@ export default function GettingToKnowUserPage(props) {
       >
         You have rated {ratedMovies} / {requiredMovies}
       </Typography>
-      <Container style={{marginTop:"2.5vh"}} disableGutters={true}>
+      <Container style={{ marginTop: "2.5vh" }} disableGutters={true}>
         <GenreBasedRec skip={skip} setSkip={setSkip} />
         <Container maxWidth="sm">
           <Button
@@ -82,4 +84,8 @@ export default function GettingToKnowUserPage(props) {
       </Container>
     </Paper>
   );
-}
+};
+
+export default withAuthenticationRequired(GettingToKnowUserPage, {
+  onRedirecting: () => <AuthLoading />,
+});

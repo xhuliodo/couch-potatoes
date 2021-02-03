@@ -9,8 +9,10 @@ import GenresIcon from "../utils/icons/GenresIcon";
 import UserBasedRec from "../components/UserBasedRec";
 import GenreBasedRec from "../components/GenreBasedRec";
 import WatchlistProvider from "../components/WatchlistProvider";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
+import AuthLoading from "../components/AuthLoading";
 
-export default function Solo() {
+export const Solo = () => {
   const [nav, setNav] = useState("watchlist");
 
   return (
@@ -55,4 +57,8 @@ export default function Solo() {
       </div>
     </Paper>
   );
-}
+};
+
+export default withAuthenticationRequired(Solo, {
+  onRedirecting: () => <AuthLoading />,
+});
