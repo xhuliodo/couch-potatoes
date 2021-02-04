@@ -1,6 +1,7 @@
 import {
   BottomNavigation,
   BottomNavigationAction,
+  makeStyles,
   Paper,
 } from "@material-ui/core";
 import { People, WatchLater } from "@material-ui/icons";
@@ -11,12 +12,16 @@ import GenreBasedRec from "../components/GenreBasedRec";
 import WatchlistProvider from "../components/WatchlistProvider";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
+import { useQuery } from "react-query";
+
+// const useFavoriteGenres = useQuery()
 
 export const Solo = () => {
-  const [nav, setNav] = useState("watchlist");
+  const classes = useStyles();
+  const [nav, setNav] = useState("userBased");
 
   return (
-    <Paper elevation={0} style={{ height: "fit-content" }}>
+    <Paper elevation={0} >
       <Paper elevation={5} style={{ padding: "12px 0" }}>
         <BottomNavigation
           value={nav}
@@ -31,18 +36,21 @@ export const Solo = () => {
             label="Popular by Genre"
             value="genreBased"
             icon={<GenresIcon />}
+            classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ margin: "0 10px" }}
             label="Other users also liked"
             value="userBased"
             icon={<People />}
+            classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ paddingLeft: "10px" }}
             label="Watchlist"
             value="watchlist"
             icon={<WatchLater />}
+            classes={{ selected: classes.selected }}
           />
         </BottomNavigation>
       </Paper>
@@ -58,6 +66,10 @@ export const Solo = () => {
     </Paper>
   );
 };
+
+const useStyles = makeStyles((theme) => ({
+  selected: { color: `${theme.palette.secondary.dark}!important` },
+}));
 
 export default withAuthenticationRequired(Solo, {
   onRedirecting: () => <AuthLoading />,

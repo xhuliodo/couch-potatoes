@@ -30,6 +30,7 @@ export default function MovieCardWatchlist({ m }) {
       successFunc: () => console.log("eeeee"),
     };
     rate.mutate(mutationData);
+    // TODO: try to put this clean up function into smth out of here
     const unratedMovies = movies.filter((m) => m.movieId !== movieId);
     setMovies(unratedMovies);
   };

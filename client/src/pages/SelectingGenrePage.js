@@ -95,4 +95,5 @@ export const SelectingGenrePage = (props) => {
 
 export default withAuthenticationRequired(SelectingGenrePage, {
   onRedirecting: () => <AuthLoading />,
+  
 });

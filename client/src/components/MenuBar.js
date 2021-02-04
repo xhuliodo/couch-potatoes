@@ -104,8 +104,8 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
           <Paper>
             <ClickAwayListener onClickAway={handleClose}>
               <MenuList autoFocusItem={open} id="menu-list-grow">
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
+                {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </MenuList>
             </ClickAwayListener>

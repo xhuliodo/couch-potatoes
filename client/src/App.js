@@ -15,7 +15,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 
 // app routing
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
 import history from "./utils/history";
 
 // pages and components
@@ -50,13 +50,24 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={appliedTheme}>
-        <Paper elevation={0}>
+        <Paper
+          elevation={0}
+          style={{
+            minHeight: "100vh",
+          }}
+        >
           <MenuBar
             darkThemeIcon={icon}
             darkTheme={darkTheme}
             setDarkTheme={setDarkTheme}
           />
-          <Container maxWidth="md" style={{ marginTop: "5vh" }}>
+          <Container
+            maxWidth="md"
+            style={{
+              marginTop: "5vh",
+              height: "fit-content",
+            }}
+          >
             <Router history={history}>
               <Switch>
                 <Route exact path="/" component={WelcomePage} />
