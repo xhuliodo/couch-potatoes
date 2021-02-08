@@ -10,15 +10,14 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { Link as LinkIcon, ThumbDown, ThumbUp } from "@material-ui/icons";
-import { useState } from "react";
 
 import { useMutation } from "react-query";
 import { rateMovie } from "../utils/requests";
 
-export default function MovieCardWatchlist({ m }) {
+export default function MovieCardWatchlist({ movies }) {
   const classes = useStyles();
 
-  const [movies, setMovies] = useState(m);
+  // const [movies, setMovies] = useState(m);
 
   const rate = useMutation((mutationData) => rateMovie(mutationData));
 
@@ -27,17 +26,19 @@ export default function MovieCardWatchlist({ m }) {
       movieId,
       userId: 2,
       action,
-      successFunc: () => console.log("eeeee"),
+      successFunc: () => successFunc(movieId),
     };
     rate.mutate(mutationData);
-    // TODO: try to put this clean up function into smth out of here
-    const unratedMovies = movies.filter((m) => m.movieId !== movieId);
-    setMovies(unratedMovies);
   };
 
-  // const successFunc = (movieId) => {
-
-  // };
+  const successFunc = (movieId) => {
+    for (var i = 0; i < movies.length; i++) {
+      if (movies[i].movieId === movieId) {
+        movies.splice(i, 1);
+        i--;
+      }
+    }
+  };
 
   return movies.map((m) => {
     const image = `${m.posterUrl}`;
@@ -55,9 +56,7 @@ export default function MovieCardWatchlist({ m }) {
           </CardContent>
           <CardActions disableSpacing>
             <IconButton
-              onClick={() => {
-                handleRate(m.movieId, "love");
-              }}
+              onClick={() => handleRate(m.movieId, "love")}
               variant="contained"
               color="primary"
             >

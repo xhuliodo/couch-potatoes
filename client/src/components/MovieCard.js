@@ -39,7 +39,9 @@ export default function MovieCard({
       "http://localhost:4001/graphql",
       gql`
         mutation {
-          MergeUserWatchlist(from: { userId: "${userId}" }, to: { movieId: "${movieId}" }) {
+          MergeUserWatchlist(
+            from: { userId: "${userId}" }, 
+            to: { movieId: ${movieId} }) {
             to {
               movieId
             }

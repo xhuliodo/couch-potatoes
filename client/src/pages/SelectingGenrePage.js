@@ -5,8 +5,9 @@ import { request, gql } from "graphql-request";
 
 import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
-import { withAuthenticationRequired } from "@auth0/auth0-react";
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
+import { useGetToken } from "../utils/getToken";
 
 const useGenres = () => {
   return useQuery("genres", async () => {
@@ -31,9 +32,14 @@ export const SelectingGenrePage = (props) => {
 
   const [selectedGenres, setSelectedGenres] = useState([]);
 
+  const { user } = useAuth0();
+  const token = useGetToken();
+  console.log(token);
+
   const handleSubmit = useMutation(async ({ userId, genres }) => {
     const data = await request(
       "http://localhost:4001/graphql",
+      { headers: { authorization: `Bearer ${token}` } },
       gql`
         mutation  {
           MergeUserFavoriteGenres(
@@ -51,6 +57,7 @@ export const SelectingGenrePage = (props) => {
     );
 
     const { MergeUserFavoriteGenres } = data;
+    console.log(MergeUserFavoriteGenres);
     if (MergeUserFavoriteGenres.userId !== null) {
       props.history.push("/getting-to-know-2");
     }
@@ -83,7 +90,7 @@ export const SelectingGenrePage = (props) => {
           color="primary"
           variant="contained"
           onClick={() =>
-            handleSubmit.mutate({ userId: "2", genres: selectedGenres })
+            handleSubmit.mutate({ userId: user.sub, genres: selectedGenres })
           }
         >
           Next
@@ -95,5 +102,4 @@ export const SelectingGenrePage = (props) => {
 
 export default withAuthenticationRequired(SelectingGenrePage, {
   onRedirecting: () => <AuthLoading />,
-  
 });

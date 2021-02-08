@@ -8,17 +8,7 @@ const useGetWatchlistMovies = (userId) => {
   return useQuery(["getWatchlistMovies", userId], async () => {
     const data = request(
       "http://localhost:4001/graphql",
-      gql`
-        query {
-  watchlist(userId:${userId}){
-     movieId
-      title
-      posterUrl
-      releaseYear
-      imdbLink
-  }
-}
-      `
+      gql`query {watchlist(userId:"${userId}"){movieId title posterUrl releaseYear imdbLink } } `
     );
     const { watchlist } = await data;
     return watchlist;
@@ -35,7 +25,7 @@ export default function WatchlistProvider() {
       ) : isError ? (
         <span>Something went wrong...</span>
       ) : (
-        <WatchlistCard m={data} />
+        <WatchlistCard movies={data} />
       )}
     </Container>
   );

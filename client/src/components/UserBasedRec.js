@@ -6,6 +6,7 @@ import request, { gql } from "graphql-request";
 import { useMovieStore } from "../context/movies";
 import MovieCard from "./MovieCard";
 import UserFeedbackMovieCard from "./UserFeedbackMovieCard";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const useUserBasedRec = (
   userId,
@@ -25,23 +26,21 @@ const useUserBasedRec = (
       const data = await request(
         "http://localhost:4001/graphql",
         gql`
-      query {
-        
-  recommendFromOtherUsers(
-    userId: ${userId}
-    minimumRatings: ${minimumRatings}
-    peopleToCompare: ${peopleToCompare}
-    moviesToRecommend: ${moviesToRecommend}
-  ) {
-    movieId
-    posterUrl
-    title
-    releaseYear
-    imdbLink
-  }
-}
-      
-      `
+          query{
+            recommendFromOtherUsers( 
+              userId: "${userId}" 
+              minimumRatings: ${minimumRatings} 
+              peopleToCompare: ${peopleToCompare} 
+              moviesToRecommend: ${moviesToRecommend} 
+              ) { 
+                movieId 
+                posterUrl 
+                title 
+                releaseYear
+                imdbLink 
+                } 
+            }
+        `
       );
       const { recommendFromOtherUsers } = await data;
       return recommendFromOtherUsers;
@@ -54,8 +53,10 @@ export default function UserBasedRec() {
 
   const minimumRatings = requiredMovies / 1.5;
 
+  const { user } = useAuth0();
+
   const { isLoading, isError, data, refetch } = useUserBasedRec(
-    "2",
+    user.sub,
     minimumRatings,
     peopleToCompare,
     limit

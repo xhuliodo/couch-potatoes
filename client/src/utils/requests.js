@@ -38,7 +38,5 @@ export const rateMovie = async ({ movieId, userId, action, successFunc }) => {
   } else {
     console.log("you rated the movie with id", rateMovie.movieId);
     successFunc();
-    // nextMovie();
-    // increaseRatedMovies();
   }
 };

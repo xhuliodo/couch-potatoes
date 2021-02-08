@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import request, { gql } from "graphql-request";
 import { useQuery } from "react-query";
 
@@ -16,20 +17,19 @@ export default function GenreBasedRec({
       const data = await request(
         "http://localhost:4001/graphql",
         gql`
-                query {
-                    recommendPopularMoviesBasedOnGenre(
-                      userId: ${userId}
-                      limit: ${limit}
-                      skip: ${skip}
-                    ) {
-                      movieId
-                      posterUrl
-                      title
-                      releaseYear
-                      imdbLink
-                    }
-                }
-              `
+          query {
+            recommendPopularMoviesBasedOnGenre(
+              userId: "${userId}", 
+              limit: ${limit}, 
+              skip: ${skip}) {
+                movieId
+                posterUrl
+                title
+                releaseYear
+                imdbLink
+            }
+          }
+        `
       );
       const { recommendPopularMoviesBasedOnGenre } = await data;
       return recommendPopularMoviesBasedOnGenre;
@@ -38,7 +38,9 @@ export default function GenreBasedRec({
 
   const { limit } = useMovieStore();
 
-  const { isLoading, isError, data, refetch } = useMovies("2", limit);
+  const { user } = useAuth0();
+
+  const { isLoading, isError, data, refetch } = useMovies(user.sub, limit);
 
   return isLoading ? (
     <UserFeedbackMovieCard message="Fetching movies..." type="loading" />
