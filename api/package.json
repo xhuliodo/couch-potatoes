@@ -33,6 +33,7 @@
   "dependencies": {
     "apollo-server": "^2.19.1",
     "dotenv": "^8.2.0",
+    "express-jwt": "^6.0.0",
     "neo4j-driver": "^4.2.1",
     "neo4j-graphql-js": "^2.18.0"
   }

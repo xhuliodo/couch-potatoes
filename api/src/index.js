@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import { typeDefs } from "./graphql-schema";
 import { initializeDb } from "./initialize";
 
+import jwt from "express-jwt";
+
 // set env vars from .env file
 dotenv.config();
 
@@ -18,6 +20,9 @@ const schema = makeAugmentedSchema({
   typeDefs,
   config: {
     experimental: true,
+    auth: {
+      isAuthenticated: true,
+    },
   },
 });
 
@@ -47,7 +52,16 @@ init(driver);
 // resolvers to connect to the database
 // TODO: set introspection and playground to false in production
 const server = new ApolloServer({
-  context: { driver, neo4jDatabase: process.env.NEO4J_DATABASE },
+  context: ({ req }) => {
+    return {
+      req,
+      driver,
+      cypherParams: {
+        userId: req?.user?.sub,
+      },
+      neo4jDatabase: process.env.NEO4J_DATABASE,
+    };
+  },
   schema,
   introspection: true,
   playground: true,
@@ -58,8 +72,16 @@ const port = process.env.GRAPHQL_SERVER_PORT || 4001;
 const path = process.env.GRAPHQL_SERVER_PATH || "/graphql";
 const host = process.env.GRAPHQL_SERVER_HOST || "0.0.0.0";
 
+// applying auth middleware
+app.use(
+  jwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ["RS256"],
+    credentialsRequired: false,
+  })
+);
+
 // adding apollo instance as a middleware to express instance
-// TODO: apply auth
 server.applyMiddleware({ app, path });
 
 // activate express instance
