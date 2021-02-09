@@ -55,6 +55,7 @@ type Mutation {
   #     return m
   #     """
   #   )
+  starGenres(userId: ID!, genreId:ID!)
 }
 
 type Query {

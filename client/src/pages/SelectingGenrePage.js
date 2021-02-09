@@ -32,9 +32,21 @@ export const SelectingGenrePage = (props) => {
   const { user } = useAuth0();
   const graphqlClient = useGraphqlClient();
 
-  const handleSubmit = useMutation(async ({ userId, genres }) => {
-    const data = await (await graphqlClient).request(
-      gql`
+  const handleSubmit = useMutation(async ({ userId, genres, name }) => {
+    const userData = await (await graphqlClient).request(
+      gql`mutation {
+        MergeUser(
+          where: { userId: "${userId}" }
+          data: { userId: "${userId}" }
+        ){
+          userId
+        }
+      }`
+    );
+    const { MergeUser } = userData;
+    if (MergeUser?.userId) {
+      const data = await (await graphqlClient).request(
+        gql`
         mutation  {
           MergeUserFavoriteGenres(
             from: { userId: "${userId}" }
@@ -48,11 +60,12 @@ export const SelectingGenrePage = (props) => {
           }
         }
       `
-    );
+      );
 
-    const { MergeUserFavoriteGenres } = data;
-    if (MergeUserFavoriteGenres.userId !== null) {
-      props.history.push("/getting-to-know-2");
+      const { MergeUserFavoriteGenres } = data;
+      if (MergeUserFavoriteGenres.userId !== null) {
+        props.history.push("/getting-to-know-2");
+      }
     }
   });
 
@@ -83,7 +96,11 @@ export const SelectingGenrePage = (props) => {
           color="primary"
           variant="contained"
           onClick={() =>
-            handleSubmit.mutate({ userId: user?.sub, genres: selectedGenres })
+            handleSubmit.mutate({
+              userId: user?.sub,
+              genres: selectedGenres,
+              name: user?.given_name,
+            })
           }
         >
           Next
