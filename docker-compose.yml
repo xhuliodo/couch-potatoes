@@ -34,3 +34,13 @@ services:
       - GRAPHQL_URI=http://cp-api:4001/graphql
     depends_on:
       - cp-db
+
+  # react client
+  cp-client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+      args: 
+        REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
+    ports:
+      - 4000:4000
