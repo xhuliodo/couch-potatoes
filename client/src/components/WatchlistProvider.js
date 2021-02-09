@@ -2,21 +2,33 @@ import { Container } from "@material-ui/core";
 import WatchlistCard from "./WatchlistCard";
 
 import { useQuery } from "react-query";
-import request, { gql } from "graphql-request";
-
-const useGetWatchlistMovies = (userId) => {
-  return useQuery(["getWatchlistMovies", userId], async () => {
-    const data = request(
-      "http://localhost:4001/graphql",
-      gql`query {watchlist(userId:"${userId}"){movieId title posterUrl releaseYear imdbLink } } `
-    );
-    const { watchlist } = await data;
-    return watchlist;
-  });
-};
+import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { gql } from "graphql-request";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function WatchlistProvider() {
-  const { isLoading, isError, data } = useGetWatchlistMovies("2");
+  const graphqlClient = useGraphqlClient();
+  const useGetWatchlistMovies = (userId) => {
+    return useQuery(["getWatchlistMovies", userId], async () => {
+      const data = (await graphqlClient).request(
+        gql`
+          query {
+            watchlist(userId:"${userId}"){
+              movieId 
+              title 
+              posterUrl 
+              releaseYear 
+              imdbLink 
+              } 
+            }
+        `
+      );
+      const { watchlist } = await data;
+      return watchlist;
+    });
+  };
+  const { user } = useAuth0();
+  const { isLoading, isError, data } = useGetWatchlistMovies(user?.sub);
 
   return (
     <Container maxWidth="sm" style={{ marginTop: "2.5vh" }}>

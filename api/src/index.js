@@ -56,9 +56,6 @@ const server = new ApolloServer({
     return {
       req,
       driver,
-      cypherParams: {
-        userId: req?.user?.sub,
-      },
       neo4jDatabase: process.env.NEO4J_DATABASE,
     };
   },

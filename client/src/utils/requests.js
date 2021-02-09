@@ -1,12 +1,14 @@
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
 
-export const rateMovie = async ({ movieId, userId, action, successFunc }) => {
+export const rateMovie = async (
+  { movieId, userId, action, successFunc },
+  graphqlClient
+) => {
   let data = { rateMovie: null };
   // eslint-disable-next-line default-case
   switch (action) {
     case "love":
-      data = await request(
-        "http://localhost:4001/graphql",
+      data = (await graphqlClient).request(
         gql`
             mutation {
               rateMovie(movieId: "${movieId}", userId: "${userId}", rating:1) {
@@ -18,8 +20,7 @@ export const rateMovie = async ({ movieId, userId, action, successFunc }) => {
       );
       break;
     case "hate":
-      data = await request(
-        "http://localhost:4001/graphql",
+      data = (await graphqlClient).request(
         gql`
             mutation {
               rateMovie(movieId: "${movieId}", userId: "${userId}", rating:0) {

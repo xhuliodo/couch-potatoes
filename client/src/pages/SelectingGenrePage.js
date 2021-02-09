@@ -1,45 +1,39 @@
 import { Button, Container, Grid, Paper, Typography } from "@material-ui/core";
 
 import { useMutation, useQuery } from "react-query";
-import { request, gql } from "graphql-request";
+import { gql } from "graphql-request";
 
 import SelectingGenre from "../components/SelectingGenre";
 import { useState } from "react";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
-import { useGetToken } from "../utils/getToken";
-
-const useGenres = () => {
-  return useQuery("genres", async () => {
-    const data = await request(
-      "http://localhost:4001/graphql",
-      gql`
-        query {
-          Genre {
-            genreId
-            name
-          }
-        }
-      `
-    );
-    const { Genre } = await data;
-    return Genre;
-  });
-};
+import { useGraphqlClient } from "../utils/useGraphqlClient";
 
 export const SelectingGenrePage = (props) => {
+  const useGenres = () => {
+    return useQuery("genres", async () => {
+      const data = await (await graphqlClient).request(
+        gql`
+          query {
+            Genre {
+              genreId
+              name
+            }
+          }
+        `
+      );
+      const { Genre } = await data;
+      return Genre;
+    });
+  };
   const { status, data, error } = useGenres();
-
   const [selectedGenres, setSelectedGenres] = useState([]);
 
   const { user } = useAuth0();
-  const token = useGetToken();
-  console.log(token);
+  const graphqlClient = useGraphqlClient();
 
   const handleSubmit = useMutation(async ({ userId, genres }) => {
-    const data = await request(
-      "http://localhost:4001/graphql",
-      { headers: { authorization: `Bearer ${token}` } },
+    const data = await (await graphqlClient).request(
       gql`
         mutation  {
           MergeUserFavoriteGenres(
@@ -57,7 +51,6 @@ export const SelectingGenrePage = (props) => {
     );
 
     const { MergeUserFavoriteGenres } = data;
-    console.log(MergeUserFavoriteGenres);
     if (MergeUserFavoriteGenres.userId !== null) {
       props.history.push("/getting-to-know-2");
     }
@@ -90,7 +83,7 @@ export const SelectingGenrePage = (props) => {
           color="primary"
           variant="contained"
           onClick={() =>
-            handleSubmit.mutate({ userId: user.sub, genres: selectedGenres })
+            handleSubmit.mutate({ userId: user?.sub, genres: selectedGenres })
           }
         >
           Next

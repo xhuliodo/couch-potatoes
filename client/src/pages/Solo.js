@@ -13,18 +13,20 @@ import WatchlistProvider from "../components/WatchlistProvider";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
-import request, { gql } from "graphql-request";
+import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { gql } from "graphql-request";
 import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
 
 export const Solo = (props) => {
   const classes = useStyles();
   const [nav, setNav] = useState("userBased");
 
+  const graphqlClient = useGraphqlClient();
+
   // redirect rule for people who have not finished the setup
   const useFavoriteGenres = (userId) => {
     return useQuery(["genres", userId], async () => {
-      const data = await request(
-        "http://localhost:4001/graphql",
+      const data = await (await graphqlClient).request(
         gql`
           query {
             User(userId: "${userId}") {
@@ -44,7 +46,7 @@ export const Solo = (props) => {
 
   const { user } = useAuth0();
 
-  const { isLoading, isError } = useFavoriteGenres(user.sub);
+  const { isLoading, isError } = useFavoriteGenres(user?.sub);
 
   return isLoading ? (
     <UserFeedbackMovieCard message="Fetching movies..." type="loading" />

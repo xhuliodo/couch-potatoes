@@ -2,7 +2,9 @@ import { Button, Container, Grid, Paper, Tooltip } from "@material-ui/core";
 import { Card, CardWrapper } from "react-swipeable-cards";
 
 import { useMutation } from "react-query";
-import request, { gql } from "graphql-request";
+import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { gql } from "graphql-request";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
@@ -17,12 +19,18 @@ export default function MovieCard({
 }) {
   const { increaseRatedMovies } = useMovieStore();
 
-  const rate = useMutation((mutationData) => rateMovie(mutationData));
+  const graphqlClient = useGraphqlClient();
+
+  const rate = useMutation((mutationData) =>
+    rateMovie(mutationData, graphqlClient)
+  );
+
+  const { user } = useAuth0();
 
   const handleRate = (action) => {
     const mutationData = {
       movieId: movies[0].movieId,
-      userId: 2,
+      userId: user?.sub,
       action,
       successFunc,
     };
@@ -35,8 +43,7 @@ export default function MovieCard({
   };
 
   const addToWatchlist = useMutation(async ({ movieId, userId }) => {
-    const data = await request(
-      "http://localhost:4001/graphql",
+    const data = (await graphqlClient).request(
       gql`
         mutation {
           MergeUserWatchlist(
@@ -132,7 +139,7 @@ export default function MovieCard({
               variant="contained"
               onClick={() => {
                 const mutationData = {
-                  userId: 2,
+                  userId: user?.sub,
                   movieId: movies[0].movieId,
                 };
                 addToWatchlist.mutate(mutationData);
