@@ -43,5 +43,6 @@ services:
       dockerfile: Dockerfile
       args: 
         REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
+        REACT_APP_DOMAIN: ${REACT_APP_DOMAIN}
     ports:
       - 4000:80
