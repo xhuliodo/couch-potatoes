@@ -43,4 +43,4 @@ services:
       args: 
         REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
     ports:
-      - 4000:4000
+      - 4000:80
