@@ -1,6 +1,6 @@
-CREATE CONSTRAINT ON (m:Movie) ASSERT m.movieId IS UNIQUE;
-CREATE CONSTRAINT ON (g:Genre) ASSERT g.name IS UNIQUE;
-CREATE CONSTRAINT ON (u:User) ASSERT u.userId IS UNIQUE;
+// CREATE CONSTRAINT ON (m:Movie) ASSERT m.movieId IS UNIQUE;
+// CREATE CONSTRAINT ON (g:Genre) ASSERT g.name IS UNIQUE;
+// CREATE CONSTRAINT ON (u:User) ASSERT u.userId IS UNIQUE;
 
 // The moment you set a unique constraint on a label of a node
 // you have already put a index on in, that's how it keeps track
