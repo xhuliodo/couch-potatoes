@@ -18,7 +18,8 @@ services:
     # - "./db/conf:/conf"
     - "./db/data:/data"
     - "./db/import:/import"
-    # command: bash -c "neo4j-admin restore --from=/import/neo4j --force"
+    # this one below worked on as a command inside the container
+    # command: bash -c "cypher-shell -u neo4j -p letmein -f /import/import.cypher"
   
   # nodejs graphql api
   cp-api:
