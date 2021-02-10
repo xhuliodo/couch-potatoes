@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   makeStyles,
   Card,
@@ -13,18 +14,24 @@ import { Link as LinkIcon, ThumbDown, ThumbUp } from "@material-ui/icons";
 
 import { useMutation } from "react-query";
 import { rateMovie } from "../utils/requests";
+import { useGraphqlClient } from "../utils/useGraphqlClient";
 
 export default function MovieCardWatchlist({ movies }) {
   const classes = useStyles();
 
   // const [movies, setMovies] = useState(m);
+  const graphqlClient = useGraphqlClient();
 
-  const rate = useMutation((mutationData) => rateMovie(mutationData));
+  const { user } = useAuth0();
+
+  const rate = useMutation((mutationData) =>
+    rateMovie(mutationData, graphqlClient)
+  );
 
   const handleRate = (movieId, action) => {
     const mutationData = {
       movieId,
-      userId: 2,
+      userId: user?.sub,
       action,
       successFunc: () => successFunc(movieId),
     };

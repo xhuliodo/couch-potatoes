@@ -57,13 +57,13 @@ export default function MovieCard({
       `
     );
 
-    const { MergeUserWatchlist } = data;
+    const { MergeUserWatchlist } = await data;
     if (MergeUserWatchlist === null) {
       console.log("the watchlist did not get filled 😏");
     } else {
       console.log(
         "you added to playlist the movie with id",
-        MergeUserWatchlist.to.movieId
+        MergeUserWatchlist.to?.movieId
       );
       nextMovie();
     }
