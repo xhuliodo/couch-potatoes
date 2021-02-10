@@ -1,4 +1,4 @@
-FROM node:12.18-alpine3.9 as build
+FROM node:12.18 as build
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 ARG REACT_APP_API_ENDPOINT
