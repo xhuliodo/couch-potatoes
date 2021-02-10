@@ -1,5 +1,5 @@
 import { LinearProgress, Typography } from "@material-ui/core";
-import { Card, CardWrapper } from "react-swipeable-cards";
+import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 
 export default function UserFeedbackMovieCard({ message, type }) {
   return (

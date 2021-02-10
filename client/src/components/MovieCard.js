@@ -1,5 +1,5 @@
 import { Button, Container, Grid, Paper, Tooltip } from "@material-ui/core";
-import { Card, CardWrapper } from "react-swipeable-cards";
+import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 
 import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
@@ -164,6 +164,7 @@ export default function MovieCard({
             key={m.movieId}
             onSwipeLeft={() => handleRate("hate")}
             onSwipeRight={() => handleRate("love")}
+            swipeSensitivity={30}
             style={{
               backgroundImage: `url(${m.posterUrl})`,
               backgroundSize: "contain",
