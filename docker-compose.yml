@@ -38,6 +38,7 @@ services:
 
   # react client
   cp-client:
+    container_name: cp-client 
     build: 
       context: ./client
       dockerfile: Dockerfile
