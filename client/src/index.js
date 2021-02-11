@@ -5,7 +5,7 @@ import App from "./App";
 import history from "./utils/history";
 
 // pwa service worker
-import serviceWorker from "./serviceWorker";
+import * as serviceWorker from "./serviceWorker";
 
 //importing auth
 import { Auth0Provider } from "@auth0/auth0-react";
