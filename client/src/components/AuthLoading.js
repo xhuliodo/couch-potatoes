@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     height: "20vh!important",
     width: "20vw!important",
-    backgroundColor: "white",
     top: "40vh",
     bottom: 0,
     left: "40vw",
