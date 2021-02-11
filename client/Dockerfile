@@ -8,7 +8,6 @@ ENV REACT_APP_DOMAIN=$REACT_APP_DOMAIN
 COPY package.json ./
 COPY yarn.lock ./
 RUN yarn --silent
-RUN yarn add global react-scripts@4.0.1 --silent
 COPY . ./
 RUN yarn run build
 
