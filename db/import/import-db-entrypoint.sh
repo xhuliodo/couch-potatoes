@@ -28,6 +28,7 @@ if [ -e "/import/import.cypher" ];
     log_info  "IMPORT-SCRIPT: Starting importing, you might have to wait a while depending on vm specs"
 
     cypher-shell -u neo4j -p letmein -f /import/import.cypher
+    
     log_info "IMPORT-SCRIPT: Done importing"
     TOTAL_CHANGES=$(cypher-shell --format plain "MATCH (n) RETURN count(n) AS count")
     # https://stackoverflow.com/questions/15520339/how-to-remove-carriage-return-and-newline-from-a-variable-in-shell-script/15520508#15520508
