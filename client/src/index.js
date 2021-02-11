@@ -4,6 +4,9 @@ import "./index.css";
 import App from "./App";
 import history from "./utils/history";
 
+// pwa service worker
+import serviceWorker from "./serviceWorker";
+
 //importing auth
 import { Auth0Provider } from "@auth0/auth0-react";
 
@@ -13,7 +16,7 @@ const onRedirectCallback = (appState) => {
   );
 };
 
-const redirectUri = process.env.REACT_APP_DOMAIN || 'http://localhost:3000'
+const redirectUri = process.env.REACT_APP_DOMAIN || "http://localhost:3000";
 
 ReactDOM.render(
   <Auth0Provider
@@ -26,3 +29,5 @@ ReactDOM.render(
   </Auth0Provider>,
   document.getElementById("root")
 );
+
+serviceWorker.register();
