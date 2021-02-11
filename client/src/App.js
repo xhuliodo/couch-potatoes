@@ -28,7 +28,10 @@ import Solo from "./pages/Solo";
 
 export default function App() {
   // dark theme setup
-  const isDarkThemeOn = localStorage.getItem("darkMode") || false;
+  const userPref = localStorage.getItem("darkMode");
+  const isDarkThemeOn =
+    // eslint-disable-next-line eqeqeq
+    userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
   const icon = !darkTheme ? (
     <Brightness7Icon style={verticalAlign} />
@@ -65,7 +68,7 @@ export default function App() {
           <Container
             maxWidth="md"
             style={{
-              marginTop: "5vh",
+              marginTop: "2.5vh",
               height: "fit-content",
             }}
           >
