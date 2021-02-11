@@ -5,7 +5,7 @@
   "background_color": "#fff",
   "display": "fullScreen",
   "orientation": "portrait",
-  "start_url": "./index.html",
+  "start_url": "/solo",
   "icons": [
     {
       "src": "favicon.ico",
