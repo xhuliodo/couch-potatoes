@@ -3,9 +3,9 @@
   "short_name": "Couch Potatoes",
   "theme_color": "#3f51b5",
   "background_color": "#fff",
-  "display": "fullScreen",
+  "display": "standalone",
   "orientation": "portrait",
-  "start_url": "./index.html",
+  "start_url": "/solo",
   "icons": [
     {
       "src": "favicon.ico",
