@@ -10,7 +10,7 @@ RUN sh -c 'cd /var/lib/neo4j/plugins && curl -L -O "${APOC_URI}"'
 
 EXPOSE 7474 7473 7687
 
-ENV IMPORT_ENTRYPOINT_URI  https://raw.githubusercontent.com/xhuliodo/couch-potatoes/master/db/import/import-db-entrypoint.sh
+ENV IMPORT_ENTRYPOINT_URI https://raw.githubusercontent.com/xhuliodo/couch-potatoes/master/db/import/import-db-entrypoint.sh
 
 RUN sh -c 'cd /var/lib/neo4j/ && curl -L -O "${IMPORT_ENTRYPOINT_URI}"'
 

@@ -18,8 +18,6 @@ services:
     # - "./db/conf:/conf"
     - "./db/data:/data"
     - "./db/import:/import"
-    # this one below worked on as a command inside the container
-    # command: bash -c "cypher-shell -u neo4j -p letmein -f /import/import.cypher"
   
   # nodejs graphql api
   cp-api:
@@ -47,3 +45,6 @@ services:
         REACT_APP_DOMAIN: ${REACT_APP_DOMAIN}
     ports:
       - 4000:80
+
+# networks:
+#   couch_potatoes:
