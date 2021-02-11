@@ -47,7 +47,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
     logout,
     loginWithRedirect,
     user,
-    getIdTokenClaims
+    getIdTokenClaims,
   } = useAuth0();
 
   const handleToggle = async () => {
@@ -127,6 +127,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
             <Switch
               checked={darkTheme}
               onChange={() => {
+                localStorage.setItem("darkMode", !darkTheme);
                 setDarkTheme(!darkTheme);
               }}
             />

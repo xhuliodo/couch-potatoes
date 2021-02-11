@@ -28,7 +28,8 @@ import Solo from "./pages/Solo";
 
 export default function App() {
   // dark theme setup
-  const [darkTheme, setDarkTheme] = useState(false);
+  const isDarkThemeOn = localStorage.getItem("darkMode") || false;
+  const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
   const icon = !darkTheme ? (
     <Brightness7Icon style={verticalAlign} />
   ) : (
@@ -88,7 +89,7 @@ export default function App() {
           <Footer />
         </Paper>
       </ThemeProvider>
-      <ReactQueryDevtools initialIsOpen />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
