@@ -4,11 +4,10 @@ import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
-import { rateMovie } from "../utils/requests";
+import { rateMovie } from "../utils/rateMovie";
 
 export default function MovieCard({
   movies,
@@ -25,12 +24,9 @@ export default function MovieCard({
     rateMovie(mutationData, graphqlClient)
   );
 
-  const { user } = useAuth0();
-
   const handleRate = (action) => {
     const mutationData = {
       movieId: movies[0].movieId,
-      userId: user?.sub,
       action,
       successFunc,
     };
@@ -42,28 +38,24 @@ export default function MovieCard({
     increaseRatedMovies();
   };
 
-  const addToWatchlist = useMutation(async ({ movieId, userId }) => {
+  const addToWatchlist = useMutation(async ({ movieId }) => {
     const data = (await graphqlClient).request(
       gql`
         mutation {
-          MergeUserWatchlist(
-            from: { userId: "${userId}" }, 
-            to: { movieId: ${movieId} }) {
-            to {
-              movieId
-            }
+          addToWatchlist(movieId: ${movieId}) {
+            movieId
           }
         }
       `
     );
 
-    const { MergeUserWatchlist } = await data;
-    if (MergeUserWatchlist === null) {
+    const { addToWatchlist } = await data;
+    if (addToWatchlist === null) {
       console.log("the watchlist did not get filled 😏");
     } else {
       console.log(
         "you added to playlist the movie with id",
-        MergeUserWatchlist.to?.movieId
+        addToWatchlist.movieId
       );
       nextMovie();
     }
@@ -105,17 +97,6 @@ export default function MovieCard({
               </Button>
             </Tooltip>
           )}
-
-          <Tooltip placement="top" arrow title="Loved it!">
-            <Button
-              style={buttonStyling}
-              onClick={() => handleRate("love")}
-              variant="contained"
-              color="primary"
-            >
-              <ThumbUp fontSize="inherit" />
-            </Button>
-          </Tooltip>
           <Tooltip placement="top" arrow title="Hated it!">
             <Button
               style={buttonStyling}
@@ -124,6 +105,16 @@ export default function MovieCard({
               color="secondary"
             >
               <ThumbDown fontSize="inherit" />
+            </Button>
+          </Tooltip>
+          <Tooltip placement="top" arrow title="Loved it!">
+            <Button
+              style={buttonStyling}
+              onClick={() => handleRate("love")}
+              variant="contained"
+              color="primary"
+            >
+              <ThumbUp fontSize="inherit" />
             </Button>
           </Tooltip>
         </Grid>
@@ -139,7 +130,6 @@ export default function MovieCard({
               variant="contained"
               onClick={() => {
                 const mutationData = {
-                  userId: user?.sub,
                   movieId: movies[0].movieId,
                 };
                 addToWatchlist.mutate(mutationData);

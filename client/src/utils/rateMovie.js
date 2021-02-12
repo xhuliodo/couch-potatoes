@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 
 export const rateMovie = async (
-  { movieId, userId, action, successFunc },
+  { movieId, action, successFunc },
   graphqlClient
 ) => {
   let data = { rateMovie: null };
@@ -11,7 +11,7 @@ export const rateMovie = async (
       data = (await graphqlClient).request(
         gql`
             mutation {
-              rateMovie(movieId: "${movieId}", userId: "${userId}", rating:1) {
+              rateMovie(movieId: "${movieId}", rating:1) {
                 movieId
                 title
               }
@@ -23,7 +23,7 @@ export const rateMovie = async (
       data = (await graphqlClient).request(
         gql`
             mutation {
-              rateMovie(movieId: "${movieId}", userId: "${userId}", rating:0) {
+              rateMovie(movieId: "${movieId}", rating:0) {
                 movieId
                 title
               }

@@ -4,16 +4,15 @@ import WatchlistCard from "./WatchlistCard";
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
-import { useAuth0 } from "@auth0/auth0-react";
 
 export default function WatchlistProvider() {
   const graphqlClient = useGraphqlClient();
-  const useGetWatchlistMovies = (userId) => {
-    return useQuery(["getWatchlistMovies", userId], async () => {
+  const useGetWatchlistMovies = () => {
+    return useQuery(["getWatchlistMovies"], async () => {
       const data = (await graphqlClient).request(
         gql`
           query {
-            watchlist(userId:"${userId}"){
+            watchlist{
               movieId 
               title 
               posterUrl 
@@ -27,8 +26,7 @@ export default function WatchlistProvider() {
       return watchlist;
     });
   };
-  const { user } = useAuth0();
-  const { isLoading, isError, data } = useGetWatchlistMovies(user?.sub);
+  const { isLoading, isError, data } = useGetWatchlistMovies();
 
   return (
     <Container maxWidth="sm" style={{ marginTop: "2.5vh" }}>

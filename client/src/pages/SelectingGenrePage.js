@@ -34,36 +34,30 @@ export const SelectingGenrePage = (props) => {
 
   const handleSubmit = useMutation(async ({ userId, genres, name }) => {
     const userData = await (await graphqlClient).request(
-      gql`mutation {
-        MergeUser(
-          where: { userId: "${userId}" }
-          data: { userId: "${userId}" }
-        ){
-          userId
+      gql`
+        mutation {
+          selfRegister {
+            userId
+          }
         }
-      }`
+      `
     );
-    const { MergeUser } = userData;
-    if (MergeUser?.userId) {
+    const { selfRegister } = userData;
+    if (selfRegister?.userId) {
       const data = await (await graphqlClient).request(
         gql`
-        mutation  {
-          MergeUserFavoriteGenres(
-            from: { userId: "${userId}" }
-            to: {
-              genreId_in: [${genres.map((g) => `"${g}"`)}]
-            }
+        mutation {
+          setFavoriteGenres(
+            genres: [${genres.map((g) => `"${g}"`)}]
           ) {
-            from {
-              userId
-            }
+            userId
           }
         }
       `
       );
 
-      const { MergeUserFavoriteGenres } = data;
-      if (MergeUserFavoriteGenres.userId !== null) {
+      const { setFavoriteGenres } = data;
+      if (setFavoriteGenres.userId !== null) {
         props.history.push("/getting-to-know-2");
       }
     }

@@ -10,7 +10,7 @@ import GenresIcon from "../utils/icons/GenresIcon";
 import UserBasedRec from "../components/UserBasedRec";
 import GenreBasedRec from "../components/GenreBasedRec";
 import WatchlistProvider from "../components/WatchlistProvider";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
@@ -24,29 +24,25 @@ export const Solo = (props) => {
   const graphqlClient = useGraphqlClient();
 
   // redirect rule for people who have not finished the setup
-  const useFavoriteGenres = (userId) => {
-    return useQuery(["genres", userId], async () => {
+  const useFavoriteGenres = () => {
+    return useQuery(["genres"], async () => {
       const data = await (await graphqlClient).request(
         gql`
           query {
-            User(userId: "${userId}") {
-              favoriteGenres {
-                genreId
-              }
+            getFavoriteGenres {
+              genreId
             }
           }
         `
       );
-      const { User } = data;
-      if (User.length === 0 || User[0].favoriteGenres.length < 3) {
+      const { getFavoriteGenres } = data;
+      if (getFavoriteGenres.length === 0) {
         props.history.push("/getting-to-know-1");
       }
     });
   };
 
-  const { user } = useAuth0();
-
-  const { isLoading, isError } = useFavoriteGenres(user?.sub);
+  const { isLoading, isError } = useFavoriteGenres();
 
   return isLoading ? (
     <UserFeedbackMovieCard message="Fetching movies..." type="loading" />
