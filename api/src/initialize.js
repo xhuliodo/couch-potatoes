@@ -1,5 +1,5 @@
 export const initializeDb = (driver) => {
-  const initCyper = `call apoc.schema.assert({}, {Movie:["movieId"], User:["userId"]}, false)`;
+  const initCyper = `call apoc.schema.assert({}, {Movie:["movieId"], User:["userId"], Genre:["genreId"]}, false)`;
 
   const executeQuery = (driver) => {
     const session = driver.session();

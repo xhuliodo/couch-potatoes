@@ -1,3 +1,7 @@
+enum Role {
+  admin
+}
+
 type Movie @isAuthenticated {
   movieId(limit: Int = 10): ID! @id
   title: String!
@@ -9,9 +13,13 @@ type Movie @isAuthenticated {
   # plot: String
 }
 
-type Genre {
+type Genre @isAuthenticated {
   genreId: ID! @id
   name: String! @unique
+}
+
+input FavoriteGenres {
+  genreId: ID!
 }
 
 # this one is still in question whether or not i'm going to crawl for it
@@ -19,54 +27,69 @@ type Genre {
 
 # }
 
-type User {
+type User @isAuthenticated {
   userId: ID! @id
-  fullName: String
-  # username: String @unique
   watchlist(limit: Int = 10): [Movie]!
     @relation(name: "WATCH_LATER", direction: "OUT")
   favoriteGenres: [Genre]! @relation(name: "FAVORITE", direction: "OUT")
 }
 
 type Mutation {
-  rateMovie(userId: ID!, movieId: ID!, rating: Int!): Movie
+  rateMovie(movieId: ID!, rating: Int!): Movie
+    @isAuthenticated
     @cypher(
       statement: """
-      match (u:User{userId:$userId}), (m:Movie{movieId:$movieId})
+      match (u:User{userId:$cypherParams.userId}), (m:Movie{movieId:$movieId})
       merge (u)-[r:RATED]->(m) on create set r.rating=toInteger($rating)
       return m
       """
     )
-  # likeMovie(userId: ID!, movieId: ID!): Movie
-  #   @cypher(
-  #     statement: """
-  #     match (u:User{userId:$userId}), (m:Movie{movieId:$movieId})
-  #     merge (u)-[r:RATED]->(m)
-  #     on create set r.rating=1
-  #     return m
-  #     """
-  #   )
-  # dislikeMovie(userId: ID!, movieId: ID!): Movie
-  #   @cypher(
-  #     statement: """
-  #     match (u:User{userId:$userId}), (m:Movie{movieId:$movieId})
-  #     merge (u)-[r:RATED]->(m)
-  #     on create set r.rating=0
-  #     return m
-  #     """
-  #   )
+  selfRegister: User!
+    @isAuthenticated
+    # @hasRole(roles: [admin])
+    @cypher(
+      statement: """
+      merge (u:User{userId:$cypherParams.userId})
+      on create set u.userId=$cypherParams.userId
+      return u
+      """
+    )
+  setFavoriteGenres(genres: [ID]!): User
+    @isAuthenticated
+    @cypher(
+      statement: """
+      match (u:User{userId:$cypherParams.userId}), (g:Genre)
+      where g.genreId in $genres
+      merge (u)-[:FAVORITE]->(g)
+      return u
+      """
+    )
+  addToWatchlist(movieId: ID!): Movie
+    @isAuthenticated
+    @cypher(
+      statement: """
+      match (u:User{userId:$cypherParams.userId}), (m:Movie{movieId:$movieId})
+      merge (u)-[:WATCH_LATER]->(m)
+      return m
+      """
+    )
 }
 
 type Query {
-  recommendPopularMoviesBasedOnGenre(
-    userId: ID!
-    limit: Int!
-    skip: Int!
-  ): [Movie]!
+  getFavoriteGenres(limit: Int): [Genre]!
+    @isAuthenticated
     @cypher(
       statement: """
-      match (u:User)-[:FAVORITE]->(g:Genre)
-      where u.userId=$userId
+      match (u:User{userId: $cypherParams.userId})-[:FAVORITE]->(g:Genre)
+      return g
+      """
+    )
+
+  recommendPopularMoviesBasedOnGenre(limit: Int!, skip: Int!): [Movie]!
+    @isAuthenticated
+    @cypher(
+      statement: """
+      match (u:User{userId:$cypherParams.userId})-[:FAVORITE]->(g:Genre)
       with g, u match (m:Movie)-[:IN_GENRE]->(g)
       where not exists( (u)-[:RATED]->(m) ) and not exists ( (u)-[:WATCH_LATER]->(m) )
       with  distinct(m) as movie
@@ -79,14 +102,14 @@ type Query {
       """
     )
   recommendFromOtherUsers(
-    userId: ID!
     minimumRatings: Int!
     peopleToCompare: Int!
     moviesToRecommend: Int = 25
   ): [Movie]!
+    @isAuthenticated
     @cypher(
       statement: """
-      match (u1:User {userId:$userId})-[r:RATED]->(m:Movie)
+      match (u1:User {userId:$cypherParams.userId})-[r:RATED]->(m:Movie)
       with u1, avg(r.rating) AS u1_mean
       match (u1)-[r1:RATED]->(m:Movie)<-[r2:RATED]-(u2)
       with u1, u1_mean, u2, collect({r1: r1, r2: r2}) as ratings
@@ -104,40 +127,41 @@ type Query {
       limit toInteger($moviesToRecommend)
       """
     )
-  watchlist(userId: ID!): [Movie]!
+  watchlist: [Movie]!
+    @isAuthenticated
     @cypher(
       statement: """
-      match (u:User{userId:$userId})-[:WATCH_LATER]->(m:Movie)
+      match (u:User {userId:$cypherParams.userId})-[:WATCH_LATER]->(m:Movie)
       where  not exists((u)-[:RATED]->(m))
       return m
       """
     )
-  recommendToGroup(
-    userId_1: ID!
-    userId_2: ID!
-    userId_3: ID
-    minimumRatings: Int!
-    peopleToCompare: Int!
-    moviesToRecommend: Int = 25
-  ): [Movie]!
-    @cypher(
-      statement: """
-      match (u1:User)-[r:RATED]->(m:Movie)
-      where u1.userId in [$userId_1,$userId_2]
-      with u1, avg(r.rating) AS u1_mean
-      match (u1)-[r1:RATED]->(m:Movie)<-[r2:RATED]-(u2)
-      with u1, u1_mean, u2, collect({r1: r1, r2: r2}) as ratings
-      where size(ratings) > toInteger($minimumRatings)
-      match (u2)-[r:RATED]->(m:Movie)
-      with u1, u1_mean, u2, avg(r.rating) as u2_mean, ratings unwind ratings as r
-      with sum( (r.r1.rating-u1_mean) * (r.r2.rating-u2_mean) ) as nom, sqrt( sum( (r.r1.rating - u1_mean)^2) * sum( (r.r2.rating - u2_mean) ^2)) as denom, u1, u2
-      where denom <> 0 with u1, u2, nom/denom as pearson
-      order by pearson desc
-      limit toInteger($peopleToCompare)
-      match (u2)-[r:RATED]->(m:Movie)
-      where not exists( (u1)-[:RATED]->(m) ) return m, sum( pearson * r.rating) as score
-      order by score desc
-      limit toInteger($moviesToRecommend)
-      """
-    )
+  # recommendToGroup(
+  #   userId_1: ID!
+  #   userId_2: ID!
+  #   userId_3: ID
+  #   minimumRatings: Int!
+  #   peopleToCompare: Int!
+  #   moviesToRecommend: Int = 25
+  # ): [Movie]! @isAuthenticated
+  #   @cypher(
+  #     statement: """
+  #     match (u1:User)-[r:RATED]->(m:Movie)
+  #     where u1.userId in [$userId_1,$userId_2]
+  #     with u1, avg(r.rating) AS u1_mean
+  #     match (u1)-[r1:RATED]->(m:Movie)<-[r2:RATED]-(u2)
+  #     with u1, u1_mean, u2, collect({r1: r1, r2: r2}) as ratings
+  #     where size(ratings) > toInteger($minimumRatings)
+  #     match (u2)-[r:RATED]->(m:Movie)
+  #     with u1, u1_mean, u2, avg(r.rating) as u2_mean, ratings unwind ratings as r
+  #     with sum( (r.r1.rating-u1_mean) * (r.r2.rating-u2_mean) ) as nom, sqrt( sum( (r.r1.rating - u1_mean)^2) * sum( (r.r2.rating - u2_mean) ^2)) as denom, u1, u2
+  #     where denom <> 0 with u1, u2, nom/denom as pearson
+  #     order by pearson desc
+  #     limit toInteger($peopleToCompare)
+  #     match (u2)-[r:RATED]->(m:Movie)
+  #     where not exists( (u1)-[:RATED]->(m) ) return m, sum( pearson * r.rating) as score
+  #     order by score desc
+  #     limit toInteger($moviesToRecommend)
+  #     """
+  #   )
 }

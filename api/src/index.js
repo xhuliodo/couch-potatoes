@@ -19,9 +19,16 @@ const app = express();
 const schema = makeAugmentedSchema({
   typeDefs,
   config: {
+    mutation: {
+      exclude: ["Genre", "Movie", "User"],
+    },
+    query: {
+      exclude: ["Movie", "User"],
+    },
     experimental: true,
     auth: {
       isAuthenticated: true,
+      // hasRole: true
     },
   },
 });
@@ -55,6 +62,9 @@ const server = new ApolloServer({
   context: ({ req }) => {
     return {
       req,
+      cypherParams: {
+        userId: req?.user?.sub,
+      },
       driver,
       neo4jDatabase: process.env.NEO4J_DATABASE,
     };
