@@ -12,6 +12,7 @@
 
 .container {
   height: calc(100vh - 9vh) !important;
+  min-height: 400px;
   /* height: 900px!important; */
   /* max-height: calc(100vh - 8vh); */
   /* height: calc(100vh + 30px); */
@@ -19,6 +20,10 @@
 
 .card_container {
   top: 30px;
+}
+
+.container .cards_container .card_container {
+  max-width: 450px !important;
 }
 
 @media (min-height: 730px) {
