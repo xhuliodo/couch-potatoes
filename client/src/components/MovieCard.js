@@ -154,7 +154,7 @@ export default function MovieCard({
             key={m.movieId}
             onSwipeLeft={() => handleRate("hate")}
             onSwipeRight={() => handleRate("love")}
-            swipeSensitivity={30}
+            swipeSensitivity={60}
             style={{
               backgroundImage: `url(${m.posterUrl})`,
               backgroundSize: "contain",
