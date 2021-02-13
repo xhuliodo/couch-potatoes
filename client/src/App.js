@@ -19,6 +19,7 @@ import { Router, Route, Switch } from "react-router-dom";
 import history from "./utils/history";
 
 // pages and components
+import "./App.css";
 import MenuBar from "./components/MenuBar";
 import Footer from "./components/Footer";
 import WelcomePage from "./pages/WelcomePage";
@@ -58,6 +59,7 @@ export default function App() {
           elevation={0}
           style={{
             minHeight: "100vh",
+            borderRadius: "0px",
           }}
         >
           <MenuBar
@@ -70,6 +72,7 @@ export default function App() {
             style={{
               marginTop: "2.5vh",
               height: "fit-content",
+              borderRadius: "0px!important",
             }}
           >
             <Router history={history}>
