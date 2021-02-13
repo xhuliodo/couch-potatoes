@@ -5,9 +5,11 @@ import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
 import { useEffect } from "react";
-import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
+import { Favorite, ThumbDown, VisibilityOff } from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
 import { rateMovie } from "../utils/rateMovie";
+import { openRateFeedbackExported } from "./RateFeedback";
+import RateFeedback from "./RateFeedback";
 
 export default function MovieCard({
   movies,
@@ -25,18 +27,22 @@ export default function MovieCard({
   );
 
   const handleRate = (action) => {
+    console.log(action);
     const mutationData = {
       movieId: movies[0].movieId,
       action,
-      successFunc,
+      successFunc: () => successFunc(action),
     };
     rate.mutate(mutationData);
   };
 
-  const successFunc = () => {
+  const successFunc = (action) => {
+    openRateFeedbackExported(action);
     nextMovie();
     increaseRatedMovies();
   };
+
+  const feedback = (action) => <RateFeedback action={action} />;
 
   const addToWatchlist = useMutation(async ({ movieId }) => {
     const data = (await graphqlClient).request(
@@ -114,7 +120,7 @@ export default function MovieCard({
               variant="contained"
               color="primary"
             >
-              <ThumbUp fontSize="inherit" />
+              <Favorite fontSize="inherit" />
             </Button>
           </Tooltip>
         </Grid>
@@ -152,7 +158,10 @@ export default function MovieCard({
         {movies.map((m) => (
           <Card
             key={m.movieId}
-            onSwipeLeft={() => handleRate("hate")}
+            onSwipeLeft={() => {
+              handleRate("hate");
+              feedback("hate");
+            }}
             onSwipeRight={() => handleRate("love")}
             swipeSensitivity={100}
             style={{
@@ -169,6 +178,7 @@ export default function MovieCard({
             </Paper>
           </Card>
         ))}
+        <RateFeedback />
         <ActionButtons />
       </CardWrapper>
     </>

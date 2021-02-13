@@ -15,7 +15,7 @@ import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
-import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
+import DataStateMovieCard from "../components/DataStateMovieCard";
 
 export const Solo = (props) => {
   const classes = useStyles();
@@ -44,11 +44,7 @@ export const Solo = (props) => {
 
   const { isLoading, isError } = useFavoriteGenres();
 
-  return isLoading ? (
-    <UserFeedbackMovieCard message="Fetching movies..." type="loading" />
-  ) : isError ? (
-    <UserFeedbackMovieCard message="Something went wrong..." />
-  ) : (
+  return (
     <Paper elevation={0}>
       <Paper elevation={5} style={{ padding: "12px 0" }}>
         <BottomNavigation
@@ -82,15 +78,22 @@ export const Solo = (props) => {
           />
         </BottomNavigation>
       </Paper>
-      <div style={{ marginTop: "15px" }}>
-        {nav === "userBased" ? (
-          <UserBasedRec />
-        ) : nav === "genreBased" ? (
-          <GenreBasedRec startedFromTheBottomNowWeHere={true} />
-        ) : (
-          <WatchlistProvider />
-        )}
-      </div>
+
+      {isLoading ? (
+        <DataStateMovieCard message="Fetching movies..." type="loading" />
+      ) : isError ? (
+        <DataStateMovieCard message="Something went wrong..." />
+      ) : (
+        <div style={{ marginTop: "15px" }}>
+          {nav === "userBased" ? (
+            <UserBasedRec />
+          ) : nav === "genreBased" ? (
+            <GenreBasedRec startedFromTheBottomNowWeHere={true} />
+          ) : (
+            <WatchlistProvider />
+          )}
+        </div>
+      )}
     </Paper>
   );
 };

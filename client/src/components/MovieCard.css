@@ -10,12 +10,6 @@
   background-repeat: no-repeat;
 }
 
-.container {
-  /* height: 900px!important; */
-  /* max-height: calc(100vh - 8vh); */
-  /* height: calc(100vh + 30px); */
-}
-
 div.container.loaded {
   height: calc(100vh - 13vh);
   min-height: 687px;
@@ -26,25 +20,13 @@ div.container.loaded {
   top: 30px;
 }
 
+
 .container .cards_container .card_container {
   max-width: 450px;
   max-height: 650px;
   min-height: 545px;
 }
 
-/* @media (min-height: 766px) {
-  .container .cards_container .card_container {
-    height: 82vh!important;
-    min-height: 400px;
-  }
-} */
-
-/* @media (min-height: 435px) {
-  .container .cards_container .card_container {
-    height: 82vh !important;
-  }
-}
-*/
 .MuiTooltip-tooltip {
   font-size: 16px !important;
 }

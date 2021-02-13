@@ -6,7 +6,7 @@ import { gql } from "graphql-request";
 
 import { useMovieStore } from "../context/movies";
 import MovieCard from "./MovieCard";
-import UserFeedbackMovieCard from "./UserFeedbackMovieCard";
+import DataStateMovieCard from "./DataStateMovieCard";
 
 export default function UserBasedRec() {
   const { peopleToCompare, limit, requiredMovies } = useMovieStore();
@@ -58,9 +58,9 @@ export default function UserBasedRec() {
   );
 
   return isLoading ? (
-    <UserFeedbackMovieCard message="Fetching movies..." type="loading" />
+    <DataStateMovieCard message="Fetching movies..." type="loading" />
   ) : isError ? (
-    <UserFeedbackMovieCard message="Something went wrong..." />
+    <DataStateMovieCard message="Something went wrong..." />
   ) : (
     <>
       <MovieCard

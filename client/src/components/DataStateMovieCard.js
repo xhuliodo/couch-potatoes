@@ -1,7 +1,7 @@
 import { LinearProgress, Typography } from "@material-ui/core";
 import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 
-export default function UserFeedbackMovieCard({ message, type }) {
+export default function DataStateMovieCard({ message, type }) {
   return (
     <CardWrapper style={{ paddingTop: "0px" }}>
       <Card
@@ -21,6 +21,7 @@ export default function UserFeedbackMovieCard({ message, type }) {
 }
 
 let stylingTitle = {
+  color:"black",
   textAlign: "center",
   fontWeight: "bold",
   fontSize: "35px",
