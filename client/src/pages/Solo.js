@@ -82,7 +82,7 @@ export const Solo = (props) => {
           />
         </BottomNavigation>
       </Paper>
-      <div style={{ marginTop: "2.5vh" }}>
+      <div style={{ marginTop: "15px" }}>
         {nav === "userBased" ? (
           <UserBasedRec />
         ) : nav === "genreBased" ? (

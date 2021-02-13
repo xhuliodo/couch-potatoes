@@ -19,7 +19,6 @@ import { Router, Route, Switch } from "react-router-dom";
 import history from "./utils/history";
 
 // pages and components
-import "./App.css";
 import MenuBar from "./components/MenuBar";
 import Footer from "./components/Footer";
 import WelcomePage from "./pages/WelcomePage";
@@ -70,7 +69,7 @@ export default function App() {
           <Container
             maxWidth="md"
             style={{
-              marginTop: "2.5vh",
+              marginTop: "15px",
               height: "fit-content",
               borderRadius: "0px!important",
             }}
