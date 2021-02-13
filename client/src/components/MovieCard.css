@@ -12,7 +12,7 @@
 
 .container {
   height: calc(100vh - 9vh) !important;
-  min-height: 400px;
+  min-height: 400px !important;
   /* height: 900px!important; */
   /* max-height: calc(100vh - 8vh); */
   /* height: calc(100vh + 30px); */
