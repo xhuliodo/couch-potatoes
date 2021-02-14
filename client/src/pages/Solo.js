@@ -112,7 +112,7 @@ export const Solo = (props) => {
           onChangeIndex={handleChangeIndex}
           springConfig={{
             duration: "0.5s",
-            easeFunction: "cubic-bezier(0.15, 0.3, 0.25, 1)",
+            easeFunction: "cubic-bezier(0.42, 0, 0.58, 1)",
             delay: "0s",
           }}
         >
