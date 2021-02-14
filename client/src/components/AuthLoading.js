@@ -9,8 +9,8 @@ export default function AuthLoading() {
 
 const useStyles = makeStyles((theme) => ({
   loading: {
+    color: theme.palette.primary.main,
     position: "absolute",
-    display: "flex",
     justifyContent: "center",
     height: "20vh!important",
     width: "20vw!important",
