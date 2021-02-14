@@ -1,22 +1,33 @@
-import { CircularProgress, makeStyles } from "@material-ui/core";
+import {
+  Backdrop,
+  CircularProgress,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 
 import React from "react";
 
 export default function AuthLoading() {
   const classes = useStyles();
-  return <CircularProgress className={classes.loading} />;
+  return (
+    <Backdrop open className={classes.backdrop}>
+      <CircularProgress className={classes.loading} />
+      <br />
+      <br />
+      <Typography variant="h5">Logging you in, please wait</Typography>
+    </Backdrop>
+  );
 }
 
 const useStyles = makeStyles((theme) => ({
   loading: {
     color: theme.palette.primary.main,
-    position: "absolute",
-    justifyContent: "center",
-    height: "20vh!important",
-    width: "20vw!important",
-    top: "40vh",
-    bottom: 0,
-    left: "40vw",
-    right: 0,
+    height: "15vh!important",
+    width: "15vh!important",
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
+    flexDirection: "column",
   },
 }));
