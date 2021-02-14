@@ -12,14 +12,14 @@ export default function WatchlistProvider() {
       const data = (await graphqlClient).request(
         gql`
           query {
-            watchlist{
-              movieId 
-              title 
-              posterUrl 
-              releaseYear 
-              imdbLink 
-              } 
+            watchlist {
+              movieId
+              title
+              posterUrl
+              releaseYear
+              imdbLink
             }
+          }
         `
       );
       const { watchlist } = await data;
@@ -29,7 +29,7 @@ export default function WatchlistProvider() {
   const { isLoading, isError, data } = useGetWatchlistMovies();
 
   return (
-    <Container maxWidth="sm" style={{ marginTop: "2.5vh" }}>
+    <Container maxWidth="sm" style={{ marginTop: "15px" }}>
       {isLoading ? (
         <span>fetching data</span>
       ) : isError ? (
