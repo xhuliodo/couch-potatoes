@@ -110,6 +110,11 @@ export const Solo = (props) => {
           axis={theme.direction === "rtl" ? "x-reverse" : "x"}
           index={nav}
           onChangeIndex={handleChangeIndex}
+          springConfig={{
+            duration: "0.5s",
+            easeFunction: "cubic-bezier(0.15, 0.3, 0.25, 1)",
+            delay: "0s",
+          }}
         >
           <Panel value={nav} index={0} dir={theme.direction}>
             <GenreBasedRec startedFromTheBottomNowWeHere={true} />
