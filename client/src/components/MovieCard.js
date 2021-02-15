@@ -1,17 +1,18 @@
-import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  LinearProgress,
+  Paper,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
 import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 
 import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
 import { useEffect } from "react";
-import {
-  Favorite,
-  SkipNext,
-  ThumbDown,
-  VisibilityOff,
-  WatchLater,
-} from "@material-ui/icons";
+import { Favorite, SkipNext, ThumbDown, WatchLater } from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
 import { rateMovie } from "../utils/rateMovie";
 import { openRateFeedbackExported } from "./RateFeedback";
@@ -51,6 +52,23 @@ export default function MovieCard({
     increaseRatedMovies();
   };
 
+  const waitingForMore = () => (
+    <div>
+      <Typography
+        style={{
+          color: "black",
+          textAlign: "center",
+          fontWeight: "bold",
+          fontSize: "35px",
+          marginTop: "45%",
+        }}
+      >
+        Fetching movies...
+      </Typography>
+      <LinearProgress style={{ width: "85%", margin: "50px auto" }} />
+    </div>
+  );
+  
   const feedback = (action) => <RateFeedback action={action} />;
 
   const addToWatchlist = useMutation(async ({ movieId }) => {
@@ -177,38 +195,33 @@ export default function MovieCard({
   };
 
   return (
-    <>
-      <CardWrapper
-        // addEndCard={waitForMoreData.bind(this)}
-        style={{ paddingTop: "0px" }}
-      >
-        {movies.map((m) => (
-          <Card
-            key={m.movieId}
-            onSwipeLeft={() => {
-              handleRate("hate");
-              feedback("hate");
-            }}
-            onSwipeRight={() => handleRate("love")}
-            swipeSensitivity={100}
-            style={{
-              backgroundImage: `url(${m.posterUrl})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-            }}
-          >
-            <Paper className="secondMovie_cardText">
-              <h3>
-                {m.title} <i>({m.releaseYear})</i>
-              </h3>
-            </Paper>
-          </Card>
-        ))}
-        <RateFeedback />
-        <ActionButtons />
-      </CardWrapper>
-    </>
+    <CardWrapper addEndCard={waitingForMore} style={{ paddingTop: "0px" }}>
+      {movies.map((m) => (
+        <Card
+          key={m.movieId}
+          onSwipeLeft={() => {
+            handleRate("hate");
+            feedback("hate");
+          }}
+          onSwipeRight={() => handleRate("love")}
+          swipeSensitivity={100}
+          style={{
+            backgroundImage: `url(${m.posterUrl})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+          }}
+        >
+          <Paper className="secondMovie_cardText">
+            <h3>
+              {m.title} <i>({m.releaseYear})</i>
+            </h3>
+          </Paper>
+        </Card>
+      ))}
+      <RateFeedback />
+      <ActionButtons />
+    </CardWrapper>
   );
 }
 
