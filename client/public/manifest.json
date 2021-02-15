@@ -6,7 +6,6 @@
   "display": "standalone",
   "orientation": "portrait",
   "start_url": "/solo",
-  "scope":"/",
   "icons": [
     {
       "src": "favicon.ico",
