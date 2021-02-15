@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // dark theme importing
 import Brightness7Icon from "@material-ui/icons/Brightness7";
@@ -50,15 +50,6 @@ export default function App() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { refetchOnWindowFocus: false } },
   });
-
-  // auto updating pwa when new update is out
-  useEffect(() => {
-    if (window.swUpdateReady) {
-      window.swUpdateReady = false;
-      window.stop();
-      window.location.reload();
-    }
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
