@@ -7,6 +7,7 @@ services:
     image: xhuliodo/couch-potatoes-db:latest
     container_name: cp-db
     ports:
+      - 7473:7473
       - 7474:7474
       - 7687:7687
     environment:
