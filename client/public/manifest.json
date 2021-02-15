@@ -5,7 +5,7 @@
   "background_color": "#fff",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "/solo",
+  "start_url": "./index.html",
   "icons": [
     {
       "src": "favicon.ico",
