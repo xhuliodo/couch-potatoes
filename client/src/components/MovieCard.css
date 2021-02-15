@@ -10,27 +10,21 @@
   background-repeat: no-repeat;
 }
 
-.container {
-  height: calc(100vh - 9vh) !important;
-  /* height: 900px!important; */
-  /* max-height: calc(100vh - 8vh); */
-  /* height: calc(100vh + 30px); */
+div.container.loaded {
+  height: calc(100vh - 13vh);
+  min-height: 687px;
+  max-height: 795px;
 }
 
 .card_container {
   top: 30px;
 }
 
-@media (min-height: 730px) {
-  .container {
-    height: calc(100vh - 13vh) !important;
-  }
-}
 
-@media (min-height: 900px) {
-  .container {
-    height: calc(100vh - 15vh) !important;
-  }
+.container .cards_container .card_container {
+  max-width: 450px;
+  max-height: 650px;
+  min-height: 545px;
 }
 
 .MuiTooltip-tooltip {

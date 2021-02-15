@@ -117,7 +117,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   return (
     <div className={classes.grow}>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar style={{ minHeight: "48px" }}>
           <Typography variant="h5" noWrap>
             Couch Potatoes
           </Typography>

@@ -58,6 +58,7 @@ export default function App() {
           elevation={0}
           style={{
             minHeight: "100vh",
+            borderRadius: "0px",
           }}
         >
           <MenuBar
@@ -68,8 +69,9 @@ export default function App() {
           <Container
             maxWidth="md"
             style={{
-              marginTop: "2.5vh",
+              marginTop: "15px",
               height: "fit-content",
+              borderRadius: "0px!important",
             }}
           >
             <Router history={history}>

@@ -3,6 +3,7 @@ import {
   BottomNavigationAction,
   makeStyles,
   Paper,
+  useTheme,
 } from "@material-ui/core";
 import { People, WatchLater } from "@material-ui/icons";
 import { useState } from "react";
@@ -15,11 +16,23 @@ import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
-import UserFeedbackMovieCard from "../components/UserFeedbackMovieCard";
+import DataStateMovieCard from "../components/DataStateMovieCard";
+
+import SwipeableViews from "react-swipeable-views";
 
 export const Solo = (props) => {
   const classes = useStyles();
-  const [nav, setNav] = useState("userBased");
+  const theme = useTheme();
+
+  const [nav, setNav] = useState(1);
+
+  const handleChange = (event, newValue) => {
+    setNav(newValue);
+  };
+
+  const handleChangeIndex = (index) => {
+    setNav(index);
+  };
 
   const graphqlClient = useGraphqlClient();
 
@@ -44,55 +57,83 @@ export const Solo = (props) => {
 
   const { isLoading, isError } = useFavoriteGenres();
 
-  return isLoading ? (
-    <UserFeedbackMovieCard message="Fetching movies..." type="loading" />
-  ) : isError ? (
-    <UserFeedbackMovieCard message="Something went wrong..." />
-  ) : (
+  return (
     <Paper elevation={0}>
       <Paper elevation={5} style={{ padding: "12px 0" }}>
         <BottomNavigation
           value={nav}
-          onChange={(event, newValue) => {
-            setNav(newValue);
-          }}
+          onChange={handleChange}
           showLabels
           style={{ width: "fit-content", margin: "0 auto" }}
         >
           <BottomNavigationAction
             style={{ paddingRight: "10px" }}
             label="Popular by Genre"
-            value="genreBased"
+            value={0}
             icon={<GenresIcon />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ margin: "0 10px" }}
             label="Other users also liked"
-            value="userBased"
+            value={1}
             icon={<People />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ paddingLeft: "10px" }}
             label="Watchlist"
-            value="watchlist"
+            value={2}
             icon={<WatchLater />}
             classes={{ selected: classes.selected }}
           />
         </BottomNavigation>
       </Paper>
-      <div style={{ marginTop: "2.5vh" }}>
-        {nav === "userBased" ? (
-          <UserBasedRec />
-        ) : nav === "genreBased" ? (
-          <GenreBasedRec startedFromTheBottomNowWeHere={true} />
-        ) : (
-          <WatchlistProvider />
-        )}
-      </div>
+
+      {isLoading ? (
+        <DataStateMovieCard message="Fetching movies..." type="loading" />
+      ) : isError ? (
+        <DataStateMovieCard message="Something went wrong..." />
+      ) : (
+        // no animation version
+        // <div style={{ marginTop: "15px" }}>
+        //   {nav === "userBased" ? (
+        //     <UserBasedRec />
+        //   ) : nav === "genreBased" ? (
+        //     <GenreBasedRec startedFromTheBottomNowWeHere={true} />
+        //   ) : (
+        //     <WatchlistProvider />
+        //   )}
+        // </div>
+        <SwipeableViews
+          style={{ marginTop: "15px" }}
+          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+          index={nav}
+          onChangeIndex={handleChangeIndex}
+          springConfig={{
+            duration: "0.5s",
+            easeFunction: "cubic-bezier(0.42, 0, 0.58, 1)",
+            delay: "0s",
+          }}
+        >
+          <Panel value={nav} index={0} dir={theme.direction}>
+            <GenreBasedRec startedFromTheBottomNowWeHere={true} />
+          </Panel>
+          <Panel value={nav} index={1} dir={theme.direction}>
+            <UserBasedRec />
+          </Panel>
+          <Panel value={nav} index={2} dir={theme.direction}>
+            <WatchlistProvider />
+          </Panel>
+        </SwipeableViews>
+      )}
     </Paper>
   );
+};
+
+const Panel = (props) => {
+  const { children, value, index, ...other } = props;
+  return value === index && <div>{children}</div>;
 };
 
 const useStyles = makeStyles((theme) => ({

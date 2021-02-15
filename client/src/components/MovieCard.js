@@ -1,13 +1,20 @@
-import { Button, Container, Grid, Paper, Tooltip } from "@material-ui/core";
+import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
 import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 
 import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
 import { useEffect } from "react";
-import { ThumbDown, ThumbUp, VisibilityOff } from "@material-ui/icons";
+import {
+  Favorite,
+  ThumbDown,
+  VisibilityOff,
+  WatchLater,
+} from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
 import { rateMovie } from "../utils/rateMovie";
+import { openRateFeedbackExported } from "./RateFeedback";
+import RateFeedback from "./RateFeedback";
 
 export default function MovieCard({
   movies,
@@ -25,18 +32,22 @@ export default function MovieCard({
   );
 
   const handleRate = (action) => {
+    console.log(action);
     const mutationData = {
       movieId: movies[0].movieId,
       action,
-      successFunc,
+      successFunc: () => successFunc(action),
     };
     rate.mutate(mutationData);
   };
 
-  const successFunc = () => {
+  const successFunc = (action) => {
+    openRateFeedbackExported(action);
     nextMovie();
     increaseRatedMovies();
   };
+
+  const feedback = (action) => <RateFeedback action={action} />;
 
   const addToWatchlist = useMutation(async ({ movieId }) => {
     const data = (await graphqlClient).request(
@@ -57,6 +68,7 @@ export default function MovieCard({
         "you added to playlist the movie with id",
         addToWatchlist.movieId
       );
+      openRateFeedbackExported("watchlater");
       nextMovie();
     }
   });
@@ -78,12 +90,27 @@ export default function MovieCard({
       <>
         <Grid
           {...newProps}
-          style={{ position: "absolute", bottom: "50px" }}
+          style={{ position: "absolute", bottom: "45px" }}
           container
           justify="center"
           className="cards_container"
         >
-          {startedFromTheBottomNowWeHere ? null : (
+          {startedFromTheBottomNowWeHere ? (
+            <Tooltip placement="top" arrow title="Add to watchlist">
+              <Button
+                style={buttonStyling}
+                onClick={() => {
+                  const mutationData = {
+                    movieId: movies[0].movieId,
+                  };
+                  addToWatchlist.mutate(mutationData);
+                }}
+                variant="contained"
+              >
+                <WatchLater fontSize="inherit" />
+              </Button>
+            </Tooltip>
+          ) : (
             <Tooltip placement="top" arrow title="Ignore...">
               <Button
                 style={buttonStyling}
@@ -114,11 +141,13 @@ export default function MovieCard({
               variant="contained"
               color="primary"
             >
-              <ThumbUp fontSize="inherit" />
+              <Favorite fontSize="inherit" />
             </Button>
           </Tooltip>
         </Grid>
-        {startedFromTheBottomNowWeHere ? (
+        {/* to return the watchlater strip uncomment this part
+        and set null to started from the bottom before the skip button */}
+        {/* {startedFromTheBottomNowWeHere ? (
           <Container
             style={{ position: "absolute", bottom: "2px" }}
             maxWidth="sm"
@@ -138,7 +167,7 @@ export default function MovieCard({
               Add to watchlist
             </Button>
           </Container>
-        ) : null}
+        ) : null} */}
       </>
     );
   };
@@ -152,9 +181,12 @@ export default function MovieCard({
         {movies.map((m) => (
           <Card
             key={m.movieId}
-            onSwipeLeft={() => handleRate("hate")}
+            onSwipeLeft={() => {
+              handleRate("hate");
+              feedback("hate");
+            }}
             onSwipeRight={() => handleRate("love")}
-            swipeSensitivity={30}
+            swipeSensitivity={100}
             style={{
               backgroundImage: `url(${m.posterUrl})`,
               backgroundSize: "contain",
@@ -169,6 +201,7 @@ export default function MovieCard({
             </Paper>
           </Card>
         ))}
+        <RateFeedback />
         <ActionButtons />
       </CardWrapper>
     </>
