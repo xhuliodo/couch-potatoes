@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { People, WatchLater } from "@material-ui/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import GenresIcon from "../utils/icons/GenresIcon";
 import UserBasedRec from "../components/UserBasedRec";
 import GenreBasedRec from "../components/GenreBasedRec";
@@ -23,15 +23,6 @@ import SwipeableViews from "react-swipeable-views";
 export const Solo = (props) => {
   const classes = useStyles();
   const theme = useTheme();
-
-  // auto updating pwa when new update is out
-  useEffect(() => {
-    if (window.swUpdateReady) {
-      window.swUpdateReady = false;
-      window.stop();
-      window.location.reload();
-    }
-  }, []);
 
   const [nav, setNav] = useState(1);
 
