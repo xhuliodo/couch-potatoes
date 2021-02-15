@@ -7,13 +7,13 @@ services:
     image: xhuliodo/couch-potatoes-db:latest
     container_name: cp-db
     ports:
-      - 7473:7473
       - 7474:7474
       - 7687:7687
     environment:
       - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+      # necessary for connecting to db remotely behind reverse proxy
       - NEO4J_dbms_connector_bolt_tls_level=OPTIONAL
-      - NEO4J_dbms_connector_bolt_address=0.0.0.0:7687
+      # when you import data from api
       # - NEO4J_apoc_import_file_enabled=true
       # - NEO4J_apoc_export_file_enabled=true
       # - NEO4J_dbms_shell_enabled=true
