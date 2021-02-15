@@ -5,7 +5,7 @@ import App from "./App";
 import history from "./utils/history";
 
 // pwa service worker
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import * as serviceWorker from './serviceWorker';
 
 //importing auth
 import { Auth0Provider } from "@auth0/auth0-react";
@@ -30,4 +30,4 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
-serviceWorkerRegistration.register();
+serviceWorker.register();
