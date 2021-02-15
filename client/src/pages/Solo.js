@@ -109,6 +109,7 @@ export const Solo = (props) => {
           style={{ marginTop: "15px" }}
           axis={theme.direction === "rtl" ? "x-reverse" : "x"}
           index={nav}
+          disabled={true}
           onChangeIndex={handleChangeIndex}
           springConfig={{
             duration: "0.5s",

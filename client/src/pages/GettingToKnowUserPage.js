@@ -38,7 +38,7 @@ export const GettingToKnowUserPage = (props) => {
   };
 
   return (
-    <Paper elevation={0} >
+    <Paper elevation={0}>
       <Typography style={{ textAlign: "center" }} variant="h6">
         Please rate at least {requiredMovies} movies{" "}
         <i>(ignored movies will not count)</i>
@@ -49,9 +49,9 @@ export const GettingToKnowUserPage = (props) => {
       >
         You have rated {ratedMovies} / {requiredMovies}
       </Typography>
-      <Container style={{ marginTop: "2.5vh" }} disableGutters={true}>
+      <Container style={{ marginTop: "15px" }} disableGutters={true}>
         <GenreBasedRec skip={skip} setSkip={setSkip} />
-        <Container maxWidth="sm" style={{ marginTop: "-35px" }}>
+        <Container maxWidth="sm">
           <Button
             color="primary"
             fullWidth

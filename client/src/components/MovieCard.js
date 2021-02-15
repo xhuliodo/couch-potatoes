@@ -7,6 +7,7 @@ import { gql } from "graphql-request";
 import { useEffect } from "react";
 import {
   Favorite,
+  SkipNext,
   ThumbDown,
   VisibilityOff,
   WatchLater,
@@ -111,7 +112,7 @@ export default function MovieCard({
               </Button>
             </Tooltip>
           ) : (
-            <Tooltip placement="top" arrow title="Ignore...">
+            <Tooltip placement="top" arrow title="Skip">
               <Button
                 style={buttonStyling}
                 onClick={() => {
@@ -120,11 +121,11 @@ export default function MovieCard({
                 }}
                 variant="contained"
               >
-                <VisibilityOff fontSize="inherit" />
+                <SkipNext fontSize="inherit" />
               </Button>
             </Tooltip>
           )}
-          <Tooltip placement="top" arrow title="Hated it!">
+          <Tooltip placement="top" arrow title="Hated it">
             <Button
               style={buttonStyling}
               onClick={() => handleRate("hate")}
@@ -134,7 +135,7 @@ export default function MovieCard({
               <ThumbDown fontSize="inherit" />
             </Button>
           </Tooltip>
-          <Tooltip placement="top" arrow title="Loved it!">
+          <Tooltip placement="top" arrow title="Loved it">
             <Button
               style={buttonStyling}
               onClick={() => handleRate("love")}
