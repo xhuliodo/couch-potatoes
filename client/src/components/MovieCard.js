@@ -33,13 +33,16 @@ export default function MovieCard({
   );
 
   const handleRate = (action) => {
-    console.log(action);
-    const mutationData = {
-      movieId: movies[0].movieId,
-      action,
-      successFunc: () => successFunc(action),
-    };
-    rate.mutate(mutationData);
+    if (movies.length === 0) {
+      console.log("patience is a virtue");
+    } else {
+      const mutationData = {
+        movieId: movies[0].movieId,
+        action,
+        successFunc: () => successFunc(action),
+      };
+      rate.mutate(mutationData);
+    }
   };
 
   const successFunc = (action) => {
