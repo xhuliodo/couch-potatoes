@@ -2,8 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- zooming issue -->
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, minimum-scale=1" />
     <meta name="theme-color" content="#3f51b5" />
     <meta
       name="description"
@@ -14,6 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#3f51b5">
     <!-- necessary for making the app a pwa -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- necessary for trigerring the prompt to install on chrome -->
     <meta name="mobile-web-app-capable" content="yes">
     <title>Couch Potatoes</title>
   </head>
