@@ -9,7 +9,8 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn --silent
 COPY . ./
-RUN yarn run build && echo 'self.addEventListener(\"install\", function() { self.skipWaiting(); });' >> ./build/service-worker.js
+RUN yarn run build 
+RUN echo "self.addEventListener(\"install\", function() { self.skipWaiting(); });" >> ./build/service-worker.js
 
 
 # production environment
