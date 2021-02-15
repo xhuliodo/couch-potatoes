@@ -96,37 +96,37 @@ export const Solo = (props) => {
         <DataStateMovieCard message="Something went wrong..." />
       ) : (
         // no animation version
-        // <div style={{ marginTop: "15px" }}>
-        //   {nav === "userBased" ? (
-        //     <UserBasedRec />
-        //   ) : nav === "genreBased" ? (
-        //     <GenreBasedRec startedFromTheBottomNowWeHere={true} />
-        //   ) : (
-        //     <WatchlistProvider />
-        //   )}
-        // </div>
-        <SwipeableViews
-          style={{ marginTop: "15px" }}
-          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-          index={nav}
-          disabled={true}
-          onChangeIndex={handleChangeIndex}
-          springConfig={{
-            duration: "0.5s",
-            easeFunction: "cubic-bezier(0.42, 0, 0.58, 1)",
-            delay: "0s",
-          }}
-        >
-          <Panel value={nav} index={0} dir={theme.direction}>
-            <GenreBasedRec startedFromTheBottomNowWeHere={true} />
-          </Panel>
-          <Panel value={nav} index={1} dir={theme.direction}>
+        <div style={{ marginTop: "15px" }}>
+          {nav === 1 ? (
             <UserBasedRec />
-          </Panel>
-          <Panel value={nav} index={2} dir={theme.direction}>
+          ) : nav === 0 ? (
+            <GenreBasedRec startedFromTheBottomNowWeHere={true} />
+          ) : nav === 2 ? (
             <WatchlistProvider />
-          </Panel>
-        </SwipeableViews>
+          ) : null}
+        </div>
+        // <SwipeableViews
+        //   style={{ marginTop: "15px" }}
+        //   axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+        //   index={nav}
+        //   disabled={true}
+        //   onChangeIndex={handleChangeIndex}
+        //   springConfig={{
+        //     duration: "0.5s",
+        //     easeFunction: "cubic-bezier(0.42, 0, 0.58, 1)",
+        //     delay: "0s",
+        //   }}
+        // >
+        //   <Panel value={nav} index={0} dir={theme.direction}>
+        //     <GenreBasedRec startedFromTheBottomNowWeHere={true} />
+        //   </Panel>
+        //   <Panel value={nav} index={1} dir={theme.direction}>
+        //     <UserBasedRec />
+        //   </Panel>
+        //   <Panel value={nav} index={2} dir={theme.direction}>
+        //     <WatchlistProvider />
+        //   </Panel>
+        // </SwipeableViews>
       )}
     </Paper>
   );
