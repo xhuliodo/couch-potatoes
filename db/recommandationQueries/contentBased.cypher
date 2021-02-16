@@ -3,15 +3,22 @@
 // account all movies rated with 1. In the end rated movies and movies in 
 // the watchlist should be filtered out.
 
-MATCH (m:Movie {title: "Inception"})-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(other:Movie)
-WITH m, other, COUNT(t) AS intersection, COLLECT(t.name) AS i
-MATCH (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(mt)
-WITH m,other, intersection,i, COLLECT(mt.name) AS s1
-MATCH (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(ot)
-WITH m,other,intersection,i, s1, COLLECT(ot.name) AS s2
+match (u:User{userId:"google-oauth2|104772264931362464545"})-[r:RATED{rating:1}]->(m:Movie) 
+with u, m
+match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(other:Movie)
+// it can be optimizes with index on actors id and collecting id instead of name
+with u, m, other, count(t) as intersection, collect(t.name) as i
+match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(mt)
+with u, m, other, intersection, i, collect(mt.name) as s1
+match (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(ot)
+with u, m,other,intersection,i, s1, collect(ot.name) as s2
 
-WITH m,other,intersection,s1,s2
+with u, m,other,intersection,s1,s2
 
-WITH m,other,intersection,s1+[x IN s2 WHERE NOT x IN s1] AS union, s1, s2
+with u, m, other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2
 
-RETURN m.title, other.title, s1,s2,((1.0*intersection)/SIZE(union)) AS jaccard ORDER BY jaccard DESC LIMIT 100
+where not exists( (u)-[:RATED]->(m) ) and not exists ( (u)-[:WATCH_LATER]->(m) )
+
+return m.title, other.title, s1,s2,((1.0*intersection)/size(union)) as jaccard 
+order by jaccard desc 
+limit 10
