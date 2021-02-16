@@ -133,7 +133,7 @@ export const Solo = (props) => {
 };
 
 const Panel = (props) => {
-  const { children, value, index, ...other } = props;
+  const { children, value, index } = props;
   return value === index && <div>{children}</div>;
 };
 
