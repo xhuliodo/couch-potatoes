@@ -7,4 +7,5 @@ export const useMovieStore = create((set) => ({
   increaseRatedMovies: () =>
     set((state) => ({ ratedMovies: state.ratedMovies + 1 })),
   peopleToCompare: 25,
+  recentMoviesToCompare: 10,
 }));

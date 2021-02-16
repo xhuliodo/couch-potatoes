@@ -5,11 +5,10 @@ import {
   Paper,
   useTheme,
 } from "@material-ui/core";
-import { People, WatchLater } from "@material-ui/icons";
+import { Movie, People, WatchLater } from "@material-ui/icons";
 import { useState } from "react";
-import GenresIcon from "../utils/icons/GenresIcon";
 import UserBasedRec from "../components/UserBasedRec";
-import GenreBasedRec from "../components/GenreBasedRec";
+import ContentBasedRec from "../components/ContentBasedRec";
 import WatchlistProvider from "../components/WatchlistProvider";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
@@ -68,9 +67,9 @@ export const Solo = (props) => {
         >
           <BottomNavigationAction
             style={{ paddingRight: "10px" }}
-            label="Popular by Genre"
+            label="Similar movies"
             value={0}
-            icon={<GenresIcon />}
+            icon={<Movie />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
@@ -118,7 +117,7 @@ export const Solo = (props) => {
           }}
         >
           <Panel value={nav} index={0} dir={theme.direction}>
-            <GenreBasedRec startedFromTheBottomNowWeHere={true} />
+            <ContentBasedRec />
           </Panel>
           <Panel value={nav} index={1} dir={theme.direction}>
             <UserBasedRec />
