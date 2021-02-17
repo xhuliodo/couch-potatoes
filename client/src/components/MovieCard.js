@@ -206,7 +206,7 @@ export default function MovieCard({
           onSwipeRight={() => handleRate("love")}
           swipeSensitivity={100}
           style={{
-            backgroundImage: `url(${m.posterUrl})`,
+            backgroundImage: `url(http://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg)`,
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
