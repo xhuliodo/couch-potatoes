@@ -26,6 +26,7 @@ export default function GeneralWatchlist() {
       style={{ margin: "0", paddingLeft: "0", paddingRight: "0" }}
     >
       <Accordion
+        style={{ boxShadow: "none" }}
         TransitionProps={{ unmountOnExit: true }}
         expanded={open === "panel1"}
         onChange={handleChange("panel1")}
@@ -73,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
   },
   summary: {
-    backgroundColor: "rgba(0, 0, 0, .03)",
+    backgroundColor: "rgba(0, 0, 0, .08)",
     borderRadius: "10px",
   },
 }));

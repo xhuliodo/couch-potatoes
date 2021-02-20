@@ -81,7 +81,10 @@ export default function WatchlistProvider() {
   const [animation, setAnimation] = useState("up");
 
   return (
-    <Container maxWidth="sm" style={{ height: "fit-parent", overflow: "auto" }}>
+    <Container
+      maxWidth="sm"
+      style={{ height: "fit-parent", overflowY: "auto", overflowX: "hidden" }}
+    >
       {isLoading ? (
         <span>fetching data</span>
       ) : isError ? (

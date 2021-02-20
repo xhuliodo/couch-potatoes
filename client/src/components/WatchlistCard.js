@@ -35,7 +35,11 @@ export default function MovieCardWatchlist({
 
   return (
     <Slide
-      appear
+      // appear
+      // enter={false}
+      timeout={{ enter: 0, exit: 300 }}
+      
+      // enter={false}
       direction={animation}
       in={!deleted?.includes(m.movieId)}
       unmountOnExit
