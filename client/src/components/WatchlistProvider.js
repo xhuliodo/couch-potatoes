@@ -7,6 +7,7 @@ import { rateMovie } from "../utils/rateMovie";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
 import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
+import { useState } from "react";
 
 export default function WatchlistProvider() {
   const graphqlClient = useGraphqlClient();
@@ -49,18 +50,35 @@ export default function WatchlistProvider() {
   );
 
   const handleRemove = (movieId) => {
-    const mutationData = { movieId, successFunc: () => successFunc(movieId) };
+    const mutationData = {
+      movieId,
+      successFunc: () => successFunc(movieId, "deleted"),
+    };
     remove.mutate(mutationData);
   };
 
-  const successFunc = (movieId) => {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].movieId === movieId) {
-        data.splice(i, 1);
-        i--;
-      }
+  const successFunc = (movieId, action) => {
+    // for (var i = 0; i < data.length; i++) {
+    //   if (data[i].movieId === movieId) {
+    //     data.splice(i, 1);
+    //     i--;
+    //   }
+    // }
+    switch (action) {
+      case "deleted":
+        setAnimation("left");
+        break;
+
+      default:
+        setAnimation("up");
+        break;
     }
+    setDeleted([...deleted, movieId]);
   };
+
+  const [deleted, setDeleted] = useState([]);
+
+  const [animation, setAnimation] = useState("up");
 
   return (
     <Container maxWidth="sm" style={{ height: "fit-parent", overflow: "auto" }}>
@@ -75,6 +93,8 @@ export default function WatchlistProvider() {
             m={m}
             handleRate={handleRate}
             handleRemove={handleRemove}
+            deleted={deleted}
+            animation={animation}
           />
         ))
       )}

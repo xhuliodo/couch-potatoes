@@ -45,7 +45,9 @@ export default function App() {
       MuiCssBaseline: {
         "@global": {
           "*::-webkit-scrollbar": {
+            "-webkit-appearance": "none",
             width: "8px",
+            height: "8px",
           },
           "*::-webkit-scrollbar-thumb": {
             backgroundColor: "grey",
@@ -53,6 +55,7 @@ export default function App() {
           "::-webkit-scrollbar-thumb": {
             // background: "#888",
             borderRadius: "15px",
+            "-webkit-overflow-scrolling": "auto",
           },
           "*:hover": {
             "&::-webkit-scrollbar-thumb": {

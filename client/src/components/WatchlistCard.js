@@ -10,6 +10,7 @@ import {
   Tooltip,
   useTheme,
   Button,
+  Slide,
 } from "@material-ui/core";
 import {
   Delete,
@@ -18,7 +19,13 @@ import {
   SentimentVerySatisfiedRounded,
 } from "@material-ui/icons";
 
-export default function MovieCardWatchlist({ m, handleRate, handleRemove }) {
+export default function MovieCardWatchlist({
+  m,
+  handleRate,
+  handleRemove,
+  deleted,
+  animation,
+}) {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -27,80 +34,87 @@ export default function MovieCardWatchlist({ m, handleRate, handleRemove }) {
   const rating = m?.rating;
 
   return (
-    <Card elevation={5} className={classes.root}>
-      <CardMedia className={classes.cover} image={image} />
-      <div className={classes.details}>
-        <CardContent className={classes.content}>
-          <Typography style={{ display: "flex" }} component="h5" variant="h5">
-            {m.title}
-            {/* <div className={classes.link}> */}
-            <Tooltip title="IMDB Link" arrow placement="top">
-              <Link
-                href={m.imdbLink}
-                rel="noreferrer"
-                style={{ marginLeft: "10px" }}
-                target="_blank"
-              >
-                <Info className={classes.infoIcon} />
-              </Link>
-            </Tooltip>
-            {/* </div> */}
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            {m.releaseYear}
-          </Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          <Button
-            disabled={rating === undefined ? false : true}
-            style={
-              rating === 0
-                ? {
-                    backgroundColor: theme.palette.secondary.main,
-                    margin: "0 10px",
-                  }
-                : { margin: "0 10px" }
-            }
-            onClick={() => handleRate(m.movieId, "hate")}
-            variant="contained"
-            color="secondary"
-          >
-            <SentimentDissatisfied
-              className={classes.rateIcons}
-              fontSize="inherit"
-            />
-          </Button>
-          <Button
-            style={
-              rating === 1
-                ? {
-                    backgroundColor: theme.palette.primary.main,
-                    margin: "0 10px",
-                  }
-                : { margin: "0 10px" }
-            }
-            disabled={rating === undefined ? false : true}
-            onClick={() => handleRate(m.movieId, "love")}
-            variant="contained"
-            color="primary"
-          >
-            <SentimentVerySatisfiedRounded
-              className={classes.rateIcons}
-              fontSize="inherit"
-            />
-          </Button>
-
-          <div className={classes.trash}>
-            <IconButton
-              onClick={() => handleRemove(m.movieId)}
+    <Slide
+      appear
+      direction={animation}
+      in={!deleted?.includes(m.movieId)}
+      unmountOnExit
+    >
+      <Card elevation={5} className={classes.root}>
+        <CardMedia className={classes.cover} image={image} />
+        <div className={classes.details}>
+          <CardContent className={classes.content}>
+            <Typography style={{ display: "flex" }} component="h5" variant="h5">
+              {m.title}
+              {/* <div className={classes.link}> */}
+              <Tooltip title="IMDB Link" arrow placement="top">
+                <Link
+                  href={m.imdbLink}
+                  rel="noreferrer"
+                  style={{ marginLeft: "10px" }}
+                  target="_blank"
+                >
+                  <Info className={classes.infoIcon} />
+                </Link>
+              </Tooltip>
+              {/* </div> */}
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {m.releaseYear}
+            </Typography>
+          </CardContent>
+          <CardActions disableSpacing>
+            <Button
+              disabled={rating === undefined ? false : true}
+              style={
+                rating === 0
+                  ? {
+                      backgroundColor: theme.palette.secondary.main,
+                      margin: "0 10px",
+                    }
+                  : { margin: "0 10px" }
+              }
+              onClick={() => handleRate(m.movieId, "hate")}
               variant="contained"
+              color="secondary"
             >
-              <Delete color="secondary" />
-            </IconButton>
-          </div>
-        </CardActions>
-      </div>
-    </Card>
+              <SentimentDissatisfied
+                className={classes.rateIcons}
+                fontSize="inherit"
+              />
+            </Button>
+            <Button
+              style={
+                rating === 1
+                  ? {
+                      backgroundColor: theme.palette.primary.main,
+                      margin: "0 10px",
+                    }
+                  : { margin: "0 10px" }
+              }
+              disabled={rating === undefined ? false : true}
+              onClick={() => handleRate(m.movieId, "love")}
+              variant="contained"
+              color="primary"
+            >
+              <SentimentVerySatisfiedRounded
+                className={classes.rateIcons}
+                fontSize="inherit"
+              />
+            </Button>
+
+            <div className={classes.trash}>
+              <IconButton
+                onClick={() => handleRemove(m.movieId)}
+                variant="contained"
+              >
+                <Delete color="secondary" />
+              </IconButton>
+            </div>
+          </CardActions>
+        </div>
+      </Card>
+    </Slide>
   );
 }
 

@@ -1,6 +1,6 @@
 import { Container } from "@material-ui/core";
 import { gql } from "graphql-request";
-import React from "react";
+import React, { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
@@ -34,18 +34,35 @@ export default function RatedMoviesInWatchlist() {
   );
 
   const handleRemove = (movieId) => {
-    const mutationData = { movieId, successFunc: () => successFunc(movieId) };
+    const mutationData = {
+      movieId,
+      successFunc: () => successFunc(movieId, "deleted"),
+    };
     remove.mutate(mutationData);
   };
 
-  const successFunc = (movieId) => {
-    for (var i = 0; i < data.length; i++) {
-      if (data[i].movieId === movieId) {
-        data.splice(i, 1);
-        i--;
-      }
+  const successFunc = (movieId, action) => {
+    // for (var i = 0; i < data.length; i++) {
+    //   if (data[i].movieId === movieId) {
+    //     data.splice(i, 1);
+    //     i--;
+    //   }
+    // }
+    switch (action) {
+      case "deleted":
+        setAnimation("left");
+        break;
+
+      default:
+        setAnimation("up");
+        break;
     }
+    setDeleted([...deleted, movieId]);
   };
+
+  const [deleted, setDeleted] = useState([]);
+
+  const [animation, setAnimation] = useState("up");
 
   return (
     <Container maxWidth="sm" style={{ height: "fit-parent", overflow: "auto" }}>
@@ -60,6 +77,8 @@ export default function RatedMoviesInWatchlist() {
             m={m}
             //   handleRate={handleRate}
             handleRemove={handleRemove}
+            deleted={deleted}
+            animation={animation}
           />
         ))
       )}
