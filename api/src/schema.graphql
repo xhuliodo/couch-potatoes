@@ -9,8 +9,17 @@ type Movie @isAuthenticated {
   imdbLink: String!
   posterUrl: String!
   genres: [Genre] @relation(name: "IN_GENRE", direction: "OUT")
+  rating: Int
   # this one is still in question whether or not i'm going to crawl for it
   # plot: String
+}
+
+type RatedMovie @isAuthenticated {
+  rating: Int
+  movieId: ID!
+  imdbLink: String!
+  title: String!
+  releaseYear: Int!
 }
 
 type Genre @isAuthenticated {
@@ -70,6 +79,15 @@ type Mutation {
       statement: """
       match (u:User{userId:$cypherParams.userId}), (m:Movie{movieId:$movieId})
       merge (u)-[:WATCH_LATER]->(m)
+      return m
+      """
+    )
+  removeFromWatchlist(movieId: ID!): Movie
+    @isAuthenticated
+    @cypher(
+      statement: """
+      match (u:User {userId:$cypherParams.userId})-[w:WATCH_LATER]->(m:Movie{movieId:$movieId})
+      delete w
       return m
       """
     )
@@ -162,6 +180,17 @@ type Query {
       return m
       """
     )
+  watchlistHistory: [RatedMovie]!
+    @isAuthenticated
+    @cypher(
+      statement: """
+      match (u:User {userId:$cypherParams.userId})-[w:WATCH_LATER]->(m:Movie)<-[r:RATED]-(u)
+      return m{.movieId, .title, .imdbLink, .releaseYear, rating:r.rating}
+      order by r desc
+      """
+    )
+  # return m.movieId as movieId, m.title as title, m.releaseYear as releaseYear, m.imdbLink as imdbLink, toInteger(r.rating) as rating
+
   # recommendToGroup(
   #   userId_1: ID!
   #   userId_2: ID!
