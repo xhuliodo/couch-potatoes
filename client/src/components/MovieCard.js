@@ -12,7 +12,12 @@ import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
 import { useEffect } from "react";
-import { Favorite, SkipNext, ThumbDown, WatchLater } from "@material-ui/icons";
+import {
+  LibraryAddOutlined,
+  SentimentDissatisfied,
+  SentimentVerySatisfiedRounded,
+  SkipNext,
+} from "@material-ui/icons";
 import { useMovieStore } from "../context/movies";
 import { rateMovie } from "../utils/rateMovie";
 import { openRateFeedbackExported } from "./RateFeedback";
@@ -68,30 +73,34 @@ export default function MovieCard({
       <LinearProgress style={{ width: "85%", margin: "50px auto" }} />
     </div>
   );
-  
+
   const feedback = (action) => <RateFeedback action={action} />;
 
   const addToWatchlist = useMutation(async ({ movieId }) => {
-    const data = (await graphqlClient).request(
-      gql`
+    if (movies.length === 0) {
+      console.log("patience is a virtue");
+    } else {
+      const data = (await graphqlClient).request(
+        gql`
         mutation {
           addToWatchlist(movieId: ${movieId}) {
             movieId
           }
         }
       `
-    );
-
-    const { addToWatchlist } = await data;
-    if (addToWatchlist === null) {
-      console.log("the watchlist did not get filled 😏");
-    } else {
-      console.log(
-        "you added to playlist the movie with id",
-        addToWatchlist.movieId
       );
-      openRateFeedbackExported("watchlater");
-      nextMovie();
+
+      const { addToWatchlist } = await data;
+      if (addToWatchlist === null) {
+        console.log("the watchlist did not get filled 😏");
+      } else {
+        console.log(
+          "you added to playlist the movie with id",
+          addToWatchlist.movieId
+        );
+        openRateFeedbackExported("watchlater");
+        nextMovie();
+      }
     }
   });
 
@@ -112,30 +121,40 @@ export default function MovieCard({
       <>
         <Grid
           {...newProps}
-          style={{ position: "absolute", bottom: "45px" }}
+          style={{ position: "absolute", bottom: "5px", width: "100vw" }}
           container
           justify="center"
           className="cards_container"
         >
+          <Tooltip placement="top" arrow title="Not for me">
+            <Button
+              className="actionButton"
+              onClick={() => handleRate("hate")}
+              variant="contained"
+              color="secondary"
+            >
+              <SentimentDissatisfied fontSize="inherit" />
+            </Button>
+          </Tooltip>
           {startedFromTheBottomNowWeHere ? (
             <Tooltip placement="top" arrow title="Add to watchlist">
               <Button
-                style={buttonStyling}
+                className="actionButton"
                 onClick={() => {
                   const mutationData = {
-                    movieId: movies[0].movieId,
+                    movieId: movies[0]?.movieId,
                   };
                   addToWatchlist.mutate(mutationData);
                 }}
                 variant="contained"
               >
-                <WatchLater fontSize="inherit" />
+                <LibraryAddOutlined fontSize="inherit" />
               </Button>
             </Tooltip>
           ) : (
             <Tooltip placement="top" arrow title="Skip">
               <Button
-                style={buttonStyling}
+                className="actionButton"
                 onClick={() => {
                   nextMovie();
                   setSkip(skip + 1);
@@ -146,24 +165,14 @@ export default function MovieCard({
               </Button>
             </Tooltip>
           )}
-          <Tooltip placement="top" arrow title="Hated it">
-            <Button
-              style={buttonStyling}
-              onClick={() => handleRate("hate")}
-              variant="contained"
-              color="secondary"
-            >
-              <ThumbDown fontSize="inherit" />
-            </Button>
-          </Tooltip>
           <Tooltip placement="top" arrow title="Loved it">
             <Button
-              style={buttonStyling}
+              className="actionButton"
               onClick={() => handleRate("love")}
               variant="contained"
               color="primary"
             >
-              <Favorite fontSize="inherit" />
+              <SentimentVerySatisfiedRounded fontSize="inherit" />
             </Button>
           </Tooltip>
         </Grid>
@@ -225,10 +234,4 @@ export default function MovieCard({
   );
 }
 
-const buttonStyling = {
-  marginLeft: "1.5vw",
-  marginRight: "1.5vw",
-  fontSize: "35px",
-  maxWidth: "100px",
-  width: "30vw",
-};
+const buttonStyling = {};

@@ -5,7 +5,7 @@ import {
   Paper,
   useTheme,
 } from "@material-ui/core";
-import { Movie, People, WatchLater } from "@material-ui/icons";
+import { LibraryAdd, LibraryAddOutlined, Movie, MovieOutlined, People, PeopleOutline, WatchLater } from "@material-ui/icons";
 import { useState } from "react";
 import UserBasedRec from "../components/UserBasedRec";
 import ContentBasedRec from "../components/ContentBasedRec";
@@ -67,23 +67,23 @@ export const Solo = (props) => {
         >
           <BottomNavigationAction
             style={{ paddingRight: "10px" }}
-            label="Similar movies"
+            label="Our suggestions for you"
             value={0}
-            icon={<Movie />}
+            icon={<MovieOutlined />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ margin: "0 10px" }}
-            label="Other users also liked"
+            label="Other people also liked"
             value={1}
-            icon={<People />}
+            icon={<PeopleOutline />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ paddingLeft: "10px" }}
             label="Watchlist"
             value={2}
-            icon={<WatchLater />}
+            icon={<LibraryAddOutlined />}
             classes={{ selected: classes.selected }}
           />
         </BottomNavigation>

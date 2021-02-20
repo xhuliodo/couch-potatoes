@@ -3,7 +3,7 @@
   width: 600px;
   padding: 20px;
   max-width: 85vw;
-  height: 80vh;
+  height: 0vh;
   border-radius: 20px;
   background-size: cover;
   background-position: center;
@@ -12,14 +12,20 @@
 
 div.container.loaded {
   height: calc(100vh - 13vh);
-  min-height: 687px;
-  max-height: 795px;
+  min-height: 670px;
+  max-height: 765px;
+}
+
+@media (max-height: 812px) {
+  div.container.loaded {
+    min-height: 665px;
+    max-height: 685px;
+  }
 }
 
 .card_container {
-  top: 30px;
+  bottom: 70px;
 }
-
 
 .container .cards_container .card_container {
   max-width: 450px;
@@ -62,4 +68,19 @@ div.container.loaded {
   margin: 10px;
   padding: 0 20px;
   color: #fff !important;
+}
+
+.actionButton {
+  margin-left: 1.5vw !important;
+  margin-right: 1.5vw !important;
+  font-size: 35px !important;
+  max-width: 100px;
+  width: 30vw;
+}
+
+@media (min-width: 580px) {
+  .actionButton {
+    margin-left: 0.5vw !important;
+    margin-right: 0.5vw !important;
+  }
 }

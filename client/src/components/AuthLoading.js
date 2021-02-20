@@ -14,7 +14,9 @@ export default function AuthLoading() {
       <CircularProgress className={classes.loading} />
       <br />
       <br />
-      <Typography variant="h5">Logging you in, please wait</Typography>
+      <Typography className={classes.textMargin} variant="h5">
+        Logging you in, please wait
+      </Typography>
     </Backdrop>
   );
 }
@@ -29,5 +31,8 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff",
     flexDirection: "column",
+  },
+  textMargin: {
+    marginTop: "25px",
   },
 }));

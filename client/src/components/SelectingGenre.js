@@ -1,15 +1,32 @@
 import { useEffect, useState } from "react";
 
-import { Badge, Card, CardContent, Typography } from "@material-ui/core";
-import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
-import "./SelectingGenre.css";
+import {
+  Badge,
+  Card,
+  CardContent,
+  Typography,
+  withStyles,
+} from "@material-ui/core";
 
 export default function SelectingGenre({
   selectedGenres,
   setSelectedGenres,
   genre,
+  doneIcon,
 }) {
+  const StyledBadge = withStyles((theme) => ({
+    badge: {
+      right: 0,
+      top: 0,
+      padding: "16px 6px",
+    },
+  }))(Badge);
+
   const [selected, setSelected] = useState(false);
+
+  const handleSelected = () => {
+    setSelected(!selected);
+  };
 
   useEffect(() => {
     selected
@@ -21,28 +38,28 @@ export default function SelectingGenre({
   }, [selected]);
 
   return (
-    <Badge
-      badgeContent={selected ? <DoneOutlineIcon /> : null}
-      onClick={() => {
-        setSelected(!selected);
-      }}
-      color="primary"
+    <div
       style={{
+        margin: "15px 15px",
         cursor: "pointer",
-        padding: "2vh 6px!important",
-        margin: "2.5vh",
       }}
     >
-      <Card elevation={6}>
-        <CardContent>
-          <Typography color="textSecondary" gutterBottom>
-            Movie Genre
-          </Typography>
-          <Typography variant="h5" component="h2">
-            {genre.name}
-          </Typography>
-        </CardContent>
-      </Card>
-    </Badge>
+      <StyledBadge
+        badgeContent={doneIcon()}
+        invisible={!selected}
+        color="primary"
+      >
+        <Card onClick={handleSelected} elevation={6}>
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Movie Genre
+            </Typography>
+            <Typography variant="h5" component="h2">
+              {genre.name}
+            </Typography>
+          </CardContent>
+        </Card>
+      </StyledBadge>
+    </div>
   );
 }

@@ -4,10 +4,11 @@ import { useMutation, useQuery } from "react-query";
 import { gql } from "graphql-request";
 
 import SelectingGenre from "../components/SelectingGenre";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { DoneOutline } from "@material-ui/icons";
 
 export const SelectingGenrePage = (props) => {
   const useGenres = () => {
@@ -63,10 +64,12 @@ export const SelectingGenrePage = (props) => {
     }
   });
 
+  const doneIcon = useMemo(() => () => <DoneOutline />, []);
+
   return (
     <Paper elevation={0}>
       <Typography variant="h5">Select at least 3 genres:</Typography>
-      <Grid container justify="center" style={{ marginTop: "2.5vh" }}>
+      <Grid container justify="center" style={{ marginTop: "15px" }}>
         {status === "loading" ? (
           <span>Fetching data</span>
         ) : status === "error" ? (
@@ -78,11 +81,12 @@ export const SelectingGenrePage = (props) => {
               selectedGenres={selectedGenres}
               setSelectedGenres={setSelectedGenres}
               genre={g}
+              doneIcon={doneIcon}
             />
           ))
         )}
       </Grid>
-      <Container disableGutters={true} style={{ marginTop: "2.5vh" }}>
+      <Container disableGutters={true} style={{ marginTop: "15px" }}>
         <Button
           disabled={selectedGenres.length < 3}
           fullWidth={true}

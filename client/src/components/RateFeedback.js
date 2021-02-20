@@ -1,5 +1,9 @@
 import { makeStyles, Snackbar, useTheme } from "@material-ui/core";
-import { Favorite, ThumbDown, WatchLater } from "@material-ui/icons";
+import {
+  LibraryAddOutlined,
+  SentimentDissatisfied,
+  SentimentVerySatisfiedRounded,
+} from "@material-ui/icons";
 
 import React, { useState } from "react";
 
@@ -41,11 +45,11 @@ export default function RateFeedback() {
         }}
       >
         {action === "love" ? (
-          <Favorite style={iconStyling} />
+          <SentimentVerySatisfiedRounded style={iconStyling} />
         ) : action === "hate" ? (
-          <ThumbDown style={iconStyling} />
+          <SentimentDissatisfied style={iconStyling} />
         ) : action === "watchlater" ? (
-          <WatchLater style={iconStyling} />
+          <LibraryAddOutlined style={iconStyling} />
         ) : null}
       </div>
     </Snackbar>
