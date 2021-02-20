@@ -17,8 +17,12 @@ import {
   Switch,
 } from "@material-ui/core";
 
+// mendja eshte gje e madhe, tek file per 2 px XD
+import "./MenuBar.css";
+
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
+import { Brightness3 } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -123,9 +127,10 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
           </Typography>
           <div className={classes.grow} />
           <div>
-            {darkThemeIcon}
             <Switch
               checked={darkTheme}
+              icon={darkThemeIcon}
+              checkedIcon={!darkTheme ? null : <Brightness3 />}
               onChange={() => {
                 localStorage.setItem("darkMode", !darkTheme);
                 setDarkTheme(!darkTheme);
