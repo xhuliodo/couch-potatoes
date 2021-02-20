@@ -8,6 +8,7 @@ import {
   Paper,
   ThemeProvider,
   Container,
+  CssBaseline,
 } from "@material-ui/core";
 
 // react query importing
@@ -40,6 +41,32 @@ export default function App() {
   );
 
   const customTheme = {
+    overrides: {
+      MuiCssBaseline: {
+        "@global": {
+          "*::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "*::-webkit-scrollbar-thumb": {
+            backgroundColor: "grey",
+          },
+          "::-webkit-scrollbar-thumb": {
+            // background: "#888",
+            borderRadius: "15px",
+          },
+          "*:hover": {
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "darkgrey",
+            },
+          },
+          /* Equivalent alternative:
+          "*:hover::-webkit-scrollbar-thumb": {
+            backgroundColor: "green"
+          }
+           */
+        },
+      },
+    },
     palette: {
       type: !darkTheme ? "light" : "dark",
     },
@@ -63,6 +90,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={appliedTheme}>
+        <CssBaseline />
         <Paper
           elevation={0}
           style={{
