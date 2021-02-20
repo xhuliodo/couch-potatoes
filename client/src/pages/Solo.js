@@ -5,7 +5,11 @@ import {
   Paper,
   useTheme,
 } from "@material-ui/core";
-import { LibraryAdd, LibraryAddOutlined, Movie, MovieOutlined, People, PeopleOutline, WatchLater } from "@material-ui/icons";
+import {
+  LibraryAddOutlined,
+  MovieOutlined,
+  PeopleOutline,
+} from "@material-ui/icons";
 import { useState } from "react";
 import UserBasedRec from "../components/UserBasedRec";
 import ContentBasedRec from "../components/ContentBasedRec";
