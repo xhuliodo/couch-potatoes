@@ -1,48 +1,33 @@
 import { Container } from "@material-ui/core";
+import { gql } from "graphql-request";
+import React from "react";
+import { useMutation, useQuery } from "react-query";
+import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
+import { useGraphqlClient } from "../utils/useGraphqlClient";
 import WatchlistCard from "./WatchlistCard";
 
-import { useQuery } from "react-query";
-import { useMutation } from "react-query";
-import { rateMovie } from "../utils/rateMovie";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
-import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
-
-export default function WatchlistProvider() {
+export default function RatedMoviesInWatchlist() {
   const graphqlClient = useGraphqlClient();
-  const useGetWatchlistMovies = () => {
-    return useQuery(["getWatchlistMovies"], async () => {
+  const useGetWatchlistHistory = () => {
+    return useQuery(["getWatchlistHistory"], async () => {
       const data = (await graphqlClient).request(
         gql`
           query {
-            watchlist {
+            watchlistHistory {
               movieId
               title
-              posterUrl
               releaseYear
               imdbLink
+              rating
             }
           }
         `
       );
-      const { watchlist } = await data;
-      return watchlist;
+      const { watchlistHistory } = await data;
+      return watchlistHistory;
     });
   };
-  const { isLoading, isError, data } = useGetWatchlistMovies();
-
-  const rate = useMutation((mutationData) =>
-    rateMovie(mutationData, graphqlClient)
-  );
-
-  const handleRate = (movieId, action) => {
-    const mutationData = {
-      movieId,
-      action,
-      successFunc: () => successFunc(movieId),
-    };
-    rate.mutate(mutationData);
-  };
+  const { isLoading, isError, data } = useGetWatchlistHistory();
 
   const remove = useMutation((mutationData) =>
     removeFromWatchlist(mutationData, graphqlClient)
@@ -73,7 +58,7 @@ export default function WatchlistProvider() {
           <WatchlistCard
             key={m.movieId}
             m={m}
-            handleRate={handleRate}
+            //   handleRate={handleRate}
             handleRemove={handleRemove}
           />
         ))

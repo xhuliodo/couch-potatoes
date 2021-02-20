@@ -1,4 +1,7 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   BottomNavigation,
   BottomNavigationAction,
   makeStyles,
@@ -6,6 +9,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import {
+  ExpandMore,
   LibraryAddOutlined,
   MovieOutlined,
   PeopleOutline,
@@ -22,6 +26,8 @@ import { gql } from "graphql-request";
 import DataStateMovieCard from "../components/DataStateMovieCard";
 
 import SwipeableViews from "react-swipeable-views";
+import RatedMoviesInWatchlist from "../components/RatedMoviesInWatchlist";
+import GeneralWatchlist from "../components/GeneralWatchlist";
 
 export const Solo = (props) => {
   const classes = useStyles();
@@ -127,7 +133,7 @@ export const Solo = (props) => {
             <UserBasedRec />
           </Panel>
           <Panel value={nav} index={2} dir={theme.direction}>
-            <WatchlistProvider />
+            <GeneralWatchlist />
           </Panel>
         </SwipeableViews>
       )}

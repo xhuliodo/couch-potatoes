@@ -51,7 +51,7 @@ export const GettingToKnowUserPage = (props) => {
       </Typography>
       <Container style={{ marginTop: "15px" }} disableGutters={true}>
         <GenreBasedRec skip={skip} setSkip={setSkip} />
-        <Container maxWidth="sm">
+        <Container style={{ marginTop: "12px" }} maxWidth="sm">
           <Button
             color="primary"
             fullWidth
