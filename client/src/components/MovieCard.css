@@ -23,6 +23,13 @@ div.container.loaded {
   }
 }
 
+@media (max-height: 896px) and (min-height: 813px) {
+  div.container.loaded {
+    min-height: 670px;
+    max-height: 735px;
+  }
+}
+
 .card_container {
   bottom: 70px;
 }
