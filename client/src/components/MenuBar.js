@@ -22,7 +22,7 @@ import "./MenuBar.css";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
-import { Brightness3 } from "@material-ui/icons";
+import { Brightness3, Brightness7 } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -129,8 +129,8 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
           <div>
             <Switch
               checked={darkTheme}
-              icon={darkThemeIcon}
-              checkedIcon={!darkTheme ? null : <Brightness3 />}
+              icon={<Brightness7 />}
+              checkedIcon={<Brightness3 />}
               onChange={() => {
                 localStorage.setItem("darkMode", !darkTheme);
                 setDarkTheme(!darkTheme);

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 // dark theme importing
-import Brightness7Icon from "@material-ui/icons/Brightness7";
-import Brightness3Icon from "@material-ui/icons/Brightness3";
 import {
   createMuiTheme,
   Paper,
@@ -13,7 +11,7 @@ import {
 
 // react query importing
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
+// import { ReactQueryDevtools } from "react-query/devtools";
 
 // app routing
 import { Router, Route, Switch } from "react-router-dom";
@@ -34,11 +32,6 @@ export default function App() {
     // eslint-disable-next-line eqeqeq
     userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
-  const icon = !darkTheme ? (
-    <Brightness7Icon style={verticalAlign} />
-  ) : (
-    <Brightness3Icon style={verticalAlign} />
-  );
 
   const customTheme = {
     overrides: {
@@ -101,11 +94,7 @@ export default function App() {
             borderRadius: "0px",
           }}
         >
-          <MenuBar
-            darkThemeIcon={icon}
-            darkTheme={darkTheme}
-            setDarkTheme={setDarkTheme}
-          />
+          <MenuBar darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
           <Container
             maxWidth="md"
             style={{
@@ -134,7 +123,7 @@ export default function App() {
           <Footer />
         </Paper>
       </ThemeProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   );
 }
