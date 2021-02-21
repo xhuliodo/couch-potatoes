@@ -87,7 +87,7 @@ export default function WatchlistProvider() {
         height: "fit-parent",
         overflowY: "auto",
         overflowX: "hidden",
-        "-webkit-overflow-scrolling": "auto",
+        WebkitOverflowScrolling: "auto",
       }}
     >
       {isLoading ? (

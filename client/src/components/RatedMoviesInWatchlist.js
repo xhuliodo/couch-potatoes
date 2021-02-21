@@ -71,7 +71,7 @@ export default function RatedMoviesInWatchlist() {
         height: "fit-parent",
         overflowY: "auto",
         overflowX: "hidden",
-        "-webkit-overflow-scrolling": "auto",
+        WebkitOverflowScrolling: "auto",
       }}
     >
       {isLoading ? (
