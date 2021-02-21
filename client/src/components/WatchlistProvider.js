@@ -83,7 +83,12 @@ export default function WatchlistProvider() {
   return (
     <Container
       maxWidth="sm"
-      style={{ height: "fit-parent", overflowY: "auto", overflowX: "hidden" }}
+      style={{
+        height: "fit-parent",
+        overflowY: "auto",
+        overflowX: "hidden",
+        "-webkit-overflow-scrolling": "auto",
+      }}
     >
       {isLoading ? (
         <span>fetching data</span>

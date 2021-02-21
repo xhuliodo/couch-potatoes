@@ -37,7 +37,7 @@ export default function MovieCardWatchlist({
     <Slide
       // appear
       // enter={false}
-      timeout={{ enter: 0, exit: 300 }}
+      timeout={{ enter: 0, exit: 250 }}
       
       // enter={false}
       direction={animation}
