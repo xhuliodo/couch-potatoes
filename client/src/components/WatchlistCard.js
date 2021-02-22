@@ -38,7 +38,6 @@ export default function MovieCardWatchlist({
       // appear
       // enter={false}
       timeout={{ enter: 0, exit: 250 }}
-      
       // enter={false}
       direction={animation}
       in={!deleted?.includes(m.movieId)}
@@ -47,27 +46,42 @@ export default function MovieCardWatchlist({
       <Card elevation={5} className={classes.root}>
         <CardMedia className={classes.cover} image={image} />
         <div className={classes.details}>
-          <CardContent className={classes.content}>
-            <Typography style={{ display: "flex" }} component="h5" variant="h5">
-              {m.title}
-              {/* <div className={classes.link}> */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            <CardContent
+              style={{
+                flex: "auto",
+              }}
+            >
+              <Typography>
+                <strong>{m.title}</strong>
+              </Typography>
+
+              <Typography variant="subtitle1" color="textSecondary">
+                {m.releaseYear}
+              </Typography>
+            </CardContent>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "18px",
+                marginRight: "22px",
+                // padding: "21px",
+              }}
+            >
               <Tooltip title="IMDB Link" arrow placement="top">
-                <Link
-                  href={m.imdbLink}
-                  rel="noreferrer"
-                  style={{ marginLeft: "10px" }}
-                  target="_blank"
-                >
+                <Link href={m.imdbLink} rel="noreferrer" target="_blank">
                   <Info className={classes.infoIcon} />
                 </Link>
               </Tooltip>
-              {/* </div> */}
-            </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-              {m.releaseYear}
-            </Typography>
-          </CardContent>
-          <CardActions disableSpacing>
+            </div>
+          </div>
+          <CardActions>
             <Button
               disabled={rating === undefined ? false : true}
               style={
@@ -92,9 +106,8 @@ export default function MovieCardWatchlist({
                 rating === 1
                   ? {
                       backgroundColor: theme.palette.primary.main,
-                      margin: "0 10px",
                     }
-                  : { margin: "0 10px" }
+                  : null
               }
               disabled={rating === undefined ? false : true}
               onClick={() => handleRate(m.movieId, "love")}
@@ -141,11 +154,11 @@ const useStyles = makeStyles((theme) => ({
     height: 26,
     width: 26,
   },
-  link: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "flex-end",
-  },
+  // link: {
+  //   width: "100%",
+  //   display: "flex",
+  //   justifyContent: "flex-end",
+  // },
   trash: {
     width: "100%",
     display: "flex",
