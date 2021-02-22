@@ -1,7 +1,4 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   BottomNavigation,
   BottomNavigationAction,
   makeStyles,
@@ -9,7 +6,6 @@ import {
   useTheme,
 } from "@material-ui/core";
 import {
-  ExpandMore,
   LibraryAddOutlined,
   MovieOutlined,
   PeopleOutline,
@@ -17,7 +13,6 @@ import {
 import { useState } from "react";
 import UserBasedRec from "../components/UserBasedRec";
 import ContentBasedRec from "../components/ContentBasedRec";
-import WatchlistProvider from "../components/WatchlistProvider";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
@@ -26,7 +21,6 @@ import { gql } from "graphql-request";
 import DataStateMovieCard from "../components/DataStateMovieCard";
 
 import SwipeableViews from "react-swipeable-views";
-import RatedMoviesInWatchlist from "../components/RatedMoviesInWatchlist";
 import GeneralWatchlist from "../components/GeneralWatchlist";
 
 export const Solo = (props) => {
