@@ -35,11 +35,11 @@ MERGE (c:Cast {name: director})
 ON CREATE SET c.castId = apoc.create.uuid()
 CREATE (c)-[:DIRECTED]->(m)
 
-// Load users / ratings
+// Load writers
 LOAD CSV WITH HEADERS FROM "file:///writers.csv" AS row
 MATCH (m:Movie {imdbId: row.imdbId})
 WITH *
 UNWIND split(row.writerName, "|") AS writer
 MERGE (c:Cast {name: writer})
 ON CREATE SET c.castId = apoc.create.uuid()
-CREATE (c)-[:WROTE]]->(m)
+CREATE (c)-[:WROTE]->(m)
