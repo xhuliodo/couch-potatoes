@@ -20,7 +20,7 @@ set -m
 
 # wait for Neo4j
 log_info "IMPORT-SCRIPT: Waiting until neo4j stats at :7474 ..."
-wget --quiet --tries=10 --waitretry=2 -O /dev/null http://localhost:7474
+wget --quiet --tries=10 --waitretry=2 -O /dev/null https://localhost:7474
 
 if [ -e "/import/import.cypher" ]; 
   then
