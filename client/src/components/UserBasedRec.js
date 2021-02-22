@@ -21,12 +21,7 @@ export default function UserBasedRec() {
     moviesToRecommend
   ) => {
     return useQuery(
-      [
-        "userBasedRec",
-        minimumRatings,
-        peopleToCompare,
-        moviesToRecommend,
-      ],
+      ["userBasedRec", minimumRatings, peopleToCompare, moviesToRecommend],
       async () => {
         const data = (await graphqlClient).request(
           gql`
@@ -61,12 +56,10 @@ export default function UserBasedRec() {
   ) : isError ? (
     <DataStateMovieCard message="Something went wrong..." />
   ) : (
-    <>
-      <MovieCard
-        startedFromTheBottomNowWeHere={true}
-        movies={data}
-        refetch={refetch}
-      />
-    </>
+    <MovieCard
+      startedFromTheBottomNowWeHere={true}
+      movies={data}
+      refetch={refetch}
+    />
   );
 }

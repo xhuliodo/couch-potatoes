@@ -41,7 +41,7 @@ export const Solo = (props) => {
 
   // redirect rule for people who have not finished the setup
   const useFavoriteGenres = () => {
-    return useQuery(["genres"], async () => {
+    return useQuery("favoriteGenres", async () => {
       const data = await (await graphqlClient).request(
         gql`
           query {

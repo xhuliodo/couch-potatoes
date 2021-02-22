@@ -13,7 +13,7 @@ export default function ContentBasedRec() {
 
   const graphqlClient = useGraphqlClient();
 
-  const useUserBasedRec = (recentMoviesToCompare, moviesToRecommend) => {
+  const useContentBasedRec = (recentMoviesToCompare, moviesToRecommend) => {
     return useQuery(
       ["contentBasedRec", recentMoviesToCompare, moviesToRecommend],
       async () => {
@@ -38,7 +38,7 @@ export default function ContentBasedRec() {
     );
   };
 
-  const { isLoading, isError, data, refetch } = useUserBasedRec(
+  const { isLoading, isError, data, refetch } = useContentBasedRec(
     recentMoviesToCompare,
     limit
   );
@@ -48,12 +48,10 @@ export default function ContentBasedRec() {
   ) : isError ? (
     <DataStateMovieCard message="Something went wrong..." />
   ) : (
-    <>
       <MovieCard
         startedFromTheBottomNowWeHere={true}
         movies={data}
         refetch={refetch}
       />
-    </>
   );
 }
