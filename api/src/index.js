@@ -28,7 +28,7 @@ const schema = makeAugmentedSchema({
     experimental: true,
     auth: {
       isAuthenticated: true,
-      // hasRole: true
+      hasRole: true
     },
   },
 });

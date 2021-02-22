@@ -53,13 +53,13 @@ type Mutation {
       return m
       """
     )
-  selfRegister: User!
-    @isAuthenticated
-    # @hasRole(roles: [admin])
+  registerFromAuth0(userId:ID!): User!
+    # @isAuthenticated
+    @hasRole(roles: [admin])
     @cypher(
       statement: """
-      merge (u:User{userId:$cypherParams.userId})
-      on create set u.userId=$cypherParams.userId
+      merge (u:User{userId:$userId})
+      on create set u.userId=$userId
       return u
       """
     )
