@@ -156,12 +156,12 @@ type Query {
       with u, m
       order by r desc
       limit toInteger($recentMoviesToCompare)
-      match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(other:Movie)
+      match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(other:Movie)
       where not exists( (u)-[:RATED]->(other) ) and not exists ( (u)-[:WATCH_LATER]->(other) )
       with m, other, count(t) as intersection
-      match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(mt)
+      match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(mt)
       with m, other, intersection, collect(mt.name) as s1
-      match (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(ot)
+      match (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(ot)
       with m, other, intersection, s1, collect(ot.name) as s2
       with m, other, intersection,s1,s2
       with m, other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2

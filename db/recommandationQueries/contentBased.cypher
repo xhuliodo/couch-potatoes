@@ -11,16 +11,16 @@ with u, m
 order by r desc
 limit 10
 
-match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(other:Movie)
+match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(other:Movie)
 where not exists( (u)-[:RATED]->(other) ) and not exists ( (u)-[:WATCH_LATER]->(other) )
 with m, other, count(t) as intersection
 
 // collect all ref points for liked movies
-match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(mt)
+match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(mt)
 with m, other, intersection, collect(mt.name) as s1
 
 // collect all ref points for suggestions
-match (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED]-(ot)
+match (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(ot)
 with m, other, intersection, s1, collect(ot.name) as s2
 
 with m, other, intersection,s1,s2

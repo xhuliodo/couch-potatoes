@@ -19,7 +19,6 @@ export default function WatchlistProvider() {
             watchlist {
               movieId
               title
-              posterUrl
               releaseYear
               imdbLink
             }

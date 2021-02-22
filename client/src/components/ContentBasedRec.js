@@ -25,7 +25,6 @@ export default function ContentBasedRec() {
                 moviesToRecommend: ${moviesToRecommend}
               ) {
                 movieId
-                posterUrl
                 title
                 releaseYear
                 imdbLink

@@ -22,7 +22,6 @@ export default function GenreBasedRec({
               limit: ${limit}, 
               skip: ${skip}) {
                 movieId
-                posterUrl
                 title
                 releaseYear
                 imdbLink

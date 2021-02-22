@@ -11,7 +11,7 @@
 // Load movies
 LOAD CSV WITH HEADERS FROM "file:///movies.csv" AS row
 MERGE (m:Movie {movieId: row.movieId})
-ON CREATE SET m.title = row.title, m.releaseYear = row.year, m.imdbLink=row.imdbUrl, m.posterUrl = row.posterUrl
+ON CREATE SET m.title = row.title, m.releaseYear = toInteger(row.year), m.imdbLink=row.imdbUrl, m.imdbId = row.imdbId
 WITH *
 UNWIND split(row.genres, "|") AS genre
 MERGE (g:Genre {name: genre})
@@ -25,3 +25,21 @@ WITH *
 MATCH (m:Movie {movieId: row.movieId})
 CREATE (u)-[r:RATED]->(m)
 SET r.rating = toFloat(row.rating);
+
+// Load directors
+LOAD CSV WITH HEADERS FROM "file:///directors.csv" AS row
+MATCH (m:Movie {imdbId: row.imdbId})
+WITH *
+UNWIND split(row.directorName, "|") AS director
+MERGE (c:Cast {name: director})
+ON CREATE SET c.castId = apoc.create.uuid()
+CREATE (c)-[:DIRECTED]->(m)
+
+// Load users / ratings
+LOAD CSV WITH HEADERS FROM "file:///writers.csv" AS row
+MATCH (m:Movie {imdbId: row.imdbId})
+WITH *
+UNWIND split(row.writerName, "|") AS writer
+MERGE (c:Cast {name: writer})
+ON CREATE SET c.castId = apoc.create.uuid()
+CREATE (c)-[:WROTE]]->(m)

@@ -37,7 +37,6 @@ export default function UserBasedRec() {
               moviesToRecommend: ${moviesToRecommend} 
               ) { 
                 movieId 
-                posterUrl 
                 title 
                 releaseYear
                 imdbLink 
