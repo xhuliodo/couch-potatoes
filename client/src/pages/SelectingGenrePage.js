@@ -34,19 +34,19 @@ export const SelectingGenrePage = (props) => {
   const graphqlClient = useGraphqlClient();
 
   const handleSubmit = useMutation(async ({ userId, genres, name }) => {
-    const userData = await (await graphqlClient).request(
+    // const userData = await (await graphqlClient).request(
+    //   gql`
+    //     mutation {
+    //       selfRegister {
+    //         userId
+    //       }
+    //     }
+    //   `
+    // );
+    // const { selfRegister } = userData;
+    // if (selfRegister?.userId) {
+    const data = await (await graphqlClient).request(
       gql`
-        mutation {
-          selfRegister {
-            userId
-          }
-        }
-      `
-    );
-    const { selfRegister } = userData;
-    if (selfRegister?.userId) {
-      const data = await (await graphqlClient).request(
-        gql`
         mutation {
           setFavoriteGenres(
             genres: [${genres.map((g) => `"${g}"`)}]
@@ -55,13 +55,13 @@ export const SelectingGenrePage = (props) => {
           }
         }
       `
-      );
+    );
 
-      const { setFavoriteGenres } = data;
-      if (setFavoriteGenres.userId !== null) {
-        props.history.push("/getting-to-know-2");
-      }
+    const { setFavoriteGenres } = data;
+    if (setFavoriteGenres.userId !== null) {
+      props.history.push("/getting-to-know-2");
     }
+    // }
   });
 
   const doneIcon = useMemo(() => () => <DoneOutline />, []);
