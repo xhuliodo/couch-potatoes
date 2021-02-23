@@ -48,30 +48,32 @@ export const Solo = (props) => {
     return useQuery("setupRedirect", async () => {
       const finishedSetup = localStorage.getItem("finishedSetup");
       if (!finishedSetup) {
-        const stepOne = await (await graphqlClient).request(
-          gql`
-            query {
-              isSetupStepOneDone
-            }
-          `
-        );
-        const { isSetupStepOneDone } = stepOne;
-        if (isSetupStepOneDone === 0) {
-          props.history.push("/getting-to-know-1");
-        }
-
-        const stepTwo = await (await graphqlClient).request(
+        const stepTwo = (await graphqlClient).request(
           gql`
             query {
               isSetupStepTwoDone
             }
           `
         );
-        const { isSetupStepTwoDone } = stepTwo;
-        if (isSetupStepTwoDone <= requiredMovies) {
+        const { isSetupStepTwoDone } = await stepTwo;
+
+        if (isSetupStepTwoDone < requiredMovies) {
           props.history.push("/getting-to-know-2");
         } else {
           localStorage.setItem("finishedSetup", "true");
+          return;
+        }
+
+        const stepOne = (await graphqlClient).request(
+          gql`
+            query {
+              isSetupStepOneDone
+            }
+          `
+        );
+        const { isSetupStepOneDone } = await stepOne;
+        if (isSetupStepOneDone < 2) {
+          props.history.push("/getting-to-know-1");
         }
       }
     });

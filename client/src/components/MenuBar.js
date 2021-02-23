@@ -70,6 +70,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("finishedSetup");
     setOpen(false);
     logout({ returnTo: window.location.origin });
   };
