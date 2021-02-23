@@ -46,28 +46,33 @@ export const Solo = (props) => {
   // redirect rule for people who have not finished the setup
   const useSetupRedirect = () => {
     return useQuery("setupRedirect", async () => {
-      const stepOne = await (await graphqlClient).request(
-        gql`
-          query {
-            isSetupStepOneDone
-          }
-        `
-      );
-      const { isSetupStepOneDone } = stepOne;
-      if (isSetupStepOneDone === 0) {
-        props.history.push("/getting-to-know-1");
-      }
+      const finishedSetup = localStorage.getItem("finishedSetup");
+      if (!finishedSetup) {
+        const stepOne = await (await graphqlClient).request(
+          gql`
+            query {
+              isSetupStepOneDone
+            }
+          `
+        );
+        const { isSetupStepOneDone } = stepOne;
+        if (isSetupStepOneDone === 0) {
+          props.history.push("/getting-to-know-1");
+        }
 
-      const stepTwo = await (await graphqlClient).request(
-        gql`
-          query {
-            isSetupStepTwoDone
-          }
-        `
-      );
-      const { isSetupStepTwoDone } = stepTwo;
-      if (isSetupStepTwoDone <= requiredMovies) {
-        props.history.push("/getting-to-know-2");
+        const stepTwo = await (await graphqlClient).request(
+          gql`
+            query {
+              isSetupStepTwoDone
+            }
+          `
+        );
+        const { isSetupStepTwoDone } = stepTwo;
+        if (isSetupStepTwoDone <= requiredMovies) {
+          props.history.push("/getting-to-know-2");
+        } else {
+          localStorage.setItem("finishedSetup", "true");
+        }
       }
     });
   };
