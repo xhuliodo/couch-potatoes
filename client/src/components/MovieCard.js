@@ -156,8 +156,9 @@ export default function MovieCard({
               <Button
                 className="actionButton"
                 onClick={() => {
-                  nextMovie();
                   setSkip(skip + 1);
+                  nextMovie();
+                  openRateFeedbackExported("skip");
                 }}
                 variant="contained"
               >

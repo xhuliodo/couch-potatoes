@@ -3,6 +3,7 @@ import {
   LibraryAddOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
+  SkipNext,
 } from "@material-ui/icons";
 
 import React, { useState } from "react";
@@ -50,6 +51,8 @@ export default function RateFeedback() {
           <SentimentDissatisfied style={iconStyling} />
         ) : action === "watchlater" ? (
           <LibraryAddOutlined style={iconStyling} />
+        ) : action === "skip" ? (
+          <SkipNext style={iconStyling} />
         ) : null}
       </div>
     </Snackbar>
