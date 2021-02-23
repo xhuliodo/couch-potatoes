@@ -20,15 +20,15 @@ const schema = makeAugmentedSchema({
   typeDefs,
   config: {
     mutation: {
-      exclude: ["Genre", "Movie", "User"],
+      exclude: ["Genre", "Movie", "User", "RatedMovie"],
     },
     query: {
-      exclude: ["Movie", "User"],
+      exclude: ["Movie", "User", "RatedMovie"],
     },
     experimental: true,
     auth: {
       isAuthenticated: true,
-      hasRole: true
+      hasRole: true,
     },
   },
 });

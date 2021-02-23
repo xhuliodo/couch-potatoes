@@ -7,7 +7,6 @@ type Movie @isAuthenticated {
   title: String!
   releaseYear: Int!
   imdbLink: String!
-  posterUrl: String!
   genres: [Genre] @relation(name: "IN_GENRE", direction: "OUT")
   rating: Int
   # this one is still in question whether or not i'm going to crawl for it
@@ -15,7 +14,7 @@ type Movie @isAuthenticated {
 }
 
 type RatedMovie @isAuthenticated {
-  rating: Int
+  rating: Int!
   movieId: ID!
   imdbLink: String!
   title: String!
@@ -53,8 +52,7 @@ type Mutation {
       return m
       """
     )
-  registerFromAuth0(userId:ID!): User!
-    # @isAuthenticated
+  registerFromAuth0(userId: ID!): User!
     @hasRole(roles: [admin])
     @cypher(
       statement: """
@@ -94,12 +92,21 @@ type Mutation {
 }
 
 type Query {
-  getFavoriteGenres(limit: Int): [Genre]!
+  isSetupStepOneDone: Int!
     @isAuthenticated
     @cypher(
       statement: """
       match (u:User{userId: $cypherParams.userId})-[:FAVORITE]->(g:Genre)
-      return g
+      return count(g)
+      """
+    )
+
+  isSetupStepTwoDone: Int!
+    @isAuthenticated
+    @cypher(
+      statement: """
+      match (u:User{userId: $cypherParams.userId})-[:RATED]->(m:Movie)
+      return count(m)
       """
     )
 
