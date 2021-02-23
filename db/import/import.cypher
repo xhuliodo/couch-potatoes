@@ -33,7 +33,7 @@ WITH *
 UNWIND split(row.directorName, "|") AS director
 MERGE (c:Cast {name: director})
 ON CREATE SET c.castId = apoc.create.uuid()
-CREATE (c)-[:DIRECTED]->(m);
+MERGE (c)-[:DIRECTED]->(m);
 
 // Load writers
 LOAD CSV WITH HEADERS FROM "file:///writers.csv" AS row
@@ -42,4 +42,4 @@ WITH *
 UNWIND split(row.writerName, "|") AS writer
 MERGE (c:Cast {name: writer})
 ON CREATE SET c.castId = apoc.create.uuid()
-CREATE (c)-[:WROTE]->(m);
+MERGE (c)-[:WROTE]->(m);
