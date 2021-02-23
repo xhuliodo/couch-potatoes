@@ -33,18 +33,7 @@ export const SelectingGenrePage = (props) => {
   const { user } = useAuth0();
   const graphqlClient = useGraphqlClient();
 
-  const handleSubmit = useMutation(async ({ userId, genres, name }) => {
-    // const userData = await (await graphqlClient).request(
-    //   gql`
-    //     mutation {
-    //       selfRegister {
-    //         userId
-    //       }
-    //     }
-    //   `
-    // );
-    // const { selfRegister } = userData;
-    // if (selfRegister?.userId) {
+  const handleSubmit = useMutation(async ({ genres }) => {
     const data = await (await graphqlClient).request(
       gql`
         mutation {
@@ -61,7 +50,6 @@ export const SelectingGenrePage = (props) => {
     if (setFavoriteGenres.userId !== null) {
       props.history.push("/getting-to-know-2");
     }
-    // }
   });
 
   const doneIcon = useMemo(() => () => <DoneOutline />, []);

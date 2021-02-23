@@ -18,14 +18,18 @@ import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
+
 import DataStateMovieCard from "../components/DataStateMovieCard";
 
 import SwipeableViews from "react-swipeable-views";
 import GeneralWatchlist from "../components/GeneralWatchlist";
+import { useMovieStore } from "../context/movies";
 
 export const Solo = (props) => {
   const classes = useStyles();
   const theme = useTheme();
+
+  const { requiredMovies } = useMovieStore();
 
   const [nav, setNav] = useState(1);
 
@@ -40,25 +44,35 @@ export const Solo = (props) => {
   const graphqlClient = useGraphqlClient();
 
   // redirect rule for people who have not finished the setup
-  const useFavoriteGenres = () => {
-    return useQuery("favoriteGenres", async () => {
-      const data = await (await graphqlClient).request(
+  const useSetupRedirect = () => {
+    return useQuery("setupRedirect", async () => {
+      const stepOne = await (await graphqlClient).request(
         gql`
           query {
-            getFavoriteGenres {
-              genreId
-            }
+            isSetupStepOneDone
           }
         `
       );
-      const { getFavoriteGenres } = data;
-      if (getFavoriteGenres.length === 0) {
+      const { isSetupStepOneDone } = stepOne;
+      if (isSetupStepOneDone === 0) {
         props.history.push("/getting-to-know-1");
+      }
+
+      const stepTwo = await (await graphqlClient).request(
+        gql`
+          query {
+            isSetupStepTwoDone
+          }
+        `
+      );
+      const { isSetupStepTwoDone } = stepTwo;
+      if (isSetupStepTwoDone <= requiredMovies) {
+        props.history.push("/getting-to-know-2");
       }
     });
   };
 
-  const { isLoading, isError } = useFavoriteGenres();
+  const { isLoading, isError } = useSetupRedirect();
 
   return (
     <Paper elevation={0}>
