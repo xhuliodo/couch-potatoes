@@ -23,8 +23,8 @@ LOAD CSV WITH HEADERS FROM "file:///ratings.csv" AS row
 MERGE (u:User {userId: row.userId})
 WITH *
 MATCH (m:Movie {movieId: row.movieId})
-CREATE (u)-[r:RATED]->(m)
-SET r.rating = toFloat(row.rating);
+MERGE (u)-[r:RATED]->(m)
+ON CREATE SET r.rating = toFloat(row.rating);
 
 // Load directors
 LOAD CSV WITH HEADERS FROM "file:///directors.csv" AS row
