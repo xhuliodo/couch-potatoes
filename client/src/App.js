@@ -120,7 +120,7 @@ export default function App() {
               </Switch>
             </Router>
           </Container>
-          <Footer />
+          {/* <Footer /> */}
         </Paper>
       </ThemeProvider>
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}

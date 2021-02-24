@@ -11,6 +11,8 @@ import React, { useState } from "react";
 import RatedMoviesInWatchlist from "./RatedMoviesInWatchlist";
 import WatchlistProvider from "./WatchlistProvider";
 
+import "./GeneralWatchlist.css";
+
 export default function GeneralWatchlist() {
   const classes = useStyles();
 
@@ -35,14 +37,13 @@ export default function GeneralWatchlist() {
           className={classes.summary}
           expandIcon={<ExpandMore />}
           aria-controls="panel1a-content"
+          style={{ margin: "0" }}
         >
           <Typography className={classes.heading}>
             Movies waiting for you
           </Typography>
         </AccordionSummary>
-        <AccordionDetails
-          style={{ height: "62vh", paddingLeft: "0", paddingRight: "0" }}
-        >
+        <AccordionDetails className="accordionStyling">
           <WatchlistProvider />
         </AccordionDetails>
       </Accordion>
@@ -58,9 +59,7 @@ export default function GeneralWatchlist() {
         >
           <Typography className={classes.heading}>Your collection</Typography>
         </AccordionSummary>
-        <AccordionDetails
-          style={{ height: "62vh", paddingLeft: "0", paddingRight: "0" }}
-        >
+        <AccordionDetails className="accordionStyling">
           <RatedMoviesInWatchlist />
         </AccordionDetails>
       </Accordion>
@@ -76,5 +75,6 @@ const useStyles = makeStyles((theme) => ({
   summary: {
     backgroundColor: "rgba(0, 0, 0, .08)",
     borderRadius: "10px",
+    // margin: "0!important",
   },
 }));

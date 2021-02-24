@@ -1,0 +1,42 @@
+.MuiAccordionSummary-content.Mui-expanded {
+  margin: 0 !important;
+  padding: 0;
+}
+
+.MuiAccordionSummary-root.Mui-expanded {
+  min-height: 45px !important;
+}
+
+.MuiAccordionDetails-root {
+  padding-bottom: 0 !important;
+}
+
+.MuiPaper-root.MuiAccordion-root.MuiAccordion-rounded.MuiPaper-elevation1.MuiPaper-rounded {
+  margin: 5px auto !important;
+}
+
+.MuiPaper-elevation1 {
+  box-shadow: none !important;
+}
+
+.accordionStyling {
+  height: 65vh;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-height: 790px) and (max-height: 900px) {
+  .accordionStyling {
+    height: 69vh;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (min-height: 901px) {
+  .accordionStyling {
+    height: 71vh;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
