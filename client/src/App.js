@@ -101,7 +101,7 @@ export default function App() {
             maxWidth="md"
             style={{
               // marginTop: "15px",
-              flex: "auto",
+              flex: "2 1 auto",
               height: "fit-content",
               borderRadius: "0px!important",
             }}
