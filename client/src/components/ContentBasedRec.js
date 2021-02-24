@@ -9,19 +9,16 @@ import MovieCard from "./MovieCard";
 import DataStateMovieCard from "./DataStateMovieCard";
 
 export default function ContentBasedRec() {
-  const { recentMoviesToCompare, limit } = useMovieStore();
+  const { limit } = useMovieStore();
 
   const graphqlClient = useGraphqlClient();
 
-  const useContentBasedRec = (recentMoviesToCompare, moviesToRecommend) => {
-    return useQuery(
-      ["contentBasedRec", recentMoviesToCompare, moviesToRecommend],
-      async () => {
-        const data = (await graphqlClient).request(
-          gql`
+  const useContentBasedRec = (moviesToRecommend) => {
+    return useQuery(["contentBasedRec", moviesToRecommend], async () => {
+      const data = (await graphqlClient).request(
+        gql`
             query {
               recommendFromOtherLikedMovies(
-                recentMoviesToCompare: ${recentMoviesToCompare}
                 moviesToRecommend: ${moviesToRecommend}
               ) {
                 movieId
@@ -31,27 +28,23 @@ export default function ContentBasedRec() {
               }
             }
           `
-        );
-        const { recommendFromOtherLikedMovies } = await data;
-        return recommendFromOtherLikedMovies;
-      }
-    );
+      );
+      const { recommendFromOtherLikedMovies } = await data;
+      return recommendFromOtherLikedMovies;
+    });
   };
 
-  const { isLoading, isError, data, refetch } = useContentBasedRec(
-    recentMoviesToCompare,
-    limit
-  );
+  const { isLoading, isError, data, refetch } = useContentBasedRec(limit);
 
   return isLoading ? (
     <DataStateMovieCard message="Fetching movies..." type="loading" />
   ) : isError ? (
     <DataStateMovieCard message="Something went wrong..." />
   ) : (
-      <MovieCard
-        startedFromTheBottomNowWeHere={true}
-        movies={data}
-        refetch={refetch}
-      />
+    <MovieCard
+      startedFromTheBottomNowWeHere={true}
+      movies={data}
+      refetch={refetch}
+    />
   );
 }

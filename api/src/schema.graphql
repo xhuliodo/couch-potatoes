@@ -152,27 +152,22 @@ type Query {
       limit toInteger($moviesToRecommend)
       """
     )
-  recommendFromOtherLikedMovies(
-    recentMoviesToCompare: Int!
-    moviesToRecommend: Int!
-  ): [Movie]!
+  recommendFromOtherLikedMovies(moviesToRecommend: Int!): [Movie]!
     @isAuthenticated
     @cypher(
       statement: """
       match (u:User {userId:$cypherParams.userId})-[r:RATED{rating:1}]->(m:Movie)
       with u, m
-      order by r desc
-      limit toInteger($recentMoviesToCompare)
-      match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(t)<-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(other:Movie)
+      match (m)<-[:ACTED_IN|:DIRECTED|:WROTE]-(t)-[:ACTED_IN|:DIRECTED|:WROTE]->(other:Movie)
       where not exists( (u)-[:RATED]->(other) ) and not exists ( (u)-[:WATCH_LATER]->(other) )
       with m, other, count(t) as intersection
-      match (m)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(mt)
+      match (m)<-[:ACTED_IN|:DIRECTED|:WROTE]-(mt)
       with m, other, intersection, collect(mt.name) as s1
-      match (other)-[:IN_GENRE|:ACTED_IN|:DIRECTED|:WROTE]-(ot)
+      match (other)<-[:ACTED_IN|:DIRECTED|:WROTE]-(ot)
       with m, other, intersection, s1, collect(ot.name) as s2
       with m, other, intersection,s1,s2
       with m, other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2
-      with other, s1,s2,((1.0*intersection)/size(union)) as jaccard
+      with other, s1,s2,((1.0*intersection)/size(union)) as jaccard, union, intersection
       return other
       order by jaccard desc
       limit toInteger($moviesToRecommend)

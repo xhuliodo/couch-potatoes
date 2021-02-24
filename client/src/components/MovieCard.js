@@ -234,5 +234,3 @@ export default function MovieCard({
     </CardWrapper>
   );
 }
-
-const buttonStyling = {};
