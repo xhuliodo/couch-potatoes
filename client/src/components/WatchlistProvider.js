@@ -9,6 +9,8 @@ import { gql } from "graphql-request";
 import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
 import { useState } from "react";
 
+import "./scrollbar.scss";
+
 export default function WatchlistProvider() {
   const graphqlClient = useGraphqlClient();
   const useGetWatchlistMovies = () => {
@@ -84,10 +86,8 @@ export default function WatchlistProvider() {
       maxWidth="sm"
       style={{
         height: "fit-parent",
-        overflowY: "auto",
-        overflowX: "hidden",
-        WebkitOverflowScrolling: "auto",
       }}
+      className="showScroll"
     >
       {isLoading ? (
         <span>fetching data</span>

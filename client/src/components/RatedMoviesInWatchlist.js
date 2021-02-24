@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "react-query";
 import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import WatchlistCard from "./WatchlistCard";
+import "./scrollbar.scss";
 
 export default function RatedMoviesInWatchlist() {
   const graphqlClient = useGraphqlClient();
@@ -69,10 +70,8 @@ export default function RatedMoviesInWatchlist() {
       maxWidth="sm"
       style={{
         height: "fit-parent",
-        overflowY: "auto",
-        overflowX: "hidden",
-        WebkitOverflowScrolling: "auto",
       }}
+      className="showScroll"
     >
       {isLoading ? (
         <span>fetching data</span>
