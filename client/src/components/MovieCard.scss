@@ -1,15 +1,3 @@
-.movie_card {
-  position: relative;
-  width: 600px;
-  padding: 20px;
-  max-width: 85vw;
-  height: 0vh;
-  border-radius: 20px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 div.container.loaded {
   height: calc(100vh - 13vh);
   min-height: 670px;
@@ -23,10 +11,18 @@ div.container.loaded {
   }
 }
 
-@media (max-height: 1079px) and (min-height: 813px) {
+// iphone xr pwa
+@media (max-height: 900px) and (min-height: 813px) {
   div.container.loaded {
     min-height: 670px;
-    max-height: 735px;
+    max-height: 670px;
+  }
+  .container {
+    .cards_container {
+      div.card_container {
+        height: 65vh;
+      }
+    }
   }
 }
 

@@ -91,6 +91,8 @@ export default function App() {
           elevation={0}
           style={{
             minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
             borderRadius: "0px",
           }}
         >
@@ -98,7 +100,8 @@ export default function App() {
           <Container
             maxWidth="md"
             style={{
-              marginTop: "15px",
+              // marginTop: "15px",
+              flex: "auto",
               height: "fit-content",
               borderRadius: "0px!important",
             }}
