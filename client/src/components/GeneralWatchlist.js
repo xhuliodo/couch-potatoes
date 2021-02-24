@@ -24,8 +24,8 @@ export default function GeneralWatchlist() {
 
   return (
     <Container
-      maxWidth="lg"
-      style={{ margin: "0", paddingLeft: "0", paddingRight: "0" }}
+      maxWidth="sm"
+      style={{ margin: "0 auto", paddingLeft: "0", paddingRight: "0" }}
     >
       <Accordion
         style={{ boxShadow: "none" }}
