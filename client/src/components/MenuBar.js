@@ -27,6 +27,7 @@ import { Brightness3, Brightness7 } from "@material-ui/icons";
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
+    maxHeight: "70px",
   },
   title: {
     fontSize: "2rem",

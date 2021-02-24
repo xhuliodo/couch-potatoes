@@ -26,6 +26,22 @@ div.container.loaded {
   }
 }
 
+// iphone x pwa
+@media (max-height: 812px) and (max-width: 375px) {
+  div.container.loaded {
+    min-height: 500px;
+    max-height: 615px;
+  }
+  .container {
+    .cards_container {
+      div.card_container {
+        height: 60vh;
+        min-height: 480px;
+      }
+    }
+  }
+}
+
 .card_container {
   bottom: 70px;
 }

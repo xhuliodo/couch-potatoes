@@ -34,35 +34,35 @@ export default function App() {
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
 
   const customTheme = {
-    // overrides: {
-    //   MuiCssBaseline: {
-    //     "@global": {
-    //       "*::-webkit-scrollbar": {
-    //         "-webkit-appearance": "none",
-    //         width: "8px",
-    //         height: "8px",
-    //       },
-    //       "*::-webkit-scrollbar-thumb": {
-    //         backgroundColor: "grey",
-    //       },
-    //       "::-webkit-scrollbar-thumb": {
-    //         // background: "#888",
-    //         borderRadius: "15px",
-    //         "-webkit-overflow-scrolling": "auto",
-    //       },
-    //       "*:hover": {
-    //         "&::-webkit-scrollbar-thumb": {
-    //           backgroundColor: "darkgrey",
-    //         },
-    //       },
-    //       /* Equivalent alternative:
-    //       "*:hover::-webkit-scrollbar-thumb": {
-    //         backgroundColor: "green"
-    //       }
-    //        */
-    //     },
-    //   },
-    // },
+    overrides: {
+      MuiCssBaseline: {
+        "@global": {
+          "*::-webkit-scrollbar": {
+            // "-webkit-appearance": "none",
+            width: "8px",
+            height: "8px",
+          },
+          "*::-webkit-scrollbar-thumb": {
+            backgroundColor: "grey",
+          },
+          "::-webkit-scrollbar-thumb": {
+            // background: "#888",
+            borderRadius: "15px",
+            // "-webkit-overflow-scrolling": "auto",
+          },
+          "*:hover": {
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "darkgrey",
+            },
+          },
+          /* Equivalent alternative:
+          "*:hover::-webkit-scrollbar-thumb": {
+            backgroundColor: "green"
+          }
+           */
+        },
+      },
+    },
     palette: {
       type: !darkTheme ? "light" : "dark",
     },
@@ -90,13 +90,20 @@ export default function App() {
         <Paper
           elevation={0}
           style={{
-            minHeight: "100vh",
+            minHeight: "885px",
+            height: "100vh",
             display: "flex",
             flexDirection: "column",
             borderRadius: "0px",
           }}
         >
-          <MenuBar darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
+          <MenuBar
+            style={{
+              maxHeight: "75px",
+            }}
+            darkTheme={darkTheme}
+            setDarkTheme={setDarkTheme}
+          />
           <Container
             maxWidth="md"
             style={{

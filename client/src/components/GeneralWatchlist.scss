@@ -40,3 +40,12 @@
     padding-right: 0;
   }
 }
+
+// iphone x pwa
+@media (max-height: 812px) and (max-width: 375px) {
+  .accordionStyling {
+    height: 63vh;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
