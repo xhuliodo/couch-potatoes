@@ -1,4 +1,4 @@
-import "../components/MovieCard.css";
+import "../components/MovieCard.scss";
 
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";

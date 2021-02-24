@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 
 // mendja eshte gje e madhe, tek file per 2 px XD
-import "./MenuBar.css";
+import "./MenuBar.scss";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";

@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import RatedMoviesInWatchlist from "./RatedMoviesInWatchlist";
 import WatchlistProvider from "./WatchlistProvider";
 
-import "./GeneralWatchlist.css";
+import "./GeneralWatchlist.scss";
 
 export default function GeneralWatchlist() {
   const classes = useStyles();

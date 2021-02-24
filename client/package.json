@@ -9,6 +9,7 @@
     "@xhuliodo/react-swipeable-cards": "git+https://github.com/xhuliodo/react-movie-cards-build#master",
     "graphql": "^15.4.0",
     "graphql-request": "^3.4.0",
+    "node-sass": "^5.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-query": "^3.5.12",

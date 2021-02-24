@@ -8,7 +8,7 @@ import {
 
 import React, { useState } from "react";
 
-import "./RateFeedback.css";
+import "./RateFeedback.scss";
 
 let openRateFeedbackFn;
 

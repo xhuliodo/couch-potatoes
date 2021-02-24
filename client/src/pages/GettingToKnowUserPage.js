@@ -11,7 +11,7 @@ import {
   DialogContentText,
   DialogActions,
 } from "@material-ui/core";
-import "../components/MovieCard.css";
+import "../components/MovieCard.scss";
 
 import { useMovieStore } from "../context/movies";
 
