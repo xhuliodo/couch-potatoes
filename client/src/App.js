@@ -90,7 +90,8 @@ export default function App() {
         <Paper
           elevation={0}
           style={{
-            minHeight: "885px",
+            // minHeight: "885px",
+            // minHeight: "100vh",
             height: "100vh",
             display: "flex",
             flexDirection: "column",
@@ -98,18 +99,20 @@ export default function App() {
           }}
         >
           <MenuBar
-            style={{
-              maxHeight: "75px",
-            }}
+            // style={{
+            //   maxHeight: "75px",
+            // }}
             darkTheme={darkTheme}
             setDarkTheme={setDarkTheme}
           />
           <Container
             maxWidth="md"
             style={{
-              // marginTop: "15px",
-              flex: "2 1 auto",
-              height: "fit-content",
+              marginTop: "15px",
+              flexGrow: "3",
+              alignContent: "flex-start",
+
+              // height: "100%",
               borderRadius: "0px!important",
             }}
           >

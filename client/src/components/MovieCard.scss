@@ -87,6 +87,12 @@ div.container.loaded {
   margin: 10px;
   padding: 0 20px;
   color: #fff !important;
+  transition: unset !important;
+  transform: unset !important;
+  > h3 {
+    transform: unset !important;
+    transition: unset !important;
+  }
 }
 
 .actionButton {

@@ -168,7 +168,7 @@ type Query {
       with m, other, intersection,s1,s2
       with m, other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2
       with other, s1,s2,((1.0*intersection)/size(union)) as jaccard, union, intersection
-      return other
+      return distinct other, jaccard
       order by jaccard desc
       limit toInteger($moviesToRecommend)
       """
