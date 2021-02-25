@@ -42,6 +42,7 @@ export default function ContentBasedRec() {
     <DataStateMovieCard message="Something went wrong..." />
   ) : (
     <MovieCard
+      compName="cbr"
       startedFromTheBottomNowWeHere={true}
       movies={data}
       refetch={refetch}

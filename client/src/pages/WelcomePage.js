@@ -42,6 +42,11 @@ export default function WelcomePage() {
         message="Go back to using the app?"
         // anchorOrigin={{ horizontal: "center", vertical: "top" }}
       />
+      <div style={{ backgroundColor: "black", width: "fit-content" }}>
+        lsjfhwermncvp;ermvipmr;v
+        <br />
+        lasdnocjnsdlkc
+      </div>
       This is the page where i gotta sell the product to new users so i can make
       them log in
     </div>

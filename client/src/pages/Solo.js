@@ -31,7 +31,7 @@ export const Solo = (props) => {
 
   const { requiredMovies } = useMovieStore();
 
-  const [nav, setNav] = useState(1);
+  const [nav, setNav] = useState(0);
 
   const handleChange = (event, newValue) => {
     setNav(newValue);

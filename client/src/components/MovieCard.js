@@ -24,6 +24,7 @@ import { openRateFeedbackExported } from "./RateFeedback";
 import RateFeedback from "./RateFeedback";
 
 export default function MovieCard({
+  compName = "gtk",
   movies,
   skip,
   setSkip,
@@ -208,7 +209,7 @@ export default function MovieCard({
     <CardWrapper addEndCard={waitingForMore} style={{ paddingTop: "0px" }}>
       {movies.map((m) => (
         <Card
-          key={m.movieId}
+          key={compName + m.movieId}
           onSwipeLeft={() => {
             handleRate("hate");
             feedback("hate");
@@ -234,4 +235,3 @@ export default function MovieCard({
     </CardWrapper>
   );
 }
-

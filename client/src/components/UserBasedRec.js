@@ -57,6 +57,7 @@ export default function UserBasedRec() {
     <DataStateMovieCard message="Something went wrong..." />
   ) : (
     <MovieCard
+      compName="ubr"
       startedFromTheBottomNowWeHere={true}
       movies={data}
       refetch={refetch}
