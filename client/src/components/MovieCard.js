@@ -215,7 +215,7 @@ export default function MovieCard({
             feedback("hate");
           }}
           onSwipeRight={() => handleRate("love")}
-          swipeSensitivity={100}
+          swipeSensitivity={50}
           style={{
             backgroundImage: `url(https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg)`,
             backgroundSize: "contain",
