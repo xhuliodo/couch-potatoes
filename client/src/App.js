@@ -33,7 +33,42 @@ export default function App() {
     userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
 
-  const customTheme = {
+  // const customTheme = {
+  //   overrides: {
+  //     MuiCssBaseline: {
+  //       "@global": {
+  //         "*::-webkit-scrollbar": {
+  //           // "-webkit-appearance": "none",
+  //           width: "8px",
+  //           height: "8px",
+  //         },
+  //         "*::-webkit-scrollbar-thumb": {
+  //           backgroundColor: "grey",
+  //         },
+  //         "::-webkit-scrollbar-thumb": {
+  //           // background: "#888",
+  //           borderRadius: "15px",
+  //           // "-webkit-overflow-scrolling": "auto",
+  //         },
+  //         "*:hover": {
+  //           "&::-webkit-scrollbar-thumb": {
+  //             backgroundColor: "darkgrey",
+  //           },
+  //         },
+  //         /* Equivalent alternative:
+  //         "*:hover::-webkit-scrollbar-thumb": {
+  //           backgroundColor: "green"
+  //         }
+  //          */
+  //       },
+  //     },
+  //   },
+  //   palette: {
+  //     type: !darkTheme ? "light" : "dark",
+
+  //   },
+  // };
+  const appliedTheme = createMuiTheme({
     overrides: {
       MuiCssBaseline: {
         "@global": {
@@ -65,9 +100,12 @@ export default function App() {
     },
     palette: {
       type: !darkTheme ? "light" : "dark",
+      primary: { main: "#8e72a7", dark: "#8e72a7" },
+      secondary: { main: "#746d4f", dark: "#746d4f" },
+      // background: { paper: "#c4c4c4" },
+      // text: { primary: "#fff", secondary:"#fff" },
     },
-  };
-  const appliedTheme = createMuiTheme(customTheme);
+  });
 
   // react query setup
   const queryClient = new QueryClient({

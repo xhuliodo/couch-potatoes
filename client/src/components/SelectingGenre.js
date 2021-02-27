@@ -19,6 +19,7 @@ export default function SelectingGenre({
       right: 0,
       top: 0,
       padding: "16px 6px",
+      backgroundColor: "#a69c71",
     },
   }))(Badge);
 
@@ -49,7 +50,7 @@ export default function SelectingGenre({
         invisible={!selected}
         color="primary"
       >
-        <Card onClick={handleSelected} elevation={6}>
+        <Card onClick={handleSelected} elevation={3}>
           <CardContent>
             <Typography color="textSecondary" gutterBottom>
               Movie Genre

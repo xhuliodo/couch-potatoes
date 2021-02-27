@@ -51,7 +51,7 @@ export const GettingToKnowUserPage = (props) => {
       </Typography>
       <Container style={{ marginTop: "15px" }} disableGutters={true}>
         <GenreBasedRec skip={skip} setSkip={setSkip} />
-        <Container style={{ marginTop: "12px" }} maxWidth="sm">
+        <Container style={{ marginTop: "15px" }} maxWidth="sm">
           <Button
             color="primary"
             fullWidth
@@ -63,19 +63,25 @@ export const GettingToKnowUserPage = (props) => {
           </Button>
         </Container>
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>We've gotten to know you enough 😃</DialogTitle>
+          <DialogTitle style={{ textAlign: "center" }}>
+            We've gotten to know you enough 😃
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <DialogContentText style={{ textAlign: "center" }}>
               You can either click next to get recommendations based on other
               users ratings or continue to rate movies in the genre you selected
               as well (you can always click the continue button at the end to go
               to the next step)
             </DialogContentText>
-            <DialogActions>
-              <Button onClick={handleClose} color="secondary">
+            <DialogActions style={{ justifyContent: "center" }}>
+              <Button
+                variant="contained"
+                onClick={handleClose}
+                color="secondary"
+              >
                 Continue
               </Button>
-              <Button onClick={handleNext} color="primary">
+              <Button variant="contained" onClick={handleNext} color="primary">
                 Next
               </Button>
             </DialogActions>

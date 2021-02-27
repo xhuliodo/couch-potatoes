@@ -83,7 +83,7 @@ export const Solo = (props) => {
 
   return (
     <Paper elevation={0}>
-      <Paper elevation={5} style={{ padding: "12px 0" }}>
+      <Paper elevation={3} style={{ padding: "12px 0" }}>
         <BottomNavigation
           value={nav}
           onChange={handleChange}
@@ -162,7 +162,7 @@ const Panel = (props) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  selected: { color: `${theme.palette.secondary.dark}!important` },
+  // selected: { color: "#4c4734!important" },
 }));
 
 export default withAuthenticationRequired(Solo, {
