@@ -6,7 +6,7 @@
     "@auth0/auth0-react": "^1.2.0",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
-    "@xhuliodo/react-swipeable-cards": "git+https://github.com/xhuliodo/react-movie-cards-build#master",
+    "@xhuliodo/react-swipeable-cards": "https://github.com/xhuliodo/react-movie-cards-build",
     "graphql": "^15.4.0",
     "graphql-request": "^3.4.0",
     "node-sass": "^5.0.0",
