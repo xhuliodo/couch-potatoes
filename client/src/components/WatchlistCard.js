@@ -168,5 +168,6 @@ const useStyles = makeStyles((theme) => ({
   infoIcon: {
     height: 20,
     width: 20,
+    color: "#505874",
   },
 }));
