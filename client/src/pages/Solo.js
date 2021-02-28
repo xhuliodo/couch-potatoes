@@ -31,7 +31,7 @@ export const Solo = (props) => {
 
   const { requiredMovies } = useMovieStore();
 
-  const [nav, setNav] = useState(0);
+  const [nav, setNav] = useState(1);
 
   const handleChange = (event, newValue) => {
     setNav(newValue);
@@ -162,7 +162,9 @@ const Panel = (props) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  // selected: { color: "#4c4734!important" },
+  selected: {
+    color: theme.palette.type === "dark" ? "#fff!important" : "#000!important",
+  },
 }));
 
 export default withAuthenticationRequired(Solo, {

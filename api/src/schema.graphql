@@ -173,22 +173,27 @@ type Query {
       limit toInteger($moviesToRecommend)
       """
     )
-  watchlist: [Movie]!
+  watchlist(limit: Int!, skip: Int!): [Movie]!
     @isAuthenticated
     @cypher(
       statement: """
-      match (u:User {userId:$cypherParams.userId})-[:WATCH_LATER]->(m:Movie)
+      match (u:User {userId:$cypherParams.userId})-[w:WATCH_LATER]->(m:Movie)
       where  not exists((u)-[:RATED]->(m))
       return m
+      order by w desc
+      skip toInteger($skip)
+      limit toInteger($limit)
       """
     )
-  watchlistHistory: [RatedMovie]!
+  watchlistHistory(limit: Int!, skip: Int!): [RatedMovie]!
     @isAuthenticated
     @cypher(
       statement: """
       match (u:User {userId:$cypherParams.userId})-[w:WATCH_LATER]->(m:Movie)<-[r:RATED]-(u)
       return m{.movieId, .title, .imdbLink, .releaseYear, rating:r.rating}
       order by r desc
+      skip toInteger($skip)
+      limit toInteger($limit)
       """
     )
   # return m.movieId as movieId, m.title as title, m.releaseYear as releaseYear, m.imdbLink as imdbLink, toInteger(r.rating) as rating

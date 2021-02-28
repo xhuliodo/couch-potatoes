@@ -25,6 +25,7 @@ export default function MovieCardWatchlist({
   handleRemove,
   deleted,
   animation,
+  lastElementRef,
 }) {
   const classes = useStyles();
   const theme = useTheme();
@@ -43,7 +44,7 @@ export default function MovieCardWatchlist({
       in={!deleted?.includes(m.movieId)}
       unmountOnExit
     >
-      <Card elevation={5} className={classes.root}>
+      <Card ref={lastElementRef} elevation={5} className={classes.root}>
         <CardMedia className={classes.cover} image={image} />
         <div className={classes.details}>
           <div
@@ -76,7 +77,7 @@ export default function MovieCardWatchlist({
             >
               <Tooltip title="IMDB Link" arrow placement="top">
                 <Link href={m.imdbLink} rel="noreferrer" target="_blank">
-                  <Info className={classes.infoIcon} />
+                  <Info color="action" className={classes.infoIcon} />
                 </Link>
               </Tooltip>
             </div>
@@ -125,7 +126,7 @@ export default function MovieCardWatchlist({
                 onClick={() => handleRemove(m.movieId)}
                 variant="contained"
               >
-                <Delete color="secondary" />
+                <Delete />
               </IconButton>
             </div>
           </CardActions>
