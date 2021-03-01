@@ -12,15 +12,11 @@ export default function SetupSwipeHelper() {
   };
   return (
     <Backdrop onClick={handleClose} open={open} className={classes.backdrop}>
-      <div className={classes.popup}>
-        <Typography className={classes.textMargin}>
-          Movie cards can be swiped, it's like tinder with no ghosting
-        </Typography>
-        <i className={classes.textMargin}>(click anywhere to dismiss)</i>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <img className={classes.width} alt="setup helper" src={gif}></img>
-        </div>
-      </div>
+      <Typography className={classes.textMargin}>
+        Movie cards can be swiped, it's like tinder with no ghosting
+      </Typography>
+      <i className={classes.textMargin}>(click anywhere to dismiss)</i>
+      <img className={classes.width} alt="setup helper" src={gif}></img>
     </Backdrop>
   );
 }
@@ -39,14 +35,5 @@ const useStyles = makeStyles((theme) => ({
   width: {
     width: "90vw",
     maxWidth: "600px",
-  },
-  popup: {
-    flexDirection: "column",
-    display: "flex",
-    justifyItems: "center",
-    // backgroundColor: "rgb(0, 0, 0, 0.5)",
-    borderRadius: "15px",
-    width: "95vw",
-    padding: "10px",
   },
 }));
