@@ -164,12 +164,12 @@ type Query {
       match (m)<-[:ACTED_IN|:DIRECTED|:WROTE]-(mt)
       with m, other, intersection, collect(mt.name) as s1
       match (other)<-[:ACTED_IN|:DIRECTED|:WROTE]-(ot)
-      with m, other, intersection, s1, collect(ot.name) as s2
-      with m, other, intersection,s1,s2
-      with m, other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2
-      with other, s1,s2,((1.0*intersection)/size(union)) as jaccard, union, intersection
-      return distinct other, jaccard
+      with other, intersection, s1, collect(ot.name) as s2
+      with other, intersection,s1,s2
+      with other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2
+      with other, s1,s2,((1.0*intersection)/size(union)) as jaccard
       order by jaccard desc
+      return distinct other
       limit toInteger($moviesToRecommend)
       """
     )

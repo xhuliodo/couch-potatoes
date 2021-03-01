@@ -2157,7 +2157,7 @@
 
 "@xhuliodo/react-swipeable-cards@git+https://github.com/xhuliodo/react-movie-cards-build#master":
   version "1.0.6"
-  resolved "git+https://github.com/xhuliodo/react-movie-cards-build#ad9d84fb83b2333d956d945821450965b915bb9e"
+  resolved "git+https://github.com/xhuliodo/react-movie-cards-build#6a1d9eb4350fe3ce30a4660b006ddf32b3245cc4"
   dependencies:
     react-hammerjs "^1.0.1"
 
