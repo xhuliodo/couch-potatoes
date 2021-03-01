@@ -1,4 +1,4 @@
-import { Container } from "@material-ui/core";
+import { CircularProgress, Container } from "@material-ui/core";
 import WatchlistCard from "./WatchlistCard";
 
 import { useQuery } from "react-query";
@@ -7,18 +7,19 @@ import { rateMovie } from "../utils/rateMovie";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
 import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import "./scrollbar.scss";
+import { useMovieStore } from "../context/movies";
 
 export default function WatchlistProvider() {
   const graphqlClient = useGraphqlClient();
-  const useGetWatchlistMovies = () => {
-    return useQuery(["getWatchlistMovies"], async () => {
+  const useGetWatchlistMovies = ({ skip, limit }) => {
+    return useQuery(["getWatchlistMovies", skip, limit], async () => {
       const data = (await graphqlClient).request(
         gql`
           query {
-            watchlist {
+            watchlist(skip:${skip}, limit:${limit}) {
               movieId
               title
               releaseYear
@@ -31,7 +32,44 @@ export default function WatchlistProvider() {
       return watchlist;
     });
   };
-  const { isLoading, isError, data } = useGetWatchlistMovies();
+  const { limit } = useMovieStore();
+  const [skip, setSkip] = useState(0);
+  const { isLoading, isError, data } = useGetWatchlistMovies({
+    limit,
+    skip,
+  });
+
+  const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    if (!isLoading && !isError) {
+      setMovies([...movies, ...data]);
+    }
+  }, [data, isError, isLoading]);
+
+  const increaseSkip = () => {
+    setSkip(skip + limit);
+    // refetch();
+  };
+
+  const observer = useRef();
+  const lastElementRef = useCallback(
+    (node) => {
+      if (isLoading) {
+        console.log("currently loading");
+        return;
+      }
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && data.length === limit) {
+          console.log(skip);
+          increaseSkip();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, data]
+  );
 
   const rate = useMutation((mutationData) =>
     rateMovie(mutationData, graphqlClient)
@@ -89,13 +127,10 @@ export default function WatchlistProvider() {
       }}
       className="showScroll"
     >
-      {isLoading ? (
-        <span>fetching data</span>
-      ) : isError ? (
-        <span>Something went wrong...</span>
-      ) : (
-        data.map((m) => (
+      {
+        movies.map((m, index) => (
           <WatchlistCard
+            lastElementRef={movies.length === index + 1 ? lastElementRef : null}
             key={m.movieId}
             m={m}
             handleRate={handleRate}
@@ -104,7 +139,15 @@ export default function WatchlistProvider() {
             animation={animation}
           />
         ))
-      )}
+        // )
+      }
+      {isLoading ? (
+        <div style={{ width: "100%", display: "flex" }}>
+          <CircularProgress style={{ margin: "10px auto" }} />
+        </div>
+      ) : isError ? (
+        <span style={{ textAlign: "center" }}>Something went wrong...</span>
+      ) : null}
     </Container>
   );
 }

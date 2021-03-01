@@ -115,6 +115,17 @@ export default function MovieCard({
     }
   }, [movies, rate, refetch]);
 
+  const MovieTitle = ({ title, releaseYear }) => {
+    const newProps = {};
+    return (
+      <Paper {...newProps} className="secondMovie_cardText">
+        <h3>
+          {title} <i>({releaseYear})</i>
+        </h3>
+      </Paper>
+    );
+  };
+
   const ActionButtons = (props) => {
     const newProps = {};
 
@@ -215,7 +226,7 @@ export default function MovieCard({
             feedback("hate");
           }}
           onSwipeRight={() => handleRate("love")}
-          swipeSensitivity={100}
+          swipeSensitivity={50}
           style={{
             backgroundImage: `url(https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg)`,
             backgroundSize: "contain",
@@ -223,11 +234,7 @@ export default function MovieCard({
             backgroundPosition: "center",
           }}
         >
-          <Paper className="secondMovie_cardText">
-            <h3>
-              {m.title} <i>({m.releaseYear})</i>
-            </h3>
-          </Paper>
+          <MovieTitle title={m.title} releaseYear={m.releaseYear} />
         </Card>
       ))}
       <RateFeedback />

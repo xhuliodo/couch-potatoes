@@ -106,7 +106,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
               placement === "bottom" ? "center top" : "center bottom",
           }}
         >
-          <Paper>
+          <Paper elevation={2}>
             <ClickAwayListener onClickAway={handleClose}>
               <MenuList autoFocusItem={open} id="menu-list-grow">
                 {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
@@ -132,6 +132,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
             <Switch
               checked={darkTheme}
               icon={<Brightness7 />}
+              color="default"
               checkedIcon={<Brightness3 />}
               onChange={() => {
                 localStorage.setItem("darkMode", !darkTheme);

@@ -2155,7 +2155,7 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@xhuliodo/react-swipeable-cards@git+https://github.com/xhuliodo/react-movie-cards-build#master":
+"@xhuliodo/react-swipeable-cards@https://github.com/xhuliodo/react-movie-cards-build":
   version "1.0.6"
   resolved "git+https://github.com/xhuliodo/react-movie-cards-build#6a1d9eb4350fe3ce30a4660b006ddf32b3245cc4"
   dependencies:
