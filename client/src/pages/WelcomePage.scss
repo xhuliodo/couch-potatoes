@@ -18,8 +18,12 @@
   }
 }
 
-// @media (max-width: 530px) {
-//   .movie_screen {
-//     width: 80vw
-//   }
-// }
+.main_text {
+  color: #000;
+  text-align: center;
+}
+
+.MuiSnackbarContent-root {
+  color: #000 !important;
+  background-color: #fff !important;
+}

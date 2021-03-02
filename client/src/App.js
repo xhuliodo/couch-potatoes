@@ -5,7 +5,6 @@ import {
   createMuiTheme,
   Paper,
   ThemeProvider,
-  Container,
   CssBaseline,
 } from "@material-ui/core";
 
@@ -20,12 +19,7 @@ import history from "./utils/history";
 // pages and components
 import MenuBar from "./components/MenuBar";
 import Footer from "./components/Footer";
-import WelcomePage from "./pages/WelcomePage";
-import GettingToKnowUserPage from "./pages/GettingToKnowUserPage";
-import SelectingGenrePage from "./pages/SelectingGenrePage";
-import Solo from "./pages/Solo";
-
-import cinema from "./utils/cinema.jpg";
+import PageRoutes from "./pages/PageRoutes";
 
 export default function App() {
   // dark theme setup
@@ -34,14 +28,6 @@ export default function App() {
     // eslint-disable-next-line eqeqeq
     userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
-
-  const [cinemaBackground, setCinemaBackground] = useState("nada");
-  const isUserInLandingPage = window.location.pathname === "/" ? true : false;
-  useEffect(() => {
-    const landing = window.location.pathname;
-    if (landing === "/") setCinemaBackground(`url(${cinema})`);
-    else setCinemaBackground("nada");
-  }, [window.location.pathname]);
 
   const customTheme = {
     overrides: {
@@ -108,40 +94,12 @@ export default function App() {
             display: "flex",
             flexDirection: "column",
             borderRadius: "0px",
-            backgroundImage: cinemaBackground,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "100vw 100vh",
           }}
         >
-          {isUserInLandingPage ? null : (
+          <Router history={history}>
             <MenuBar darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
-          )}
-          <Container
-            maxWidth="md"
-            style={{
-              marginTop: "15px",
-              flexGrow: "3",
-              alignContent: "flex-start",
-              borderRadius: "0px!important",
-            }}
-          >
-            <Router history={history}>
-              <Switch>
-                <Route exact path="/" component={WelcomePage} />
-                <Route
-                  exact
-                  path="/getting-to-know-1"
-                  component={SelectingGenrePage}
-                />
-                <Route
-                  exact
-                  path="/getting-to-know-2"
-                  component={GettingToKnowUserPage}
-                />
-                <Route exact path="/solo" component={Solo} />
-              </Switch>
-            </Router>
-          </Container>
+            <PageRoutes />
+          </Router>
           {/* <Footer /> */}
         </Paper>
       </ThemeProvider>

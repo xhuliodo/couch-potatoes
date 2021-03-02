@@ -23,6 +23,7 @@ import "./MenuBar.scss";
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
 import { Brightness3, Brightness7 } from "@material-ui/icons";
+import { useHistory, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -43,11 +44,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
+export default function MenuBar({ darkTheme, setDarkTheme }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
-  const isUserInLandingPage = window.location.pathname === "/" ? true : false;
+  const location = useLocation();
+  const [isUserInLandingPage, setIsUserInLandingPage] = useState(true);
+
+  useEffect(() => {
+    console.log("do i get here");
+    if (location.pathname === "/") {
+      setIsUserInLandingPage(true);
+    } else setIsUserInLandingPage(false);
+  }, [location]);
 
   const anchorRef = useRef(null);
 
@@ -122,7 +131,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
     </Popper>
   );
 
-  return (
+  return isUserInLandingPage ? null : (
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar style={{ minHeight: "48px" }}>

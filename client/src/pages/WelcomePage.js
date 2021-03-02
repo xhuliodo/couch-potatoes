@@ -1,13 +1,24 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button, Icon, Snackbar, Typography } from "@material-ui/core";
-import { ConfirmationNumber } from "@material-ui/icons";
+import { Button, Snackbar, Typography } from "@material-ui/core";
+import { ConfirmationNumber, Movie } from "@material-ui/icons";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
+import cinema from "../utils/cinema.jpg";
 import "./WelcomePage.scss";
 
 export default function WelcomePage() {
   const history = useHistory();
+  const location = useLocation();
+
+  const [cinemaBackground, setCinemaBackground] = useState(`url(${cinema})`);
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setCinemaBackground(`url${cinema}`);
+    } else {
+      setCinemaBackground("");
+    }
+  }, [location]);
   const redirect = () => {
     history.push("/solo");
   };
@@ -48,17 +59,40 @@ export default function WelcomePage() {
         height: "100%",
         alignItems: "center",
         justifyContent: "flex-start",
+        backgroundImage: cinemaBackground,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "100vw 100vh",
       }}
     >
       <div className="movie_screen">
-        <Typography style={{ fontSize: "2rem" }} align="center">
-          Get personalized 🎬 recommendations
+        <Typography
+          className="main_text"
+          style={{ fontSize: "2rem" }}
+          align="center"
+        >
+          Get personalized
+          <Movie
+            style={{
+              margin: "5px",
+              marginBottom: "-13px",
+              fontSize: "3rem",
+            }}
+          />
+          recommendations
         </Typography>
-        <Typography style={{ fontSize: "1rem" }} align="center">
+        <Typography
+          className="main_text"
+          style={{ fontSize: "1rem" }}
+          align="center"
+        >
           insert movie/stalker/lazy pun here
         </Typography>
         <Button
-          style={{ margin: "5vh auto" }}
+          style={{
+            margin: "5vh auto",
+            backgroundColor: "#8e72a7",
+            color: "#fff",
+          }}
           variant="contained"
           onClick={handleSignUp}
           size="large"
