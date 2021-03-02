@@ -39,12 +39,16 @@ const useStyles = makeStyles((theme) => ({
   },
   userButton: {
     textTransform: "none",
+    color: "#fff",
   },
 }));
 
 export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+
+  const isUserInLandingPage = window.location.pathname === "/" ? true : false;
+
   const anchorRef = useRef(null);
 
   const {
@@ -109,8 +113,6 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
           <Paper elevation={2}>
             <ClickAwayListener onClickAway={handleClose}>
               <MenuList autoFocusItem={open} id="menu-list-grow">
-                {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
-                {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </MenuList>
             </ClickAwayListener>
@@ -133,7 +135,7 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
               checked={darkTheme}
               icon={<Brightness7 />}
               color="default"
-              checkedIcon={<Brightness3 />}
+              checkedIcon={<Brightness3 style={{ color: "#f2ebff " }} />}
               onChange={() => {
                 localStorage.setItem("darkMode", !darkTheme);
                 setDarkTheme(!darkTheme);
@@ -159,7 +161,11 @@ export default function MenuBar({ darkThemeIcon, darkTheme, setDarkTheme }) {
                 </Button>
               </>
             ) : (
-              <Button onClick={handleLogin} color="default" variant="contained">
+              <Button
+                className={classes.userButton}
+                variant="outlined"
+                onClick={handleLogin}
+              >
                 Log in
               </Button>
             )}

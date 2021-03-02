@@ -1,0 +1,25 @@
+.movie_screen {
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  width: 60vw;
+  height: 45vh;
+  margin-top: 5vh;
+  box-shadow: inset 0px 0px 60px 5px rgba(0, 0, 0, 0.75);
+  @media (max-width: 530px) {
+    width: 80vw;
+  }
+  @media (max-width: 415px) {
+    width: 90vw;
+  }
+}
+
+// @media (max-width: 530px) {
+//   .movie_screen {
+//     width: 80vw
+//   }
+// }

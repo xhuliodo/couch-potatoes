@@ -25,6 +25,8 @@ import GettingToKnowUserPage from "./pages/GettingToKnowUserPage";
 import SelectingGenrePage from "./pages/SelectingGenrePage";
 import Solo from "./pages/Solo";
 
+import cinema from "./utils/cinema.jpg";
+
 export default function App() {
   // dark theme setup
   const userPref = localStorage.getItem("darkMode");
@@ -33,42 +35,15 @@ export default function App() {
     userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
 
-  // const customTheme = {
-  //   overrides: {
-  //     MuiCssBaseline: {
-  //       "@global": {
-  //         "*::-webkit-scrollbar": {
-  //           // "-webkit-appearance": "none",
-  //           width: "8px",
-  //           height: "8px",
-  //         },
-  //         "*::-webkit-scrollbar-thumb": {
-  //           backgroundColor: "grey",
-  //         },
-  //         "::-webkit-scrollbar-thumb": {
-  //           // background: "#888",
-  //           borderRadius: "15px",
-  //           // "-webkit-overflow-scrolling": "auto",
-  //         },
-  //         "*:hover": {
-  //           "&::-webkit-scrollbar-thumb": {
-  //             backgroundColor: "darkgrey",
-  //           },
-  //         },
-  //         /* Equivalent alternative:
-  //         "*:hover::-webkit-scrollbar-thumb": {
-  //           backgroundColor: "green"
-  //         }
-  //          */
-  //       },
-  //     },
-  //   },
-  //   palette: {
-  //     type: !darkTheme ? "light" : "dark",
+  const [cinemaBackground, setCinemaBackground] = useState("nada");
+  const isUserInLandingPage = window.location.pathname === "/" ? true : false;
+  useEffect(() => {
+    const landing = window.location.pathname;
+    if (landing === "/") setCinemaBackground(`url(${cinema})`);
+    else setCinemaBackground("nada");
+  }, [window.location.pathname]);
 
-  //   },
-  // };
-  const appliedTheme = createMuiTheme({
+  const customTheme = {
     overrides: {
       MuiCssBaseline: {
         "@global": {
@@ -105,7 +80,8 @@ export default function App() {
       // background: { paper: "#c4c4c4" },
       // text: { primary: "#fff", secondary:"#fff" },
     },
-  });
+  };
+  const appliedTheme = createMuiTheme(customTheme);
 
   // react query setup
   const queryClient = new QueryClient({
@@ -128,29 +104,24 @@ export default function App() {
         <Paper
           elevation={0}
           style={{
-            // minHeight: "885px",
-            // minHeight: "100vh",
             height: "100vh",
             display: "flex",
             flexDirection: "column",
             borderRadius: "0px",
+            backgroundImage: cinemaBackground,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100vw 100vh",
           }}
         >
-          <MenuBar
-            // style={{
-            //   maxHeight: "75px",
-            // }}
-            darkTheme={darkTheme}
-            setDarkTheme={setDarkTheme}
-          />
+          {isUserInLandingPage ? null : (
+            <MenuBar darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
+          )}
           <Container
             maxWidth="md"
             style={{
               marginTop: "15px",
               flexGrow: "3",
               alignContent: "flex-start",
-
-              // height: "100%",
               borderRadius: "0px!important",
             }}
           >
