@@ -98,7 +98,7 @@ export default function App() {
         >
           <Router history={history}>
             <MenuBar darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
-            <PageRoutes />
+            <PageRoutes darkTheme={darkTheme} />
           </Router>
           {/* <Footer /> */}
         </Paper>

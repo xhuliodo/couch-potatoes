@@ -6,7 +6,7 @@ import { SelectingGenrePage } from "./SelectingGenrePage";
 import { Solo } from "./Solo";
 import WelcomePage from "./WelcomePage";
 
-export default function PageRoutes() {
+export default function PageRoutes({ darkTheme, ...rest }) {
   // landing page conditional styling
   const location = useLocation();
 
@@ -20,6 +20,7 @@ export default function PageRoutes() {
         paddingRight: "0",
         margin: "0",
         maxWidth: "100%",
+        backgroundColor: `${darkTheme ? "#262626" : "#cecece"}`,
       });
     } else {
       setLandingStyling({ marginTop: "15px" });

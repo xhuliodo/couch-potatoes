@@ -4,8 +4,7 @@ import { ConfirmationNumber, Movie } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import cinema from "../utils/cinema.png";
-import background from "../utils/background.svg";
+import cinema from "../utils/cinema.svg";
 import "./WelcomePage.scss";
 
 export default function WelcomePage() {
@@ -15,11 +14,12 @@ export default function WelcomePage() {
   const [cinemaBackground, setCinemaBackground] = useState(`url(${cinema})`);
   useEffect(() => {
     if (location.pathname === "/") {
-      setCinemaBackground(`url${background}`);
+      setCinemaBackground(`url${cinema}`);
     } else {
       setCinemaBackground("");
     }
   }, [location]);
+
   const redirect = () => {
     history.push("/solo");
   };
@@ -33,7 +33,8 @@ export default function WelcomePage() {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const handleSignUp = () => {
-    loginWithRedirect({ screen_hint: "signup" });
+    if (isAuthenticated) redirect();
+    else loginWithRedirect({ screen_hint: "signup" });
   };
 
   const [open, setOpen] = useState(isAuthenticated);
@@ -90,7 +91,7 @@ export default function WelcomePage() {
         <Button
           style={{
             margin: "5vh auto",
-            backgroundColor: "#8e72a7",
+            backgroundColor: "#5c4f74",
             color: "#fff",
           }}
           variant="contained"
