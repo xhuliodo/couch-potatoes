@@ -57,7 +57,7 @@ export default function WelcomePage() {
         flexDirection: "column",
         // flex: "2 1 auto",
         zIndex: "1",
-        height: "100%",
+        height: "100vh",
         alignItems: "center",
         justifyContent: "flex-start",
         backgroundImage: cinemaBackground,
