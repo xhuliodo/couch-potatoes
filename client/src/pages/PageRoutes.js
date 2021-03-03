@@ -6,7 +6,8 @@ import { SelectingGenrePage } from "./SelectingGenrePage";
 import { Solo } from "./Solo";
 import WelcomePage from "./WelcomePage";
 
-export default function PageRoutes({ darkTheme, ...rest }) {
+export default function PageRoutes() {
+// { darkTheme, ...rest }
   // landing page conditional styling
   const location = useLocation();
 
@@ -20,7 +21,7 @@ export default function PageRoutes({ darkTheme, ...rest }) {
         paddingRight: "0",
         margin: "0",
         maxWidth: "100%",
-        backgroundColor: `${darkTheme ? "#262626" : "#cecece"}`,
+        // backgroundColor: `${darkTheme ? "#262626" : "#cecece"}`,
       });
     } else {
       setLandingStyling({ marginTop: "15px" });
@@ -37,14 +38,30 @@ export default function PageRoutes({ darkTheme, ...rest }) {
       }}
     >
       <Switch>
-        <Route exact path="/" component={WelcomePage} />
-        <Route exact path="/getting-to-know-1" component={SelectingGenrePage} />
         <Route
+          // {...rest}
+          exact
+          path="/"
+          component={WelcomePage}
+        />
+        <Route
+          // {...rest}
+          exact
+          path="/getting-to-know-1"
+          component={SelectingGenrePage}
+        />
+        <Route
+          // {...rest}
           exact
           path="/getting-to-know-2"
           component={GettingToKnowUserPage}
         />
-        <Route exact path="/solo" component={Solo} />
+        <Route
+          //  {...rest}
+          exact
+          path="/solo"
+          component={Solo}
+        />
       </Switch>
     </Container>
   );
