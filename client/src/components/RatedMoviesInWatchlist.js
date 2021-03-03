@@ -53,13 +53,11 @@ export default function RatedMoviesInWatchlist() {
   const lastElementRef = useCallback(
     (node) => {
       if (isLoading) {
-        console.log("currently loading");
         return;
       }
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && data.length === limit) {
-          console.log(skip);
           increaseSkip();
         }
       });

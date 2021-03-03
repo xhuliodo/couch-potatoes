@@ -15,6 +15,7 @@ import {
   Paper,
   Popper,
   Switch,
+  Link,
 } from "@material-ui/core";
 
 // mendja eshte gje e madhe, tek file per 2 px XD
@@ -49,10 +50,10 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
   const [open, setOpen] = useState(false);
 
   const location = useLocation();
+  const history = useHistory();
   const [isUserInLandingPage, setIsUserInLandingPage] = useState(true);
 
   useEffect(() => {
-    console.log("do i get here");
     if (location.pathname === "/") {
       setIsUserInLandingPage(true);
     } else setIsUserInLandingPage(false);
@@ -135,7 +136,14 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar style={{ minHeight: "48px" }}>
-          <Typography variant="h5" noWrap>
+          <Typography
+            variant="h5"
+            noWrap
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              history.push("/");
+            }}
+          >
             Couch Potatoes
           </Typography>
           <div className={classes.grow} />

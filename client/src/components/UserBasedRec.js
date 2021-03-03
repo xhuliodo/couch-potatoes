@@ -23,9 +23,8 @@ export default function UserBasedRec() {
     return useQuery(
       ["userBasedRec", minimumRatings, peopleToCompare, moviesToRecommend],
       async () => {
-        const data = graphqlClient.then((gc) =>
-          gc.request(
-            gql`
+        const data = (await graphqlClient).request(
+          gql`
           query{
             recommendFromOtherUsers( 
               minimumRatings: ${minimumRatings} 
@@ -39,7 +38,6 @@ export default function UserBasedRec() {
                 } 
             }
         `
-          )
         );
         const { recommendFromOtherUsers } = await data;
         return recommendFromOtherUsers;

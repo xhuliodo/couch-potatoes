@@ -24,12 +24,6 @@ export default function WelcomePage() {
     history.push("/solo");
   };
 
-  const action = (
-    <Button variant="contained" onClick={redirect} size="small">
-      GO
-    </Button>
-  );
-
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   const handleSignUp = () => {
@@ -37,19 +31,23 @@ export default function WelcomePage() {
     else loginWithRedirect({ screen_hint: "signup" });
   };
 
-  const [open, setOpen] = useState(isAuthenticated);
+  // const [open, setOpen] = useState(isAuthenticated);
 
-  useEffect(() => {
-    setOpen(isAuthenticated);
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   setOpen(isAuthenticated);
+  // }, [isAuthenticated]);
+  // const action = (
+  //   <Button variant="contained" onClick={redirect} size="small">
+  //     GO
+  //   </Button>
+  // );
+  // const handleClose = (event, reason) => {
+  //   if (reason === "clickaway") {
+  //     return;
+  //   }
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
+  //   setOpen(false);
+  // };
 
   return (
     <div
@@ -98,7 +96,7 @@ export default function WelcomePage() {
           onClick={handleSignUp}
           size="large"
         >
-          Start now
+          {isAuthenticated ? "Go back to app" : "Start now"}
           {/* Start couching now */}
           {/* Get a sure{" "}
         <span style={{ fontSize: "2rem", marginLeft: "5px" }}>🎟</span> */}
@@ -110,13 +108,13 @@ export default function WelcomePage() {
         </Button>
       </div>
 
-      <Snackbar
+      {/* <Snackbar
         open={open}
         onClose={handleClose}
         action={action}
         message="Go back to using the app?"
         anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-      />
+      /> */}
     </div>
   );
 }

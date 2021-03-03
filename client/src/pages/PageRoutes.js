@@ -1,13 +1,13 @@
 import { Container } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
-import { GettingToKnowUserPage } from "./GettingToKnowUserPage";
-import { SelectingGenrePage } from "./SelectingGenrePage";
-import { Solo } from "./Solo";
-import WelcomePage from "./WelcomePage";
 
-export default function PageRoutes() {
-// { darkTheme, ...rest }
+import WelcomePage from "./WelcomePage";
+import GettingToKnowUserPage from "./GettingToKnowUserPage";
+import SelectingGenrePage from "./SelectingGenrePage";
+import Solo from "./Solo";
+
+export default function PageRoutes({ darkTheme }) {
   // landing page conditional styling
   const location = useLocation();
 
@@ -21,12 +21,13 @@ export default function PageRoutes() {
         paddingRight: "0",
         margin: "0",
         maxWidth: "100%",
-        // backgroundColor: `${darkTheme ? "#262626" : "#cecece"}`,
+        backgroundColor: `${darkTheme ? "#262626" : "#cecece"}`,
       });
     } else {
       setLandingStyling({ marginTop: "15px" });
     }
   }, [location]);
+
   return (
     <Container
       maxWidth="md"
@@ -38,30 +39,14 @@ export default function PageRoutes() {
       }}
     >
       <Switch>
+        <Route exact path="/" component={WelcomePage} />
+        <Route exact path="/getting-to-know-1" component={SelectingGenrePage} />
         <Route
-          // {...rest}
-          exact
-          path="/"
-          component={WelcomePage}
-        />
-        <Route
-          // {...rest}
-          exact
-          path="/getting-to-know-1"
-          component={SelectingGenrePage}
-        />
-        <Route
-          // {...rest}
           exact
           path="/getting-to-know-2"
           component={GettingToKnowUserPage}
         />
-        <Route
-          //  {...rest}
-          exact
-          path="/solo"
-          component={Solo}
-        />
+        <Route exact path="/solo" component={Solo} />
       </Switch>
     </Container>
   );
