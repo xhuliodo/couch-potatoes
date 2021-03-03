@@ -88,7 +88,7 @@ export default function WelcomePage() {
         </Typography>
         <Button
           style={{
-            margin: "5vh auto",
+            margin: "3vh auto",
             backgroundColor: "#5c4f74",
             color: "#fff",
           }}
