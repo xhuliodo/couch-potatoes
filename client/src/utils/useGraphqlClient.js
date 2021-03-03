@@ -7,8 +7,8 @@ export const useGraphqlClient = async () => {
   const graphqlClient = new GraphQLClient(endpoint);
 
   const { getIdTokenClaims } = useAuth0();
-  const { __raw: token } = await getIdTokenClaims();
-  graphqlClient.setHeader("Authorization", `Bearer ${token}`);
+  const token = await getIdTokenClaims();
+  graphqlClient.setHeader("Authorization", `Bearer ${token?.__raw}`);
 
   return graphqlClient;
 };

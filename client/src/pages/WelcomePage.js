@@ -61,9 +61,7 @@ export default function WelcomePage() {
         alignItems: "center",
         justifyContent: "flex-start",
         backgroundImage: cinemaBackground,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
+        
       }}
       className="responsive_background"
     >

@@ -30,7 +30,7 @@
 }
 
 .responsive_background {
-  @media (max-width: 800px) {
-    background-position: center center !important;
-  }
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
 }
