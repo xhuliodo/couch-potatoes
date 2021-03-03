@@ -29,8 +29,12 @@ const ServiceWorkerWrapper = () => {
       onClick={reloadPage}
       anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       action={
-        <Button color="inherit" size="small" onClick={reloadPage}>
-          Reload
+        <Button
+          variant="contained"
+          size="small"
+          onClick={reloadPage}
+        >
+          Update
         </Button>
       }
     />
