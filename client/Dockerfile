@@ -10,7 +10,8 @@ COPY yarn.lock ./
 RUN yarn --silent
 COPY . ./
 RUN yarn run build 
-RUN echo "self.addEventListener(\"install\", function() { self.skipWaiting(); });" >> ./build/service-worker.js
+# auto-update failed, or rather a bit too finicky
+# RUN echo "self.addEventListener(\"install\", function() { self.skipWaiting(); });" >> ./build/service-worker.js
 
 
 # production environment

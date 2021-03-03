@@ -20,6 +20,7 @@ import history from "./utils/history";
 import MenuBar from "./components/MenuBar";
 import Footer from "./components/Footer";
 import PageRoutes from "./pages/PageRoutes";
+import ServiceWorkerWrapper from "./components/ServiceWorkerWrapper";
 
 export default function App() {
   // dark theme setup
@@ -102,6 +103,7 @@ export default function App() {
           </Router>
           {/* <Footer /> */}
         </Paper>
+        <ServiceWorkerWrapper />
       </ThemeProvider>
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
