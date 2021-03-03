@@ -13,7 +13,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 // import { ReactQueryDevtools } from "react-query/devtools";
 
 // app routing
-import { Router, Route, Switch } from "react-router-dom";
+import { Router } from "react-router-dom";
 import history from "./utils/history";
 
 // pages and components

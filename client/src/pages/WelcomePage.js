@@ -4,7 +4,8 @@ import { ConfirmationNumber, Movie } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import cinema from "../utils/cinema.jpg";
+import cinema from "../utils/cinema.png";
+import background from "../utils/background.svg";
 import "./WelcomePage.scss";
 
 export default function WelcomePage() {
@@ -14,7 +15,7 @@ export default function WelcomePage() {
   const [cinemaBackground, setCinemaBackground] = useState(`url(${cinema})`);
   useEffect(() => {
     if (location.pathname === "/") {
-      setCinemaBackground(`url${cinema}`);
+      setCinemaBackground(`url${background}`);
     } else {
       setCinemaBackground("");
     }
@@ -61,8 +62,10 @@ export default function WelcomePage() {
         justifyContent: "flex-start",
         backgroundImage: cinemaBackground,
         backgroundRepeat: "no-repeat",
-        backgroundSize: "100vw 100vh",
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
       }}
+      className="responsive_background"
     >
       <div className="movie_screen">
         <Typography
