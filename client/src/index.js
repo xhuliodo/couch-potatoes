@@ -1,18 +1,15 @@
-import React from "react";
 import ReactDOM from "react-dom";
-import "./index.scss";
 import App from "./App";
-import history from "./utils/history";
 
 //importing auth
 import { Auth0Provider } from "@auth0/auth0-react";
+import history from "./utils/history";
 
 const onRedirectCallback = (appState) => {
   history.push(
     appState && appState.returnTo ? appState.returnTo : window.location.pathname
   );
 };
-
 const redirectUri = process.env.REACT_APP_DOMAIN || "http://localhost:3000";
 
 ReactDOM.render(
@@ -26,4 +23,3 @@ ReactDOM.render(
   </Auth0Provider>,
   document.getElementById("root")
 );
-

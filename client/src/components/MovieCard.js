@@ -26,8 +26,8 @@ import RateFeedback from "./RateFeedback";
 export default function MovieCard({
   compName = "gtk",
   movies,
-  skip,
-  setSkip,
+  skip = 0,
+  setSkip = null,
   refetch,
   startedFromTheBottomNowWeHere = false,
 }) {
@@ -109,11 +109,17 @@ export default function MovieCard({
     movies.shift();
   };
 
+  const skipMovie = () => {
+    setSkip(skip + 1);
+    nextMovie();
+    openRateFeedbackExported("skip");
+  };
+
   useEffect(() => {
     if (movies.length === 0) {
       refetch();
     }
-  }, [movies, rate, refetch]);
+  }, [skip, setSkip, movies, rate, refetch]);
 
   const MovieTitle = ({ title, releaseYear }) => {
     const newProps = {};
@@ -167,11 +173,7 @@ export default function MovieCard({
             <Tooltip placement="top" arrow title="Skip">
               <Button
                 className="actionButton"
-                onClick={() => {
-                  setSkip(skip + 1);
-                  nextMovie();
-                  openRateFeedbackExported("skip");
-                }}
+                onClick={skipMovie}
                 variant="contained"
               >
                 <SkipNext fontSize="inherit" />

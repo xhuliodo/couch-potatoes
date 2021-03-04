@@ -11,13 +11,14 @@ import {
   DialogContentText,
   DialogActions,
 } from "@material-ui/core";
-import "../components/MovieCard.scss";
+
+import { withAuthenticationRequired } from "@auth0/auth0-react";
+import AuthLoading from "../components/AuthLoading";
 
 import { useMovieStore } from "../context/movies";
 
 import GenreBasedRec from "../components/GenreBasedRec";
-import { withAuthenticationRequired } from "@auth0/auth0-react";
-import AuthLoading from "../components/AuthLoading";
+import "../components/MovieCard.scss";
 import SetupSwipeHelper from "../components/SetupSwipeHelper";
 
 export const GettingToKnowUserPage = (props) => {

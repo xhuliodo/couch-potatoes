@@ -15,7 +15,6 @@ import {
   Paper,
   Popper,
   Switch,
-  Link,
 } from "@material-ui/core";
 
 // mendja eshte gje e madhe, tek file per 2 px XD
@@ -23,7 +22,9 @@ import "./MenuBar.scss";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
+// dark mode icons
 import { Brightness3, Brightness7 } from "@material-ui/icons";
+// conditional landing page styling import
 import { useHistory, useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "50px",
   },
   title: {
-    fontSize: "2rem",
+    fontSize: "1.3rem",
+    cursor: "pointer",
   },
   small: {
     width: theme.spacing(3),
@@ -47,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MenuBar({ darkTheme, setDarkTheme }) {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
 
+  // menu bar in landing page show/hide
   const location = useLocation();
   const history = useHistory();
   const [isUserInLandingPage, setIsUserInLandingPage] = useState(true);
@@ -59,21 +61,33 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
     } else setIsUserInLandingPage(false);
   }, [location]);
 
-  const anchorRef = useRef(null);
-
+  // auth logic
   const {
     isAuthenticated,
     logout,
     loginWithRedirect,
     user,
-    getIdTokenClaims,
+    // getIdTokenClaims,
   } = useAuth0();
+
+  const handleLogout = () => {
+    localStorage.removeItem("finishedSetup");
+    setOpen(false);
+    logout();
+  };
+
+  const handleLogin = () => {
+    loginWithRedirect();
+  };
+  // toolbar logic
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
 
   const handleToggle = async () => {
     setOpen((prevOpen) => !prevOpen);
-    const token = await getIdTokenClaims();
-    console.log(token.__raw);
-    console.log(user);
+    // const token = await getIdTokenClaims();
+    // console.log(token.__raw);
+    // console.log(user);
   };
 
   const handleClose = (event) => {
@@ -82,16 +96,6 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
     }
 
     setOpen(false);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("finishedSetup");
-    setOpen(false);
-    logout({ returnTo: window.location.origin });
-  };
-
-  const handleLogin = () => {
-    loginWithRedirect();
   };
 
   const prevOpen = useRef(open);
@@ -137,9 +141,8 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
       <AppBar position="static">
         <Toolbar style={{ minHeight: "48px" }}>
           <Typography
-            variant="h5"
             noWrap
-            style={{ cursor: "pointer" }}
+            className={classes.title}
             onClick={() => {
               history.push("/");
             }}
@@ -168,13 +171,12 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
                   aria-haspopup="true"
                   onClick={handleToggle}
                   color="inherit"
-                  // startIcon={<AccountCircle />}
                 >
                   <Avatar
                     className={classes.small}
-                    src={user ? user.picture : ""}
+                    src={user ? user?.picture : ""}
                   />
-                  {user.given_name}
+                  {user?.given_name}
                 </Button>
               </>
             ) : (

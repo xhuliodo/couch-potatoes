@@ -1,5 +1,5 @@
-import { Container } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import { Container, makeStyles } from "@material-ui/core";
+import React, { useEffect, useMemo, useState } from "react";
 import { Route, Switch, useLocation } from "react-router-dom";
 
 import WelcomePage from "./WelcomePage";
@@ -8,12 +8,13 @@ import SelectingGenrePage from "./SelectingGenrePage";
 import Solo from "./Solo";
 
 export default function PageRoutes({ darkTheme }) {
+  const classes = useStyle();
   // landing page conditional styling
   const location = useLocation();
 
-  const [landingStyling, setLandingStyling] = useState({
-    marginTop: "15px",
-  });
+  const defaultStyle = useMemo(() => ({ marginTop: "15px" }), []);
+  const [landingStyling, setLandingStyling] = useState(defaultStyle);
+
   useEffect(() => {
     if (location.pathname === "/") {
       setLandingStyling({
@@ -24,19 +25,15 @@ export default function PageRoutes({ darkTheme }) {
         backgroundColor: `${darkTheme ? "#262626" : "#cecece"}`,
       });
     } else {
-      setLandingStyling({ marginTop: "15px" });
+      setLandingStyling(defaultStyle);
     }
-  }, [location]);
+  }, [darkTheme, defaultStyle, location]);
 
   return (
     <Container
       maxWidth="md"
-      style={{
-        flexGrow: "3",
-        alignContent: "flex-start",
-        borderRadius: "0px!important",
-        ...landingStyling,
-      }}
+      className={classes.fullScreenSecondLevel}
+      style={{ ...landingStyling }}
     >
       <Switch>
         <Route exact path="/" component={WelcomePage} />
@@ -51,3 +48,12 @@ export default function PageRoutes({ darkTheme }) {
     </Container>
   );
 }
+
+const useStyle = makeStyles(() => ({
+  fullScreenSecondLevel: {
+    flexGrow: "3",
+    alignContent: "flex-start",
+    borderRadius: "0px!important",
+    paddingBottom: "15px",
+  },
+}));

@@ -22,6 +22,7 @@ export const removeFromWatchlist = async (
     );
     successFunc();
   } else {
+    // TODO: you should implement some feedback logic, when the rating did not happen
     console.log("you shall not remove");
   }
 };

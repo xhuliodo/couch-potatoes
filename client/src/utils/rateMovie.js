@@ -34,7 +34,7 @@ export const rateMovie = async (
   }
   const { rateMovie } = await data;
   if (rateMovie === null) {
-    // TODO: you should implement some error logic, when the rating did not happen
+    // TODO: you should implement some feedback logic, when the rating did not happen
     console.log("the rating didn't do shit");
   } else {
     console.log("you rated the movie with id", rateMovie.movieId);

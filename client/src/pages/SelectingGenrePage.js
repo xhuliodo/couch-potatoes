@@ -1,19 +1,29 @@
-import { Button, Container, Grid, Paper, Typography } from "@material-ui/core";
+import { useMemo, useState } from "react";
+
+import {
+  Button,
+  Container,
+  Grid,
+  makeStyles,
+  Paper,
+  Typography,
+} from "@material-ui/core";
+import { DoneOutline } from "@material-ui/icons";
+
+import { withAuthenticationRequired } from "@auth0/auth0-react";
 
 import { useMutation, useQuery } from "react-query";
 import { gql } from "graphql-request";
+import { useGraphqlClient } from "../utils/useGraphqlClient";
 
 import SelectingGenre from "../components/SelectingGenre";
-import { useMemo, useState } from "react";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { DoneOutline } from "@material-ui/icons";
 
 export const SelectingGenrePage = (props) => {
+  const classes = useStyle();
   const useGenres = () => {
     return useQuery("genres", async () => {
-      const data = await (await graphqlClient).request(
+      const data = (await graphqlClient).request(
         gql`
           query {
             Genre {
@@ -28,10 +38,9 @@ export const SelectingGenrePage = (props) => {
     });
   };
   const { status, data, error } = useGenres();
-  const [selectedGenres, setSelectedGenres] = useState([]);
-
-  const { user } = useAuth0();
   const graphqlClient = useGraphqlClient();
+
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   const handleSubmit = useMutation(async ({ genres }) => {
     const data = await (await graphqlClient).request(
@@ -56,8 +65,10 @@ export const SelectingGenrePage = (props) => {
 
   return (
     <Paper elevation={0}>
-      <Typography variant="h5">Select at least 3 genres:</Typography>
-      <Grid container justify="center" style={{ marginTop: "15px" }}>
+      <Typography className={classes.instruction}>
+        Select at least 3 genres:
+      </Typography>
+      <Grid container justify="center" style={{ marginTop: "5px" }}>
         {status === "loading" ? (
           <span>Fetching data</span>
         ) : status === "error" ? (
@@ -83,9 +94,7 @@ export const SelectingGenrePage = (props) => {
           variant="contained"
           onClick={() =>
             handleSubmit.mutate({
-              userId: user?.sub,
               genres: selectedGenres,
-              name: user?.given_name,
             })
           }
         >
@@ -99,3 +108,9 @@ export const SelectingGenrePage = (props) => {
 export default withAuthenticationRequired(SelectingGenrePage, {
   onRedirecting: () => <AuthLoading />,
 });
+
+const useStyle = makeStyles(() => ({
+  instruction: {
+    fontSize: "1.2rem",
+  },
+}));

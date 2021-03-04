@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // dark theme importing
 import {
@@ -6,11 +6,12 @@ import {
   Paper,
   ThemeProvider,
   CssBaseline,
+  makeStyles,
+  useTheme,
 } from "@material-ui/core";
 
 // react query importing
 import { QueryClient, QueryClientProvider } from "react-query";
-// import { ReactQueryDevtools } from "react-query/devtools";
 
 // app routing
 import { Router } from "react-router-dom";
@@ -18,11 +19,12 @@ import history from "./utils/history";
 
 // pages and components
 import MenuBar from "./components/MenuBar";
-// import Footer from "./components/Footer";
 import PageRoutes from "./pages/PageRoutes";
 import ServiceWorkerWrapper from "./components/ServiceWorkerWrapper";
 
 export default function App() {
+  const classes = useStyle();
+  const theme = useTheme();
   // dark theme setup
   const userPref = localStorage.getItem("darkMode");
   const isDarkThemeOn =
@@ -49,6 +51,11 @@ export default function App() {
               backgroundColor: "darkgrey",
             },
           },
+          body: {
+            backgroundColor: !darkTheme
+              ? theme.palette.background.paper
+              : "#424242",
+          },
         },
       },
     },
@@ -69,28 +76,23 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={appliedTheme}>
         <CssBaseline />
-        <Paper
-          elevation={0}
-          style={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            borderRadius: "0px",
-          }}
-        >
+        <Paper elevation={0} className={classes.fullScreen}>
           <Router history={history}>
             <MenuBar darkTheme={darkTheme} setDarkTheme={setDarkTheme} />
             <PageRoutes darkTheme={darkTheme} />
           </Router>
-          {/* <Footer /> */}
           <ServiceWorkerWrapper />
         </Paper>
       </ThemeProvider>
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   );
 }
 
-export const verticalAlign = {
-  verticalAlign: "middle",
-};
+const useStyle = makeStyles(() => ({
+  fullScreen: {
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    borderRadius: "0px",
+  },
+}));
