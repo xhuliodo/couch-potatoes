@@ -18,7 +18,7 @@ import history from "./utils/history";
 
 // pages and components
 import MenuBar from "./components/MenuBar";
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 import PageRoutes from "./pages/PageRoutes";
 import ServiceWorkerWrapper from "./components/ServiceWorkerWrapper";
 
@@ -35,7 +35,6 @@ export default function App() {
       MuiCssBaseline: {
         "@global": {
           "*::-webkit-scrollbar": {
-            // "-webkit-appearance": "none",
             width: "8px",
             height: "8px",
           },
@@ -43,20 +42,13 @@ export default function App() {
             backgroundColor: "grey",
           },
           "::-webkit-scrollbar-thumb": {
-            // background: "#888",
             borderRadius: "15px",
-            // "-webkit-overflow-scrolling": "auto",
           },
           "*:hover": {
             "&::-webkit-scrollbar-thumb": {
               backgroundColor: "darkgrey",
             },
           },
-          /* Equivalent alternative:
-          "*:hover::-webkit-scrollbar-thumb": {
-            backgroundColor: "green"
-          }
-           */
         },
       },
     },
@@ -64,8 +56,6 @@ export default function App() {
       type: !darkTheme ? "light" : "dark",
       primary: { main: "#8e72a7", dark: "#8e72a7" },
       secondary: { main: "#746d4f", dark: "#746d4f" },
-      // background: { paper: "#c4c4c4" },
-      // text: { primary: "#fff", secondary:"#fff" },
     },
   };
   const appliedTheme = createMuiTheme(customTheme);
@@ -74,15 +64,6 @@ export default function App() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { refetchOnWindowFocus: false } },
   });
-
-  // auto updating pwa when new update is out
-  useEffect(() => {
-    if (window.swUpdateReady) {
-      window.swUpdateReady = false;
-      window.stop();
-      window.location.reload();
-    }
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -102,8 +83,8 @@ export default function App() {
             <PageRoutes darkTheme={darkTheme} />
           </Router>
           {/* <Footer /> */}
+          <ServiceWorkerWrapper />
         </Paper>
-        <ServiceWorkerWrapper />
       </ThemeProvider>
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
