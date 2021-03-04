@@ -22,7 +22,7 @@ import "./MenuBar.scss";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
-import { authConfig } from "./utils/auth0";
+import { authConfig } from "../utils/auth0";
 
 // dark mode icons
 import { Brightness3, Brightness7 } from "@material-ui/icons";
