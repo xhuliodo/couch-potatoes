@@ -22,6 +22,8 @@ import "./MenuBar.scss";
 
 // auth
 import { useAuth0 } from "@auth0/auth0-react";
+import { authConfig } from "./utils/auth0";
+
 // dark mode icons
 import { Brightness3, Brightness7 } from "@material-ui/icons";
 // conditional landing page styling import
@@ -73,7 +75,7 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
   const handleLogout = () => {
     localStorage.removeItem("finishedSetup");
     setOpen(false);
-    logout();
+    logout({ client_id: authConfig.client_id, returnTo: authConfig.logoutUri });
   };
 
   const handleLogin = () => {

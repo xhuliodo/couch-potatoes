@@ -4,19 +4,19 @@ import App from "./App";
 //importing auth
 import { Auth0Provider } from "@auth0/auth0-react";
 import history from "./utils/history";
+import { authConfig } from "./utils/auth0";
 
 const onRedirectCallback = (appState) => {
   history.push(
     appState && appState.returnTo ? appState.returnTo : window.location.pathname
   );
 };
-const redirectUri = process.env.REACT_APP_DOMAIN || "http://localhost:3000";
 
 ReactDOM.render(
   <Auth0Provider
-    domain="dev-ps5dqqis.eu.auth0.com"
-    clientId="DqbCvZtL8cn5plDla9TYlrJLhWIXpZtV"
-    redirectUri={`${redirectUri}/solo`}
+    domain={authConfig.domain}
+    clientId={authConfig.clientId}
+    redirectUri={authConfig.redirectUri}
     onRedirectCallback={onRedirectCallback}
   >
     <App />
