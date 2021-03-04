@@ -31,50 +31,28 @@ export default function MovieCardWatchlist({
   const theme = useTheme();
 
   const image = `http://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg`;
-
   const rating = m?.rating;
 
   return (
     <Slide
-      // appear
-      // enter={false}
       timeout={{ enter: 0, exit: 250 }}
-      // enter={false}
       direction={animation}
       in={!deleted?.includes(m.movieId)}
       unmountOnExit
     >
-      <Card ref={lastElementRef} elevation={5} className={classes.root}>
+      <Card ref={lastElementRef} elevation={3} className={classes.root}>
         <CardMedia className={classes.cover} image={image} />
         <div className={classes.details}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            <CardContent
-              style={{
-                flex: "auto",
-              }}
-            >
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <CardContent style={{ flex: "auto" }}>
               <Typography>
                 <strong>{m.title}</strong>
               </Typography>
-
               <Typography variant="subtitle1" color="textSecondary">
                 {m.releaseYear}
               </Typography>
             </CardContent>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "18px",
-                marginRight: "22px",
-                // padding: "21px",
-              }}
-            >
+            <div className={classes.infoDiv}>
               <Tooltip title="IMDB Link" arrow placement="top">
                 <Link href={m.imdbLink} rel="noreferrer" target="_blank">
                   <Info color="action" className={classes.infoIcon} />
@@ -85,13 +63,13 @@ export default function MovieCardWatchlist({
           <CardActions>
             <Button
               disabled={rating === undefined ? false : true}
+              className={classes.disabledButton}
               style={
                 rating === 0
                   ? {
                       backgroundColor: theme.palette.secondary.main,
-                      margin: "0 10px",
                     }
-                  : { margin: "0 10px" }
+                  : null
               }
               onClick={() => handleRate(m.movieId, "hate")}
               variant="contained"
@@ -114,6 +92,7 @@ export default function MovieCardWatchlist({
               onClick={() => handleRate(m.movieId, "love")}
               variant="contained"
               color="primary"
+              className={classes.buttonContainer}
             >
               <SentimentVerySatisfiedRounded
                 className={classes.rateIcons}
@@ -126,7 +105,7 @@ export default function MovieCardWatchlist({
                 onClick={() => handleRemove(m.movieId)}
                 variant="contained"
               >
-                <Delete />
+                <Delete className={classes.trashColor} />
               </IconButton>
             </div>
           </CardActions>
@@ -139,7 +118,6 @@ export default function MovieCardWatchlist({
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    // margin: "20px 0",
     marginBottom: "20px",
     marginTop: "5px",
   },
@@ -149,25 +127,41 @@ const useStyles = makeStyles((theme) => ({
     width: "90%",
   },
   cover: {
-    width: 125,
+    width: 110,
   },
   rateIcons: {
-    height: 26,
-    width: 26,
+    height: "2vh",
+    width: "2vh",
   },
-  // link: {
-  //   width: "100%",
-  //   display: "flex",
-  //   justifyContent: "flex-end",
-  // },
   trash: {
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",
   },
+  trashColor: {
+    color: "#a4a4a4",
+  },
+  infoDiv: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "18px",
+    marginRight: "22px",
+  },
   infoIcon: {
     height: 20,
     width: 20,
-    color: "#505874",
+    // color: "#505874",
+    // color: "#a4a4a4",
+  },
+  disabledButton: {
+    margin: `0 1vw`,
+    maxWidth: "64px",
+    width: "25vw",
+    minWidth: "auto",
+  },
+  buttonContainer: {
+    maxWidth: "64px",
+    width: "25vw",
+    minWidth: "auto",
   },
 }));

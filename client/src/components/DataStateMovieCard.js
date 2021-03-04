@@ -1,7 +1,9 @@
-import { LinearProgress, Typography } from "@material-ui/core";
+import { LinearProgress, makeStyles, Typography } from "@material-ui/core";
 import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 
 export default function DataStateMovieCard({ message, type }) {
+  const classes = useStyle();
+  
   return (
     <CardWrapper style={{ paddingTop: "0px" }}>
       <Card
@@ -11,19 +13,27 @@ export default function DataStateMovieCard({ message, type }) {
           backgroundPosition: "center",
         }}
       >
-        <Typography style={stylingTitle}>{message}</Typography>
+        <Typography className={classes.title}>{message}</Typography>
         {type === "loading" ? (
-          <LinearProgress style={{ width: "85%", margin: "50px auto" }} />
+          <LinearProgress className={classes.loading} />
         ) : null}
       </Card>
     </CardWrapper>
   );
 }
 
-let stylingTitle = {
-  color:"black",
-  textAlign: "center",
-  fontWeight: "bold",
-  fontSize: "35px",
-  marginTop: "45%",
-};
+const useStyle = makeStyles(() => ({
+  title: {
+    color: "black",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: "35px",
+    marginTop: "45%",
+  },
+  loading: {
+    width: "85%",
+    margin: "50px auto",
+  },
+}));
+
+let stylingTitle = {};

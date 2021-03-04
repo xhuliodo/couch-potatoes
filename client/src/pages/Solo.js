@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -10,20 +11,17 @@ import {
   MovieOutlined,
   PeopleOutline,
 } from "@material-ui/icons";
-import { useState } from "react";
-import UserBasedRec from "../components/UserBasedRec";
-import ContentBasedRec from "../components/ContentBasedRec";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
 import { gql } from "graphql-request";
-
-import DataStateMovieCard from "../components/DataStateMovieCard";
-
-import SwipeableViews from "react-swipeable-views";
-import GeneralWatchlist from "../components/GeneralWatchlist";
 import { useMovieStore } from "../context/movies";
+import SwipeableViews from "react-swipeable-views";
+import ContentBasedRec from "../components/ContentBasedRec";
+import UserBasedRec from "../components/UserBasedRec";
+import WatchlistContainer from "../components/WatchlistContainer";
+import DataStateMovieCard from "../components/DataStateMovieCard";
 
 export const Solo = (props) => {
   const classes = useStyles();
@@ -119,16 +117,6 @@ export const Solo = (props) => {
       ) : isError ? (
         <DataStateMovieCard message="Something went wrong..." />
       ) : (
-        // no animation version
-        // <div style={{ marginTop: "15px" }}>
-        //   {nav === "userBased" ? (
-        //     <UserBasedRec />
-        //   ) : nav === "genreBased" ? (
-        //     <GenreBasedRec startedFromTheBottomNowWeHere={true} />
-        //   ) : (
-        //     <WatchlistProvider />
-        //   )}
-        // </div>
         <SwipeableViews
           style={{ marginTop: "15px" }}
           axis={theme.direction === "rtl" ? "x-reverse" : "x"}
@@ -148,7 +136,7 @@ export const Solo = (props) => {
             <UserBasedRec />
           </Panel>
           <Panel value={nav} index={2} dir={theme.direction}>
-            <GeneralWatchlist />
+            <WatchlistContainer />
           </Panel>
         </SwipeableViews>
       )}

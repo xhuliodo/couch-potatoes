@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 // dark theme importing
 import {
   createMuiTheme,
@@ -9,14 +8,11 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-
 // react query importing
 import { QueryClient, QueryClientProvider } from "react-query";
-
 // app routing
 import { Router } from "react-router-dom";
 import history from "./utils/history";
-
 // pages and components
 import MenuBar from "./components/MenuBar";
 import PageRoutes from "./pages/PageRoutes";
@@ -28,7 +24,7 @@ export default function App() {
   // dark theme setup
   const userPref = localStorage.getItem("darkMode");
   const isDarkThemeOn =
-    // eslint-disable-next-line eqeqeq
+    // eslint-disable-next-line
     userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
 

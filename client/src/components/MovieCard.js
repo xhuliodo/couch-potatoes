@@ -1,27 +1,20 @@
-import {
-  Button,
-  Grid,
-  LinearProgress,
-  Paper,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
-import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
-
-import { useMutation } from "react-query";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
 import { useEffect } from "react";
+import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
 import {
   LibraryAddOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
   SkipNext,
 } from "@material-ui/icons";
-import { useMovieStore } from "../context/movies";
-import { rateMovie } from "../utils/rateMovie";
+import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 import { openRateFeedbackExported } from "./RateFeedback";
 import RateFeedback from "./RateFeedback";
+import { waitingForMore } from "../utils/waitingForMore";
+import { useMutation } from "react-query";
+import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { rateMovie } from "../utils/rateMovie";
+import { gql } from "graphql-request";
+import { useMovieStore } from "../context/movies";
 
 export default function MovieCard({
   compName = "gtk",
@@ -51,32 +44,6 @@ export default function MovieCard({
       rate.mutate(mutationData);
     }
   };
-
-  const successFunc = (action) => {
-    openRateFeedbackExported(action);
-    nextMovie();
-    increaseRatedMovies();
-  };
-
-  const waitingForMore = () => (
-    <div>
-      <Typography
-        style={{
-          color: "black",
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "35px",
-          marginTop: "45%",
-        }}
-      >
-        Fetching movies...
-      </Typography>
-      <LinearProgress style={{ width: "85%", margin: "50px auto" }} />
-    </div>
-  );
-
-  const feedback = (action) => <RateFeedback action={action} />;
-
   const addToWatchlist = useMutation(async ({ movieId }) => {
     if (movies.length === 0) {
       console.log("patience is a virtue");
@@ -104,15 +71,18 @@ export default function MovieCard({
       }
     }
   });
-
-  const nextMovie = () => {
-    movies.shift();
+  const successFunc = (action) => {
+    openRateFeedbackExported(action);
+    nextMovie();
+    increaseRatedMovies();
   };
-
   const skipMovie = () => {
     setSkip(skip + 1);
     nextMovie();
     openRateFeedbackExported("skip");
+  };
+  const nextMovie = () => {
+    movies.shift();
   };
 
   useEffect(() => {
@@ -121,100 +91,64 @@ export default function MovieCard({
     }
   }, [skip, setSkip, movies, rate, refetch]);
 
-  const MovieTitle = ({ title, releaseYear }) => {
-    const newProps = {};
-    return (
-      <Paper {...newProps} className="secondMovie_cardText">
-        <h3>
-          {title} <i>({releaseYear})</i>
-        </h3>
-      </Paper>
-    );
-  };
-
-  const ActionButtons = (props) => {
+  const ActionButtons = () => {
     const newProps = {};
 
     return (
-      <>
-        <Grid
-          {...newProps}
-          style={{ position: "absolute", bottom: "5px", width: "100vw" }}
-          container
-          justify="center"
-          className="cards_container"
-        >
-          <Tooltip placement="top" arrow title="Not for me">
-            <Button
-              className="actionButton"
-              onClick={() => handleRate("hate")}
-              variant="contained"
-              color="secondary"
-            >
-              <SentimentDissatisfied fontSize="inherit" />
-            </Button>
-          </Tooltip>
-          {startedFromTheBottomNowWeHere ? (
-            <Tooltip placement="top" arrow title="Add to watchlist">
-              <Button
-                className="actionButton"
-                onClick={() => {
-                  const mutationData = {
-                    movieId: movies[0]?.movieId,
-                  };
-                  addToWatchlist.mutate(mutationData);
-                }}
-                variant="contained"
-              >
-                <LibraryAddOutlined fontSize="inherit" />
-              </Button>
-            </Tooltip>
-          ) : (
-            <Tooltip placement="top" arrow title="Skip">
-              <Button
-                className="actionButton"
-                onClick={skipMovie}
-                variant="contained"
-              >
-                <SkipNext fontSize="inherit" />
-              </Button>
-            </Tooltip>
-          )}
-          <Tooltip placement="top" arrow title="Loved it">
-            <Button
-              className="actionButton"
-              onClick={() => handleRate("love")}
-              variant="contained"
-              color="primary"
-            >
-              <SentimentVerySatisfiedRounded fontSize="inherit" />
-            </Button>
-          </Tooltip>
-        </Grid>
-        {/* to return the watchlater strip uncomment this part
-        and set null to started from the bottom before the skip button */}
-        {/* {startedFromTheBottomNowWeHere ? (
-          <Container
-            style={{ position: "absolute", bottom: "2px" }}
-            maxWidth="sm"
+      <Grid
+        {...newProps}
+        style={{ position: "absolute", bottom: "5px", width: "100vw" }}
+        container
+        justify="center"
+        className="cards_container"
+      >
+        <Tooltip placement="top" arrow title="Not for me">
+          <Button
+            className="actionButton"
+            onClick={() => handleRate("hate")}
+            variant="contained"
+            color="secondary"
           >
+            <SentimentDissatisfied fontSize="inherit" />
+          </Button>
+        </Tooltip>
+        {startedFromTheBottomNowWeHere ? (
+          <Tooltip placement="top" arrow title="Add to watchlist">
             <Button
-              style={{ marginTop: "15px" }}
-              color="primary"
-              fullWidth
-              variant="contained"
+              className="actionButton"
               onClick={() => {
                 const mutationData = {
-                  movieId: movies[0].movieId,
+                  movieId: movies[0]?.movieId,
                 };
                 addToWatchlist.mutate(mutationData);
               }}
+              variant="contained"
             >
-              Add to watchlist
+              <LibraryAddOutlined fontSize="inherit" />
             </Button>
-          </Container>
-        ) : null} */}
-      </>
+          </Tooltip>
+        ) : (
+          <Tooltip placement="top" arrow title="Skip">
+            <Button
+              className="actionButton"
+              onClick={skipMovie}
+              variant="contained"
+            >
+              <SkipNext fontSize="inherit" />
+            </Button>
+          </Tooltip>
+        )}
+        <Tooltip placement="top" arrow title="Loved it">
+          <Button
+            className="actionButton"
+            onClick={() => handleRate("love")}
+            variant="contained"
+            color="primary"
+          >
+            <SentimentVerySatisfiedRounded fontSize="inherit" />
+          </Button>
+        </Tooltip>
+      </Grid>
     );
   };
 
@@ -223,10 +157,7 @@ export default function MovieCard({
       {movies.map((m) => (
         <Card
           key={compName + m.movieId}
-          onSwipeLeft={() => {
-            handleRate("hate");
-            feedback("hate");
-          }}
+          onSwipeLeft={() => handleRate("hate")}
           onSwipeRight={() => handleRate("love")}
           swipeSensitivity={50}
           style={{
@@ -244,3 +175,14 @@ export default function MovieCard({
     </CardWrapper>
   );
 }
+
+const MovieTitle = ({ title, releaseYear }) => {
+  const newProps = {};
+  return (
+    <Paper {...newProps} className="secondMovie_cardText">
+      <h3>
+        {title} <i>({releaseYear})</i>
+      </h3>
+    </Paper>
+  );
+};

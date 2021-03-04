@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -7,13 +8,11 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
-import React, { useState } from "react";
-import RatedMoviesInWatchlist from "./RatedMoviesInWatchlist";
-import WatchlistProvider from "./WatchlistProvider";
+import WatchlistHistory from "./WatchlistHistory";
+import WatchlistUnrated from "./WatchlistUnrated";
+import "./WatchlistContainer.scss";
 
-import "./GeneralWatchlist.scss";
-
-export default function GeneralWatchlist() {
+export default function WatchlistContainer() {
   const classes = useStyles();
 
   const [open, setOpen] = useState("panel1");
@@ -23,10 +22,7 @@ export default function GeneralWatchlist() {
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      style={{ margin: "0 auto", paddingLeft: "0", paddingRight: "0" }}
-    >
+    <Container maxWidth="sm">
       <Accordion
         style={{ boxShadow: "none" }}
         TransitionProps={{ unmountOnExit: true }}
@@ -44,7 +40,7 @@ export default function GeneralWatchlist() {
           </Typography>
         </AccordionSummary>
         <AccordionDetails className="accordionStyling">
-          <WatchlistProvider />
+          <WatchlistUnrated />
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -60,7 +56,7 @@ export default function GeneralWatchlist() {
           <Typography className={classes.heading}>Your collection</Typography>
         </AccordionSummary>
         <AccordionDetails className="accordionStyling">
-          <RatedMoviesInWatchlist />
+          <WatchlistHistory />
         </AccordionDetails>
       </Accordion>
     </Container>
@@ -69,12 +65,11 @@ export default function GeneralWatchlist() {
 
 const useStyles = makeStyles((theme) => ({
   heading: {
-    // fontSize: theme.typography.pxToRem(15),
     margin: "0 auto",
   },
   summary: {
     backgroundColor: "rgba(0, 0, 0, .08)",
     borderRadius: "10px",
-    // margin: "0!important",
   },
+  
 }));

@@ -1,29 +1,24 @@
-import { makeStyles, Snackbar, useTheme } from "@material-ui/core";
+import { useState } from "react";
+import { makeStyles, Snackbar } from "@material-ui/core";
 import {
   LibraryAddOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
   SkipNext,
 } from "@material-ui/icons";
-
-import React, { useState } from "react";
-
 import "./RateFeedback.scss";
 
 let openRateFeedbackFn;
 
 export default function RateFeedback() {
   const classes = useStyles();
-  const theme = useTheme();
 
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState("");
-
   const openRateFeedback = (action) => {
     setAction(action);
     setOpen(true);
   };
-
   openRateFeedbackFn = openRateFeedback;
 
   return (
@@ -38,13 +33,7 @@ export default function RateFeedback() {
       }}
       style={{ position: "absolute" }}
     >
-      <div
-        style={{
-          borderRadius: "15px",
-          backgroundColor: theme.palette.background.paper,
-          opacity: "0.85",
-        }}
-      >
+      <div className={classes.insideDiv}>
         {action === "love" ? (
           <SentimentVerySatisfiedRounded style={iconStyling} />
         ) : action === "hate" ? (
@@ -65,13 +54,14 @@ export function openRateFeedbackExported(action) {
 
 const useStyles = makeStyles((theme) => ({
   feedback: {
-    // display: "flex",
-    // justifyContent: "center",
-    // alignSelf: "center",
     top: "auto",
     bottom: "50%!important",
     left: "50%",
-    // right: "auto!important",
+  },
+  insideDiv: {
+    borderRadius: "15px",
+    backgroundColor: theme.palette.background.paper,
+    opacity: "0.85",
   },
 }));
 

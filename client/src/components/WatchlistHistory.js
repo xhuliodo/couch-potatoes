@@ -1,54 +1,43 @@
-import { CircularProgress, Container } from "@material-ui/core";
-import { gql } from "graphql-request";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "react-query";
-import { removeFromWatchlist } from "../utils/deleteFromWatchlist";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  CircularProgress,
+  Container,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
+import { useMovieStore } from "../context/movies";
+import { useQuery } from "react-query";
+import { useMutation } from "react-query";
 import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { gql } from "graphql-request";
+import { removeFromWatchlist } from "../utils/removeFromWatchlist";
 import WatchlistCard from "./WatchlistCard";
 import "./scrollbar.scss";
-import { useMovieStore } from "../context/movies";
 
 export default function RatedMoviesInWatchlist() {
+  const classes = useStyle();
+
+  // get data
   const graphqlClient = useGraphqlClient();
-  const useGetWatchlistHistory = ({ skip, limit }) => {
-    return useQuery(["getWatchlistHistory", skip, limit], async () => {
-      const data = (await graphqlClient).request(
-        gql`
-          query {
-            watchlistHistory(skip:${skip}, limit:${limit}) {
-              movieId
-              title
-              releaseYear
-              imdbLink
-              rating
-            }
-          }
-        `
-      );
-      const { watchlistHistory } = await data;
-      return watchlistHistory;
-    });
-  };
   const { limit } = useMovieStore();
   const [skip, setSkip] = useState(0);
   const { isLoading, isError, data } = useGetWatchlistHistory({
+    graphqlClient,
     limit,
     skip,
   });
 
+  // infinite scrolling
   const [movies, setMovies] = useState([]);
-
   useEffect(() => {
     if (!isLoading && !isError) {
       setMovies([...movies, ...data]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, isError, isLoading]);
-
   const increaseSkip = () => {
     setSkip(skip + limit);
-    // refetch();
   };
-
   const observer = useRef();
   const lastElementRef = useCallback(
     (node) => {
@@ -56,20 +45,24 @@ export default function RatedMoviesInWatchlist() {
         return;
       }
       if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && data.length === limit) {
-          increaseSkip();
-        }
-      });
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && data.length === limit) {
+            increaseSkip();
+          }
+        },
+        { threshold: 1.0 }
+      );
       if (node) observer.current.observe(node);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isLoading, data]
   );
 
+  // actions user can take
   const remove = useMutation((mutationData) =>
     removeFromWatchlist(mutationData, graphqlClient)
   );
-
   const handleRemove = (movieId) => {
     const mutationData = {
       movieId,
@@ -79,12 +72,6 @@ export default function RatedMoviesInWatchlist() {
   };
 
   const successFunc = (movieId, action) => {
-    // for (var i = 0; i < data.length; i++) {
-    //   if (data[i].movieId === movieId) {
-    //     data.splice(i, 1);
-    //     i--;
-    //   }
-    // }
     switch (action) {
       case "deleted":
         setAnimation("left");
@@ -114,19 +101,43 @@ export default function RatedMoviesInWatchlist() {
           lastElementRef={movies.length === index + 1 ? lastElementRef : null}
           key={m.movieId}
           m={m}
-          //   handleRate={handleRate}
           handleRemove={handleRemove}
           deleted={deleted}
           animation={animation}
         />
       ))}
       {isLoading ? (
-        <div style={{ width: "100%", display: "flex" }}>
-          <CircularProgress style={{ margin: "10px auto" }} />
+        <div className={classes.loadingDiv}>
+          <CircularProgress className={classes.loading} />
         </div>
       ) : isError ? (
-        <span style={{ textAlign: "center" }}>Something went wrong...</span>
+        <Typography align="center">Something went wrong...</Typography>
       ) : null}
     </Container>
   );
 }
+
+const useStyle = makeStyles(() => ({
+  loadingDiv: { width: "100%", display: "flex", marginBottom: "15px" },
+  loading: { margin: "10px auto" },
+}));
+
+const useGetWatchlistHistory = ({ graphqlClient, skip, limit }) => {
+  return useQuery(["getWatchlistHistory", skip, limit], async () => {
+    const data = (await graphqlClient).request(
+      gql`
+          query {
+            watchlistHistory(skip:${skip}, limit:${limit}) {
+              movieId
+              title
+              releaseYear
+              imdbLink
+              rating
+            }
+          }
+        `
+    );
+    const { watchlistHistory } = await data;
+    return watchlistHistory;
+  });
+};

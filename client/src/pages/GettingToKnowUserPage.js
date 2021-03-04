@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   Button,
   Container,
@@ -10,11 +9,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  makeStyles,
 } from "@material-ui/core";
-
+// auth redirect import
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
-
+// global state import
 import { useMovieStore } from "../context/movies";
 
 import GenreBasedRec from "../components/GenreBasedRec";
@@ -22,6 +22,8 @@ import "../components/MovieCard.scss";
 import SetupSwipeHelper from "../components/SetupSwipeHelper";
 
 export const GettingToKnowUserPage = (props) => {
+  const classes = useStyle();
+
   const [skip, setSkip] = useState(0);
 
   const { ratedMovies, requiredMovies } = useMovieStore();
@@ -42,20 +44,25 @@ export const GettingToKnowUserPage = (props) => {
   return (
     <>
       <Paper elevation={0}>
-        <Typography style={{ textAlign: "center" }} variant="h6">
-          Please rate at least {requiredMovies} movies{" "}
+        <Typography className={classes.infoText} align="center">
+          Rate at least {requiredMovies} movies
+          <br />
+        </Typography>
+        <Typography align="center">
           <i>(ignored movies will not count)</i>
         </Typography>
-        <Typography
-          style={{ textAlign: "center", fontWeight: "bold" }}
-          variant="h6"
-        >
-          You have rated {ratedMovies} / {requiredMovies}
+
+        <Typography className={classes.boldInfoText} align="center">
+          {requiredMovies - ratedMovies > 0
+            ? `${requiredMovies - ratedMovies} ratings left`
+            : "mission accomplished ;)"}
         </Typography>
-        <Container style={{ marginTop: "15px" }} disableGutters={true}>
+
+        <Container style={{ marginTop: "10px" }} disableGutters={true}>
           <GenreBasedRec skip={skip} setSkip={setSkip} />
-          <Container style={{ marginTop: "15px" }} maxWidth="sm">
+          <Container maxWidth="xs">
             <Button
+              style={{ marginTop: "15px" }}
               color="primary"
               fullWidth
               variant="contained"
@@ -71,10 +78,8 @@ export const GettingToKnowUserPage = (props) => {
             </DialogTitle>
             <DialogContent>
               <DialogContentText style={{ textAlign: "center" }}>
-                You can either click next to get recommendations based on other
-                users ratings or continue to rate movies in the genre you
-                selected as well (you can always click the continue button at
-                the end to go to the next step)
+                You can continue rating popular movies or get some tailored
+                recommendations
               </DialogContentText>
               <DialogActions style={{ justifyContent: "center" }}>
                 <Button
@@ -100,6 +105,16 @@ export const GettingToKnowUserPage = (props) => {
     </>
   );
 };
+
+const useStyle = makeStyles(() => ({
+  infoText: {
+    fontSize: "1.2rem",
+  },
+  boldInfoText: {
+    fontWeight: "bold",
+    fontSize: "1.2rem",
+  },
+}));
 
 export default withAuthenticationRequired(GettingToKnowUserPage, {
   onRedirecting: () => <AuthLoading />,
