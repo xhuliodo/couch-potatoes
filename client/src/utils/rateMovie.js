@@ -38,7 +38,7 @@ export const rateMovie = async (
     // TODO: you should implement some feedback logic, when the rating did not happen
     console.log("the rating didn't do shit");
   } else {
-    // console.log("you rated the movie with id", rateMovie.movieId);
+    console.log("you rated the movie with id", rateMovie.movieId);
     successFunc();
   }
 };

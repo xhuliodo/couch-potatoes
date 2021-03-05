@@ -69,7 +69,7 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
     logout,
     loginWithRedirect,
     user,
-    // getIdTokenClaims,
+    getIdTokenClaims,
   } = useAuth0();
 
   const handleLogout = () => {
@@ -87,9 +87,9 @@ export default function MenuBar({ darkTheme, setDarkTheme }) {
 
   const handleToggle = async () => {
     setOpen((prevOpen) => !prevOpen);
-    // const token = await getIdTokenClaims();
-    // console.log(token.__raw);
-    // console.log(user);
+    const token = await getIdTokenClaims();
+    console.log(token.__raw);
+    console.log(user);
   };
 
   const handleClose = (event) => {

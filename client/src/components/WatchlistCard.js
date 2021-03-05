@@ -146,6 +146,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: "18px",
     marginRight: "22px",
+    height: "fit-content",
   },
   infoIcon: {
     height: 20,
