@@ -76,7 +76,7 @@ type Mutation {
     @cypher(
       statement: """
       match (u:User{userId:$cypherParams.userId}), (m:Movie{movieId:$movieId})
-      merge (u)-[:WATCH_LATER]->(m)
+      merge (u)-[w:WATCH_LATER]->(m) on create set w.createdAt=apoc.date.currentTimestamp()
       return m
       """
     )
@@ -180,7 +180,7 @@ type Query {
       match (u:User {userId:$cypherParams.userId})-[w:WATCH_LATER]->(m:Movie)
       where  not exists((u)-[:RATED]->(m))
       return m
-      order by w desc
+      order by w.createdAt desc
       skip toInteger($skip)
       limit toInteger($limit)
       """
