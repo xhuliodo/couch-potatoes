@@ -76,13 +76,19 @@ export default function MovieCard({
     nextMovie();
     increaseRatedMovies();
   };
-  const skipMovie = () => {
+  const handleSkip = () => {
     setSkip(skip + 1);
     nextMovie();
     openRateFeedbackExported("skip");
   };
   const nextMovie = () => {
     movies.shift();
+  };
+  const handleWatchLater = () => {
+    const mutationData = {
+      movieId: movies[0]?.movieId,
+    };
+    addToWatchlist.mutate(mutationData);
   };
 
   useEffect(() => {
@@ -126,12 +132,7 @@ export default function MovieCard({
           <div>
             <Button
               className="actionButton"
-              onClick={() => {
-                const mutationData = {
-                  movieId: movies[0]?.movieId,
-                };
-                addToWatchlist.mutate(mutationData);
-              }}
+              onClick={handleWatchLater}
               variant="contained"
             >
               <WatchLaterOutlined fontSize="inherit" />
@@ -144,7 +145,7 @@ export default function MovieCard({
           <div>
             <Button
               className="actionButton"
-              onClick={skipMovie}
+              onClick={handleSkip}
               variant="contained"
             >
               <SkipNextOutlined fontSize="inherit" />
