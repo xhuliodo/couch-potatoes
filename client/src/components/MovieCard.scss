@@ -96,16 +96,20 @@ div.container.loaded {
 }
 
 .actionButton {
-  margin-left: 1.5vw !important;
-  margin-right: 1.5vw !important;
+  margin-left: 2.5vw !important;
+  margin-right: 2.5vw !important;
   font-size: 35px !important;
   max-width: 100px;
   width: 30vw;
 }
 
-@media (min-width: 580px) {
+.MuiButton-startIcon.MuiButton-iconSizeMedium {
+  margin-right: 3px;
+}
+
+@media (max-width: 580px) {
   .actionButton {
-    margin-left: 0.5vw !important;
-    margin-right: 0.5vw !important;
+    margin-left: 2vw !important;
+    margin-right: 2vw !important;
   }
 }

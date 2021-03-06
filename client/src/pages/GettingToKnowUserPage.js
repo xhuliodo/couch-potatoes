@@ -44,20 +44,15 @@ export const GettingToKnowUserPage = (props) => {
   return (
     <>
       <Paper elevation={0}>
-        <Typography className={classes.infoText} align="center">
-          Rate at least {requiredMovies} movies
-          <br />
-        </Typography>
         <Typography align="center">
-          <i>(ignored movies will not count)</i>
+          To give you tailored recommendations, we need to know your taste.
+          {/* (to give you tailored recommendations, we need to know your taste) */}
         </Typography>
-
         <Typography className={classes.boldInfoText} align="center">
           {requiredMovies - ratedMovies > 0
             ? `${requiredMovies - ratedMovies} ratings left`
-            : "mission accomplished ;)"}
+            : "no more rating needed"}
         </Typography>
-
         <Container style={{ marginTop: "10px" }} disableGutters={true}>
           <GenreBasedRec skip={skip} setSkip={setSkip} />
           <Container maxWidth="xs">
@@ -74,11 +69,11 @@ export const GettingToKnowUserPage = (props) => {
           </Container>
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle style={{ textAlign: "center" }}>
-              We've gotten to know you enough 😃
+              mission accomplished ;)
             </DialogTitle>
             <DialogContent>
               <DialogContentText style={{ textAlign: "center" }}>
-                You can continue rating popular movies or get some tailored
+                You can keep rating popular movies or get some tailored
                 recommendations
               </DialogContentText>
               <DialogActions style={{ justifyContent: "center" }}>
@@ -87,14 +82,14 @@ export const GettingToKnowUserPage = (props) => {
                   onClick={handleClose}
                   color="secondary"
                 >
-                  Continue
+                  Keep going
                 </Button>
                 <Button
                   variant="contained"
                   onClick={handleNext}
                   color="primary"
                 >
-                  Next
+                  Give me
                 </Button>
               </DialogActions>
             </DialogContent>
@@ -107,11 +102,8 @@ export const GettingToKnowUserPage = (props) => {
 };
 
 const useStyle = makeStyles(() => ({
-  infoText: {
-    fontSize: "1.2rem",
-  },
   boldInfoText: {
-    fontWeight: "bold",
+    fontWeight: "bolder",
     fontSize: "1.2rem",
   },
 }));

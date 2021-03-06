@@ -127,11 +127,16 @@ const useStyles = makeStyles((theme) => ({
     width: "90%",
   },
   cover: {
+    minWidth: 50,
     width: 110,
   },
   rateIcons: {
-    height: "2vh",
-    width: "2vh",
+    height: 24,
+    width: 24,
+    "@media (max-width:330px)": {
+      height: 16,
+      width: 16,
+    },
   },
   trash: {
     width: "100%",
@@ -154,15 +159,6 @@ const useStyles = makeStyles((theme) => ({
     // color: "#505874",
     // color: "#a4a4a4",
   },
-  disabledButton: {
-    margin: `0 1vw`,
-    maxWidth: "64px",
-    width: "25vw",
-    minWidth: "auto",
-  },
-  buttonContainer: {
-    maxWidth: "64px",
-    width: "25vw",
-    minWidth: "auto",
-  },
+  disabledButton: { marginLeft: 8, minWidth: 36, width: "15vw", maxWidth: 70 },
+  buttonContainer: { minWidth: 36, width: "15vw", maxWidth: 70 },
 }));

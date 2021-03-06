@@ -10,6 +10,7 @@ import {
   LibraryAddOutlined,
   MovieOutlined,
   PeopleOutline,
+  WatchLaterOutlined,
 } from "@material-ui/icons";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
@@ -104,9 +105,9 @@ export const Solo = (props) => {
           />
           <BottomNavigationAction
             style={{ paddingLeft: "10px" }}
-            label="Watchlist"
+            label="Watch later"
             value={2}
-            icon={<LibraryAddOutlined />}
+            icon={<WatchLaterOutlined />}
             classes={{ selected: classes.selected }}
           />
         </BottomNavigation>

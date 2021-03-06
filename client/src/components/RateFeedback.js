@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { makeStyles, Snackbar } from "@material-ui/core";
 import {
-  LibraryAddOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
-  SkipNext,
+  SkipNextOutlined,
+  WatchLaterOutlined,
 } from "@material-ui/icons";
 import "./RateFeedback.scss";
 
@@ -39,9 +39,9 @@ export default function RateFeedback() {
         ) : action === "hate" ? (
           <SentimentDissatisfied style={iconStyling} />
         ) : action === "watchlater" ? (
-          <LibraryAddOutlined style={iconStyling} />
+          <WatchLaterOutlined style={iconStyling} />
         ) : action === "skip" ? (
-          <SkipNext style={iconStyling} />
+          <SkipNextOutlined style={iconStyling} />
         ) : null}
       </div>
     </Snackbar>

@@ -61,14 +61,17 @@ export const SelectingGenrePage = (props) => {
     }
   });
 
-  const doneIcon = useMemo(() => () => <DoneOutline />, []);
+  const doneIcon = useMemo(
+    () => () => <DoneOutline style={{ height: "0.85em" }} />,
+    []
+  );
 
   return (
     <Paper elevation={0}>
       <Typography className={classes.instruction}>
         Select at least 3 genres:
       </Typography>
-      <Grid container justify="center" style={{ marginTop: "5px" }}>
+      <Grid container justify="center" style={{ marginTop: "10px" }}>
         {status === "loading" ? (
           <span>Fetching data</span>
         ) : status === "error" ? (

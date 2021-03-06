@@ -12,10 +12,11 @@ export default function SetupSwipeHelper() {
   };
   return (
     <Backdrop onClick={handleClose} open={open} className={classes.backdrop}>
-      <Typography className={classes.textMargin}>
+      <Typography className={classes.textMargin} align="center">
         Movie cards can be swiped, it's like tinder with no ghosting
+        <br />
+        <i>(click anywhere to dismiss)</i>
       </Typography>
-      <i className={classes.textMargin}>(click anywhere to dismiss)</i>
       <img className={classes.width} alt="setup helper" src={gif}></img>
     </Backdrop>
   );
@@ -30,7 +31,13 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgb(0, 0, 0, 0.8)",
   },
   textMargin: {
-    textAlign: "center",
+    "@media (max-width:850px)": {
+      marginBottom: "-13vw",
+    },
+    "@media (min-width:1024px)": {
+      marginBottom: "-9vh",
+    },
+    marginBottom: "-12vh",
   },
   width: {
     width: "90vw",

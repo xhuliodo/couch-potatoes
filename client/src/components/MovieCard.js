@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
 import {
-  LibraryAddOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
-  SkipNext,
+  SkipNextOutlined,
+  WatchLaterOutlined,
 } from "@material-ui/icons";
 import { Card, CardWrapper } from "@xhuliodo/react-swipeable-cards";
 import { openRateFeedbackExported } from "./RateFeedback";
@@ -113,30 +113,27 @@ export default function MovieCard({
           </Button>
         </Tooltip>
         {startedFromTheBottomNowWeHere ? (
-          <Tooltip placement="top" arrow title="Add to watchlist">
-            <Button
-              className="actionButton"
-              onClick={() => {
-                const mutationData = {
-                  movieId: movies[0]?.movieId,
-                };
-                addToWatchlist.mutate(mutationData);
-              }}
-              variant="contained"
-            >
-              <LibraryAddOutlined fontSize="inherit" />
-            </Button>
-          </Tooltip>
+          <Button
+            startIcon={<WatchLaterOutlined />}
+            onClick={() => {
+              const mutationData = {
+                movieId: movies[0]?.movieId,
+              };
+              addToWatchlist.mutate(mutationData);
+            }}
+            variant="contained"
+          >
+            later
+          </Button>
         ) : (
-          <Tooltip placement="top" arrow title="Skip">
-            <Button
-              className="actionButton"
-              onClick={skipMovie}
-              variant="contained"
-            >
-              <SkipNext fontSize="inherit" />
-            </Button>
-          </Tooltip>
+          <Button
+            // className="actionButton"
+            startIcon={<SkipNextOutlined />}
+            onClick={skipMovie}
+            variant="contained"
+          >
+            Skip
+          </Button>
         )}
         <Tooltip placement="top" arrow title="Loved it">
           <Button

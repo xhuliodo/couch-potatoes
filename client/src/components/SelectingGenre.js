@@ -35,7 +35,7 @@ export default function SelectingGenre({
   return (
     <div
       style={{
-        margin: matches ? "2vw" : "15px",
+        margin: matches ? "1.25vh" : "15px",
         cursor: "pointer",
       }}
     >
@@ -43,6 +43,7 @@ export default function SelectingGenre({
         badgeContent={doneIcon()}
         invisible={!selected}
         color="primary"
+        // variant="dot"
       >
         <Card
           onClick={handleSelected}
@@ -50,13 +51,13 @@ export default function SelectingGenre({
           className={classes.backgroundBugOnFirefox}
         >
           <CardContent style={{ paddingBottom: "16px" }}>
-            <Typography
+            {/* <Typography
               color="textSecondary"
               className={classes.justGenre}
               gutterBottom
             >
               Movie Genre
-            </Typography>
+            </Typography> */}
             <Typography className={classes.genreTitle}>{genre.name}</Typography>
           </CardContent>
         </Card>
@@ -67,7 +68,8 @@ export default function SelectingGenre({
 
 const useStyle = makeStyles((theme) => ({
   genreTitle: {
-    fontSize: "1.3rem",
+    fontSize: "1.2rem",
+    padding: "0.5rem",
   },
   justGenre: {
     fontSize: "0.85rem",
@@ -81,7 +83,8 @@ const StyledBadge = withStyles((theme) => ({
   badge: {
     right: 0,
     top: 0,
-    padding: "16px 6px",
+    padding: "0.8rem 0.1rem",
+    borderRadius: "50%",
     backgroundColor: "#a69c71",
   },
 }))(Badge);

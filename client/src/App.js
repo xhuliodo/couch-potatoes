@@ -65,7 +65,7 @@ export default function App() {
 
   // react query setup
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { refetchOnWindowFocus: false } },
+    defaultOptions: { queries: { cacheTime: 0, refetchOnWindowFocus: false } },
   });
 
   return (
