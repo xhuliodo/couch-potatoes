@@ -159,6 +159,15 @@ const useStyles = makeStyles((theme) => ({
     // color: "#505874",
     // color: "#a4a4a4",
   },
-  disabledButton: { marginLeft: 8, minWidth: 36, width: "15vw", maxWidth: 70 },
-  buttonContainer: { minWidth: 36, width: "15vw", maxWidth: 70 },
+  disabledButton: {
+    marginLeft: 8,
+    minWidth: 36,
+    width: "15vw",
+    maxWidth: 70,
+  },
+  buttonContainer: {
+    minWidth: 36,
+    width: "15vw",
+    maxWidth: 70,
+  },
 }));

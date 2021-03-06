@@ -127,12 +127,11 @@ export default function MovieCard({
           </Button>
         ) : (
           <Button
-            // className="actionButton"
             startIcon={<SkipNextOutlined />}
             onClick={skipMovie}
             variant="contained"
           >
-            Skip
+            skip
           </Button>
         )}
         <Tooltip placement="top" arrow title="Loved it">
