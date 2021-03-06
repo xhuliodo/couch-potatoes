@@ -7,9 +7,8 @@ import {
 } from "@material-ui/core";
 import { useMutation } from "react-query";
 import { removeFromWatchlist } from "../utils/removeFromWatchlist";
-import WatchlistCard from "./WatchlistCard";
-import "./scrollbar.scss";
 import { rateMovie } from "../utils/rateMovie";
+import WatchlistCard from "./WatchlistCard";
 
 export default function WatchlistProvider({
   graphqlClient,
@@ -99,13 +98,7 @@ export default function WatchlistProvider({
   const [animation, setAnimation] = useState("up");
 
   return (
-    <Container
-      maxWidth="sm"
-      style={{
-        height: "fit-parent",
-      }}
-      className="showScroll"
-    >
+    <Container maxWidth="sm" className={classes.mainContainer}>
       {movies.map((m, index) => (
         <WatchlistCard
           lastElementRef={movies.length === index + 1 ? lastElementRef : null}
@@ -131,4 +124,9 @@ export default function WatchlistProvider({
 const useStyle = makeStyles(() => ({
   loadingDiv: { width: "100%", display: "flex", marginBottom: "15px" },
   loading: { margin: "10px auto" },
+  mainContainer: {
+    height: "fit-parent",
+    overflowX: "hidden",
+    overflowY: "scroll",
+  },
 }));

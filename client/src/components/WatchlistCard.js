@@ -30,7 +30,7 @@ export default function MovieCardWatchlist({
   const classes = useStyles();
   const theme = useTheme();
 
-  const image = `http://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg`;
+  const image = `https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg`;
   const rating = m?.rating;
 
   return (
