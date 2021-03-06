@@ -8,8 +8,11 @@ import {
 } from "@material-ui/core";
 import {
   LibraryAddOutlined,
+  Movie,
   MovieOutlined,
+  People,
   PeopleOutline,
+  WatchLater,
   WatchLaterOutlined,
 } from "@material-ui/icons";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
@@ -92,21 +95,21 @@ export const Solo = (props) => {
             style={{ paddingRight: "10px" }}
             label="Our suggestions for you"
             value={0}
-            icon={<MovieOutlined />}
+            icon={nav === 0 ? <Movie /> : <MovieOutlined />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ margin: "0 10px" }}
             label="Other people also liked"
             value={1}
-            icon={<PeopleOutline />}
+            icon={nav === 1 ? <People /> : <PeopleOutline />}
             classes={{ selected: classes.selected }}
           />
           <BottomNavigationAction
             style={{ paddingLeft: "10px" }}
             label="Watch later"
             value={2}
-            icon={<WatchLaterOutlined />}
+            icon={nav === 2 ? <WatchLater /> : <WatchLaterOutlined />}
             classes={{ selected: classes.selected }}
           />
         </BottomNavigation>
