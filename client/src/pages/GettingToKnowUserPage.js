@@ -46,7 +46,6 @@ export const GettingToKnowUserPage = (props) => {
       <Paper elevation={0}>
         <Typography align="center">
           To give you tailored recommendations, we need to know your taste.
-          {/* (to give you tailored recommendations, we need to know your taste) */}
         </Typography>
         <Typography className={classes.boldInfoText} align="center">
           {requiredMovies - ratedMovies > 0

@@ -33,9 +33,11 @@ export default function WatchlistUnrated() {
 }
 
 const useGetWatchlistHistory = ({ graphqlClient, skip, limit }) => {
-  return useQuery(["getWatchlistHistory", skip, limit], async () => {
-    const data = (await graphqlClient).request(
-      gql`
+  return useQuery(
+    ["getWatchlistHistory", skip, limit],
+    async () => {
+      const data = (await graphqlClient).request(
+        gql`
           query {
             watchlistHistory(skip:${skip}, limit:${limit}) {
               movieId
@@ -46,8 +48,10 @@ const useGetWatchlistHistory = ({ graphqlClient, skip, limit }) => {
             }
           }
         `
-    );
-    const { watchlistHistory } = await data;
-    return watchlistHistory;
-  });
+      );
+      const { watchlistHistory } = await data;
+      return watchlistHistory;
+    },
+    { cacheTime: 0 }
+  );
 };

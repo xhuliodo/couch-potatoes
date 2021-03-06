@@ -32,6 +32,21 @@ export default function App() {
     overrides: {
       MuiCssBaseline: {
         "@global": {
+          "*::-webkit-scrollbar": {
+            width: "8px",
+            height: "8px",
+          },
+          "*::-webkit-scrollbar-thumb": {
+            backgroundColor: "grey",
+          },
+          "::-webkit-scrollbar-thumb": {
+            borderRadius: "15px",
+          },
+          "*:hover": {
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "darkgrey",
+            },
+          },
           body: {
             backgroundColor: !darkTheme
               ? theme.palette.background.paper
@@ -50,7 +65,7 @@ export default function App() {
 
   // react query setup
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { cacheTime: 0, refetchOnWindowFocus: false } },
+    defaultOptions: { queries: { refetchOnWindowFocus: false } },
   });
 
   return (
