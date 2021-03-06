@@ -4,7 +4,7 @@ import { Snackbar, Button } from "@material-ui/core";
 import * as serviceWorker from "../serviceWorkerRegistration";
 
 const ServiceWorkerWrapper = () => {
-  const [showReload, setShowReload] = useState(true);
+  const [showReload, setShowReload] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState(null);
 
   const onSWUpdate = (registration) => {
