@@ -4,7 +4,7 @@ import { Snackbar, Button } from "@material-ui/core";
 import * as serviceWorker from "../serviceWorkerRegistration";
 
 const ServiceWorkerWrapper = () => {
-  const [showReload, setShowReload] = useState(false);
+  const [showReload, setShowReload] = useState(true);
   const [waitingWorker, setWaitingWorker] = useState(null);
 
   const onSWUpdate = (registration) => {
@@ -29,14 +29,11 @@ const ServiceWorkerWrapper = () => {
       onClick={reloadPage}
       anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       action={
-        <Button
-          variant="contained"
-          size="small"
-          onClick={reloadPage}
-        >
+        <Button variant="contained" size="small" onClick={reloadPage}>
           Update
         </Button>
       }
+      style={{ bottom: "2.5vh" }}
     />
   );
 };
