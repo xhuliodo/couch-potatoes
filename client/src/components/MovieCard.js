@@ -99,7 +99,7 @@ export default function MovieCard({
         {...newProps}
         style={{
           position: "absolute",
-          bottom: "1px",
+          bottom: "15px",
           width: "100vw",
           alignItems: "baseline",
         }}
@@ -115,6 +115,9 @@ export default function MovieCard({
             color="secondary"
           >
             <SentimentDissatisfied fontSize="inherit" />
+            <Typography align="center" style={{ fontSize: "0.8rem" }}>
+              Not for me
+            </Typography>
           </Button>
           {/* <Typography align="center">Not for me</Typography> */}
         </div>
@@ -132,8 +135,10 @@ export default function MovieCard({
               variant="contained"
             >
               <WatchLaterOutlined fontSize="inherit" />
+              <Typography align="center" style={{ fontSize: "0.8rem" }}>
+                Watch later
+              </Typography>
             </Button>
-            <Typography align="center">Watch later</Typography>
           </div>
         ) : (
           <div>
@@ -143,8 +148,11 @@ export default function MovieCard({
               variant="contained"
             >
               <SkipNextOutlined fontSize="inherit" />
+              <Typography align="center" style={{ fontSize: "0.8rem" }}>
+                Skip
+              </Typography>
             </Button>
-            <Typography align="center">Skip</Typography>
+            {/* <Typography align="center">Skip</Typography> */}
           </div>
         )}
         <div>
@@ -155,6 +163,9 @@ export default function MovieCard({
             color="primary"
           >
             <SentimentVerySatisfiedRounded fontSize="inherit" />
+            <Typography align="center" style={{ fontSize: "0.8rem" }}>
+              Loved it
+            </Typography>
           </Button>
           {/* <Typography align="center">Loved it</Typography> */}
         </div>

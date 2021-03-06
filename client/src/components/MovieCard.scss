@@ -91,6 +91,7 @@ div.container {
 
 // buttons styling
 .actionButton.MuiButtonBase-root {
+  padding: 3px 0;
   margin-left: 15px;
   margin-right: 15px;
   font-size: 35px;
@@ -102,5 +103,9 @@ div.container {
   }
   @media (max-width: 341px) {
     width: 25vw;
+  }
+  > .MuiButton-label {
+    flex-direction: column;
+    text-transform: none;
   }
 }
