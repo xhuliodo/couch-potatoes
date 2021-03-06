@@ -28,40 +28,7 @@ export default function App() {
     userPref == "false" ? false : userPref == "true" ? true : false;
   const [darkTheme, setDarkTheme] = useState(isDarkThemeOn);
 
-  // const customTheme = {
-  //   overrides: {
-  //     MuiCssBaseline: {
-  //       "@global": {
-  //         "*::-webkit-scrollbar": {
-  //           width: "8px",
-  //           height: "8px",
-  //         },
-  //         "*::-webkit-scrollbar-thumb": {
-  //           backgroundColor: "grey",
-  //         },
-  //         "::-webkit-scrollbar-thumb": {
-  //           borderRadius: "15px",
-  //         },
-  //         "*:hover": {
-  //           "&::-webkit-scrollbar-thumb": {
-  //             backgroundColor: "darkgrey",
-  //           },
-  //         },
-  //         body: {
-  //           backgroundColor: !darkTheme
-  //             ? theme.palette.background.paper
-  //             : "#424242",
-  //         },
-  //       },
-  //     },
-  //   },
-  //   palette: {
-  //     type: !darkTheme ? "light" : "dark",
-  //     primary: { main: "#8e72a7", dark: "#8e72a7" },
-  //     secondary: { main: "#746d4f", dark: "#746d4f" },
-  //   },
-  // };
-  const appliedTheme = createMuiTheme({
+  const customTheme = {
     overrides: {
       MuiCssBaseline: {
         "@global": {
@@ -93,7 +60,8 @@ export default function App() {
       primary: { main: "#8e72a7", dark: "#8e72a7" },
       secondary: { main: "#746d4f", dark: "#746d4f" },
     },
-  });
+  };
+  const appliedTheme = createMuiTheme(customTheme);
 
   // react query setup
   const queryClient = new QueryClient({
