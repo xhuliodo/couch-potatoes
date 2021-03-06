@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button, Grid, Paper, Tooltip } from "@material-ui/core";
+import { Button, Grid, Paper, Tooltip, Typography } from "@material-ui/core";
 import {
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
@@ -97,12 +97,17 @@ export default function MovieCard({
     return (
       <Grid
         {...newProps}
-        style={{ position: "absolute", bottom: "5px", width: "100vw" }}
+        style={{
+          position: "absolute",
+          bottom: "1px",
+          width: "100vw",
+          alignItems: "baseline",
+        }}
         container
         justify="center"
         className="cards_container"
       >
-        <Tooltip placement="top" arrow title="Not for me">
+        <div>
           <Button
             className="actionButton"
             onClick={() => handleRate("hate")}
@@ -111,30 +116,38 @@ export default function MovieCard({
           >
             <SentimentDissatisfied fontSize="inherit" />
           </Button>
-        </Tooltip>
+          {/* <Typography align="center">Not for me</Typography> */}
+        </div>
+
         {startedFromTheBottomNowWeHere ? (
-          <Button
-            startIcon={<WatchLaterOutlined />}
-            onClick={() => {
-              const mutationData = {
-                movieId: movies[0]?.movieId,
-              };
-              addToWatchlist.mutate(mutationData);
-            }}
-            variant="contained"
-          >
-            later
-          </Button>
+          <div>
+            <Button
+              className="actionButton"
+              onClick={() => {
+                const mutationData = {
+                  movieId: movies[0]?.movieId,
+                };
+                addToWatchlist.mutate(mutationData);
+              }}
+              variant="contained"
+            >
+              <WatchLaterOutlined fontSize="inherit" />
+            </Button>
+            <Typography align="center">Watch later</Typography>
+          </div>
         ) : (
-          <Button
-            startIcon={<SkipNextOutlined />}
-            onClick={skipMovie}
-            variant="contained"
-          >
-            skip
-          </Button>
+          <div>
+            <Button
+              className="actionButton"
+              onClick={skipMovie}
+              variant="contained"
+            >
+              <SkipNextOutlined fontSize="inherit" />
+            </Button>
+            <Typography align="center">Skip</Typography>
+          </div>
         )}
-        <Tooltip placement="top" arrow title="Loved it">
+        <div>
           <Button
             className="actionButton"
             onClick={() => handleRate("love")}
@@ -143,7 +156,8 @@ export default function MovieCard({
           >
             <SentimentVerySatisfiedRounded fontSize="inherit" />
           </Button>
-        </Tooltip>
+          {/* <Typography align="center">Loved it</Typography> */}
+        </div>
       </Grid>
     );
   };
@@ -175,7 +189,7 @@ export default function MovieCard({
 const MovieTitle = ({ title, releaseYear }) => {
   const newProps = {};
   return (
-    <Paper {...newProps} className="secondMovie_cardText">
+    <Paper {...newProps} className="movie_cardText">
       <h3>
         {title} <i>({releaseYear})</i>
       </h3>
