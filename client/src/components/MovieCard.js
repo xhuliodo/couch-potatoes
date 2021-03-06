@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button, Grid, Paper, Tooltip, Typography } from "@material-ui/core";
+import { Button, Grid, Paper, Typography } from "@material-ui/core";
 import {
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
