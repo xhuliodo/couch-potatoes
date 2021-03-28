@@ -43,7 +43,7 @@ type User @isAuthenticated {
 }
 
 type Mutation {
-  rateMovie(movieId: ID!, rating: Int!): Movie
+  rateMovie(movieId: ID!, rating: Float!): Movie
     @isAuthenticated
     @cypher(
       statement: """
