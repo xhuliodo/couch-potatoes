@@ -22,7 +22,7 @@ export const rateMovie = async (
       data = (await graphqlClient).request(
         gql`
             mutation {
-              rateMovie(movieId: ${movieId}, rating:0) {
+              rateMovie(movieId: ${movieId}, rating:0.1) {
                 movieId
                 title
               }
