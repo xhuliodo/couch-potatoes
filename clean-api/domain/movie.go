@@ -1,50 +1,26 @@
 package domain
 
+import (
+	"github.com/google/uuid"
+)
+
 type Movie struct {
-	Id           int
-	Title        string
-	ReleaseYear  int
-	Poster       string
-	MoreInfoLink string
-	Genres       []Genre
-	Writer       []Writer
-	Director     []Director
-	Actor        []Actor
+	Id             uuid.UUID
+	Title          string
+	ReleaseYear    int
+	Poster         string
+	MoreInfoLink   string
+	Genres         []Genre
+	PeopleInvolved []Cast
 }
 
 type Genre struct {
-	Id   int
+	Id   uuid.UUID
 	Name string
 }
 
-type Actor struct {
-	Id   int
+type Cast struct {
+	Id   uuid.UUID
 	Name string
-}
-
-type Director struct {
-	Id   int
-	Name string
-}
-
-type Writer struct {
-	Id   int
-	Name string
-}
-
-type MovieWatcher struct {
-	Id             int
-	Name           string
-	RatedMovies    []RatedMovie
-	Watchlist      []Movie
-	FavoriteGenres []Genre
-}
-
-type RatedMovie struct {
-	Movie
-	Rating float32
-}
-
-func (mw *MovieWatcher) AddFavoriteGenre(g Genre) {
-	mw.FavoriteGenres = append(mw.FavoriteGenres, g)
+	Role string
 }
