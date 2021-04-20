@@ -4,8 +4,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type MovieID string
+
 type Movie struct {
-	Id             uuid.UUID
+	Id             MovieID
 	Title          string
 	ReleaseYear    int
 	Poster         string

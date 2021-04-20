@@ -2,12 +2,12 @@ package domain
 
 import (
 	"errors"
-
-	"github.com/google/uuid"
 )
 
+type MovieWatcherID string
+
 type MovieWatcher struct {
-	Id             uuid.UUID
+	Id             MovieWatcherID
 	Name           string
 	FavoriteGenres []Genre
 	RatedMovies    []RatedMovie
@@ -21,17 +21,10 @@ type RatedMovie struct {
 
 const minimumGenreRequired int = 3
 
-func (mw *MovieWatcher) GivesGenrePreferences(g []Genre) error {
+func (mw *MovieWatcher) GiveGenrePreferences(g []Genre) error {
 	if len(g) < minimumGenreRequired {
 		return errors.New("You have to select at least 3 genres to continue")
 	}
 	mw.FavoriteGenres = append(mw.FavoriteGenres, g...)
 	return nil
-}
-
-func (mw *MovieWatcher) GetRatingHistory() ([]RatedMovie, error) {
-	if len(mw.RatedMovies) == 0 {
-		return []RatedMovie{}, errors.New("You have not rated any movies yet")
-	}
-	return mw.RatedMovies, nil
 }
