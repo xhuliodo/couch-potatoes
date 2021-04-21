@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/pkg/errors"
+import "errors"
 
 var ErrNotFound = errors.New("No genre found :`(")
 

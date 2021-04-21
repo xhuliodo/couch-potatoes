@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/pkg/errors"
+import "errors"
 
 var ErrCouldNotSaveGenrePref = errors.New("Could not save genres preferences :`(")
 
