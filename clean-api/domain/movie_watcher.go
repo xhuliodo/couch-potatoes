@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 )
 
 type MovieWatcherID string
