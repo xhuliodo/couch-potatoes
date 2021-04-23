@@ -2,7 +2,7 @@ package domain
 
 import "errors"
 
-var ErrNotFound = errors.New("No genre found :`(")
+var ErrNotFound = errors.New("no genre found :`(")
 
 type MovieRepo interface {
 	GetAllGenres() ([]Genre, error)

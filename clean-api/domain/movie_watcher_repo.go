@@ -1,9 +1,10 @@
 package domain
 
-import "errors"
+// import "errors"
 
-var ErrCouldNotSaveGenrePref = errors.New("Could not save genres preferences :`(")
+// var ErrCouldNotSaveGenrePref = errors.New("could not save genres preferences :`(")
 
-type MovieWatcherRepo interface {
-	SaveGenrePreferences(MovieWatcherID, []Genre) error
-}
+// type MovieWatcherRepo interface {
+// 	SaveGenrePreferences(MovieWatcherID, []Genre) error
+// 	ById(MovieWatcherID) error
+// }
