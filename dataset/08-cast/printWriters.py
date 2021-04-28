@@ -1,5 +1,7 @@
 import csv
 
+# giving credits where it's due
+
 # # create a list of titleID -> director names
 
 # IDtoNameDict = {}
