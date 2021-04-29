@@ -1,24 +1,21 @@
 package infrastructure
 
 import (
+	"github.com/google/uuid"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
 type Neo4jRepository struct {
-	driver neo4j.Driver
+	Driver neo4j.Driver
 }
 
-func NewNeo4jRepository(driver neo4j.Driver) *Neo4jRepository {
-	return &Neo4jRepository{driver}
+func NewNeo4jRepository(Driver neo4j.Driver) *Neo4jRepository {
+	return &Neo4jRepository{Driver}
 }
-
-// func executeQuery(){
-
-// }
 
 func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
-	session := nr.driver.NewSession(neo4j.SessionConfig{})
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
 	query := "match (n:Genre) return n.genreId as Id, n.name as Name"
@@ -29,16 +26,14 @@ func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
 	}
 
 	genres := []domain.Genre{}
-	
+
 	for res.Next() {
-		rec:=res.Record().Get("Id")
-		g:=domain.Genre{Id: }
-		genres=append(genres, )
+		genre := res.Record()
+		genreId, _ := genre.Get("Id")
+		genreUuid,_:=uuid.Parse(genreId.(string))
+		genreName, _ := genre.Get("Name")
+		g := domain.Genre{Id: genreUuid, Name: genreName.(string)}
+		genres = append(genres, g)
 	}
-	record, err := res.Single()
-	if err != nil {
-		return nil, err
-	}
-	empty := []domain.Genre{}
-	return empty, nil
+	return genres, nil
 }
