@@ -7,7 +7,7 @@ import (
 type MovieWatcherID string
 
 type MovieWatcher struct {
-	Id             MovieWatcherID
+	Id             MovieWatcherID 
 	Name           string
 	FavoriteGenres []Genre
 	RatedMovies    []RatedMovie
@@ -23,7 +23,7 @@ const minimumGenreRequired int = 3
 
 func (mw *MovieWatcher) GiveGenrePreferences(g []Genre) error {
 	if len(g) < minimumGenreRequired {
-		return errors.New("You have to select at least 3 genres to continue")
+		return errors.New("you have to select at least 3 genres to continue")
 	}
 	mw.FavoriteGenres = append(mw.FavoriteGenres, g...)
 	return nil
