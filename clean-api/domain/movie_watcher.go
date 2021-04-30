@@ -7,7 +7,7 @@ import (
 type MovieWatcherID string
 
 type MovieWatcher struct {
-	Id             MovieWatcherID 
+	Id             MovieWatcherID
 	Name           string
 	FavoriteGenres []Genre
 	RatedMovies    []RatedMovie

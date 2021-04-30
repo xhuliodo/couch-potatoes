@@ -5,6 +5,6 @@ import (
 )
 
 type UserRepo interface {
-	SaveGenrePreferences(userId UserId, genresId []uuid.UUID) error
-	ById(userId UserId) (User, error)
+	SaveGenrePreferences(userId string, genresId []uuid.UUID) error
+	GetUserById(userId string) (User, error)
 }

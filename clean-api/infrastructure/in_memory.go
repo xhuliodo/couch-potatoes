@@ -1,7 +1,10 @@
 package infrastructure
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
+	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -21,4 +24,12 @@ func NewInMemoryRepository() *InMemoryRepository {
 
 func (imr *InMemoryRepository) GetAllGenres() ([]domain.Genre, error) {
 	return imr.genres, nil
+}
+
+func (imr *InMemoryRepository) SaveGenrePreferences(userId string, genresId []uuid.UUID) error {
+	return errors.New("lala")
+}
+
+func (imr *InMemoryRepository) GetUserById(userId string) (application.User, error) {
+	return application.User{}, nil
 }

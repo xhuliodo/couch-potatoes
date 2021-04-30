@@ -21,20 +21,20 @@ func (ss SetupService) GetAllGenres() ([]domain.Genre, error) {
 	return ss.movieRepo.GetAllGenres()
 }
 
-func (ss SetupService) SaveGenrePreferences(userId UserId, genres []uuid.UUID) error {
-	user, err := ss.userRepo.ById(userId)
+func (ss SetupService) SaveGenrePreferences(userId string, genres []uuid.UUID) error {
+	user, err := ss.userRepo.GetUserById(userId)
 	if err != nil {
 		return errors.New("a user with this identifier does not exist")
 	}
 
-	realG, err := ss.movieRepo.GetAllGenres()
+	currentGenres, err := ss.movieRepo.GetAllGenres()
 	if err != nil {
 		return errors.New("no genres found")
 	}
 
 	genresToAdd := []domain.Genre{}
 	for _, genre := range genres {
-		g, found := Find(realG, genre)
+		g, found := Find(currentGenres, genre)
 		if !found {
 			_, errMessage := fmt.Printf("the genre with this ID: %s, does not exist", g)
 			return errMessage

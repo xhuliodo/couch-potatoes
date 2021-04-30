@@ -1,11 +1,13 @@
 package interfaces
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
+	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
@@ -25,11 +27,11 @@ type genreView struct {
 }
 
 type moviesResource struct {
-	repo domain.MovieRepo
+	movieRepo domain.MovieRepo
 }
 
 func (mr moviesResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
-	genres, err := mr.repo.GetAllGenres()
+	genres, err := mr.movieRepo.GetAllGenres()
 
 	if err != nil {
 		_ = render.Render(w, r, common_http.ErrInternal(err))
@@ -45,7 +47,19 @@ func (mr moviesResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
 	render.Respond(w, r, view)
 }
 
-func AddRoutes(router *chi.Mux, repo domain.MovieRepo) {
-	resource := moviesResource{repo}
-	router.Get("/genres", resource.GetAllGenres)
+type userResource struct {
+	userRepo application.UserRepo
+}
+
+func (ur userResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Request) {
+	err := errors.New("lalala")
+	_ = render.Render(w, r, common_http.ErrInternal(err))
+}
+
+func AddRoutes(router *chi.Mux, movieRepo domain.MovieRepo, userRepo application.UserRepo) {
+	movieResource := moviesResource{movieRepo}
+	router.Get("/genres", movieResource.GetAllGenres)
+
+	userResource := userResource{userRepo}
+	router.Post("/user/genre-preferences", userResource.SaveGenrePreferences)
 }

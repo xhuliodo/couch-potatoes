@@ -53,7 +53,7 @@ func createApp() (r *chi.Mux) {
 
 	r = commands.CreateRouter()
 
-	interfaces.AddRoutes(r, repo)
+	interfaces.AddRoutes(r, repo, repo)
 
 	return r
 }
