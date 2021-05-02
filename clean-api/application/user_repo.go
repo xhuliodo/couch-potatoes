@@ -1,10 +1,10 @@
 package application
 
 import (
-	"github.com/google/uuid"
+	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
 type UserRepo interface {
-	SaveGenrePreferences(userId string, genresId []uuid.UUID) error
+	SaveGenrePreferences(userId string, genresId []domain.Genre) error
 	GetUserById(userId string) (User, error)
 }

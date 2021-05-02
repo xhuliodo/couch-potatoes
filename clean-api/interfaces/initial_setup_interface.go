@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"errors"
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -22,16 +22,16 @@ import (
 // }
 
 type genreView struct {
-	Id   uuid.UUID `json:"id"`
+	Id   uuid.UUID `json:"genreId"`
 	Name string    `json:"name"`
 }
 
-type moviesResource struct {
-	movieRepo domain.MovieRepo
+type setupResource struct {
+	setupService application.SetupService
 }
 
-func (mr moviesResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
-	genres, err := mr.movieRepo.GetAllGenres()
+func (sr setupResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
+	genres, err := sr.setupService.GetAllGenres()
 
 	if err != nil {
 		_ = render.Render(w, r, common_http.ErrInternal(err))
@@ -47,19 +47,30 @@ func (mr moviesResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
 	render.Respond(w, r, view)
 }
 
-type userResource struct {
-	userRepo application.UserRepo
+type inputSaveGenrePref struct {
+	UserId          string      `json:"userId"`
+	InputGenresUuid []uuid.UUID `json:"genres"`
 }
 
-func (ur userResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Request) {
-	err := errors.New("lalala")
-	_ = render.Render(w, r, common_http.ErrInternal(err))
+func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Request) {
+	var saveGenrePref inputSaveGenrePref
+	if err := json.NewDecoder(r.Body).Decode(&saveGenrePref); err != nil {
+		_ = render.Render(w, r, common_http.ErrInternal(err))
+		return
+	}
+
+	if err := sr.setupService.SaveGenrePreferences(saveGenrePref.UserId, saveGenrePref.InputGenresUuid); err != nil {
+		_ = render.Render(w, r, common_http.ErrInternal(err))
+		return
+	}
+
+	render.Render(w,r,common_http.ResourceCreated("genre preferences of the user have been saved"))
 }
 
 func AddRoutes(router *chi.Mux, movieRepo domain.MovieRepo, userRepo application.UserRepo) {
-	movieResource := moviesResource{movieRepo}
-	router.Get("/genres", movieResource.GetAllGenres)
+	setupService := application.NewSetupService(movieRepo, userRepo)
+	setupResource := setupResource{setupService}
 
-	userResource := userResource{userRepo}
-	router.Post("/user/genre-preferences", userResource.SaveGenrePreferences)
+	router.Get("/genres", setupResource.GetAllGenres)
+	router.Post("/user/genre-preferences", setupResource.SaveGenrePreferences)
 }

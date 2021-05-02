@@ -2,7 +2,6 @@ package application
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
@@ -36,13 +35,16 @@ func (ss SetupService) SaveGenrePreferences(userId string, genres []uuid.UUID) e
 	for _, genre := range genres {
 		g, found := Find(currentGenres, genre)
 		if !found {
-			_, errMessage := fmt.Printf("the genre with this ID: %s, does not exist", g)
-			return errMessage
+			return errors.New("one of the genres id's supplied is incorrect")
 		}
 		genresToAdd = append(genresToAdd, g)
 	}
 
 	if err := user.MovieWatcher.GiveGenrePreferences(genresToAdd); err != nil {
+		return err
+	}
+
+	if err := ss.userRepo.SaveGenrePreferences(user.Id, genresToAdd); err != nil {
 		return err
 	}
 

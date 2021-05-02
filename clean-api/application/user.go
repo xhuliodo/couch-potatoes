@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	Id           string
-	isAdmin      bool
+	IsAdmin      bool
 	MovieWatcher domain.MovieWatcher
 }
 
