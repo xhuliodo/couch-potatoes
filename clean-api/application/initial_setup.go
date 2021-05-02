@@ -3,7 +3,6 @@ package application
 import (
 	"errors"
 
-	"github.com/google/uuid"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -20,7 +19,11 @@ func (ss SetupService) GetAllGenres() ([]domain.Genre, error) {
 	return ss.movieRepo.GetAllGenres()
 }
 
-func (ss SetupService) SaveGenrePreferences(userId string, genres []uuid.UUID) error {
+func (ss SetupService) GetUserById(userId string) (User, error) {
+	return ss.userRepo.GetUserById(userId)
+}
+
+func (ss SetupService) SaveGenrePreferences(userId string, genres []string) error {
 	user, err := ss.userRepo.GetUserById(userId)
 	if err != nil {
 		return errors.New("a user with this identifier does not exist")
@@ -51,7 +54,7 @@ func (ss SetupService) SaveGenrePreferences(userId string, genres []uuid.UUID) e
 	return nil
 }
 
-func Find(slice []domain.Genre, val uuid.UUID) (domain.Genre, bool) {
+func Find(slice []domain.Genre, val string) (domain.Genre, bool) {
 	for _, item := range slice {
 		if item.Id == val {
 			return item, true

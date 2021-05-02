@@ -1,9 +1,5 @@
 package domain
 
-import (
-	"github.com/google/uuid"
-)
-
 type MovieID string
 
 type Movie struct {
@@ -17,12 +13,12 @@ type Movie struct {
 }
 
 type Genre struct {
-	Id   uuid.UUID
+	Id   string
 	Name string
 }
 
 type Cast struct {
-	Id   uuid.UUID
+	Id   string
 	Name string
 	Role string
 }
