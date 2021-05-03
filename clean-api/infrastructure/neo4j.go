@@ -64,6 +64,30 @@ func (nr *Neo4jRepository) GetUserById(userId string) (application.User, error) 
 	return existingUser, nil
 }
 
+func (nr *Neo4jRepository) GetMovieById(movieId string) (domain.Movie, error) {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `match (m:Movie) 
+			where m.movieId=$movieId 
+			return m.movieId as movieId`
+	parameters := map[string]interface{}{"movieId": movieId}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return domain.Movie{}, err
+	}
+
+	record, _ := res.Single()
+	existingMovieId, bool := record.Get("movieId")
+	if !bool {
+		return domain.Movie{}, errors.New("movie does not exist")
+	}
+	existingMovie := domain.Movie{Id: domain.MovieID(existingMovieId.(string))}
+
+	return existingMovie, nil
+}
+
 func (nr *Neo4jRepository) SaveGenrePreferences(userId string, genres []domain.Genre) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -84,10 +108,34 @@ func (nr *Neo4jRepository) SaveGenrePreferences(userId string, genres []domain.G
 	}
 
 	record, _ := res.Single()
-
 	_, bool := record.Get("userId")
 	if !bool {
 		return errors.New("genre preferences did not get saved")
+	}
+
+	return nil
+}
+
+func (nr *Neo4jRepository) RateMovie(userId, movieId string, rating int) error {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `match (u:User{userId:$userId}), (m:Movie{movieId:$movieId})
+			merge (u)-[r:RATED]->(m) 
+			on create set r.rating=toInteger($rating)
+			on match set r.rating=toInteger($rating)
+			return m.movieId as movieId`
+	parameters := map[string]interface{}{"userId": userId, "movieId": movieId, "rating": rating}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return err
+	}
+
+	record, _ := res.Single()
+	_, bool := record.Get("movieId")
+	if !bool {
+		return errors.New("rating was not successful")
 	}
 
 	return nil

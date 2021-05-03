@@ -6,4 +6,5 @@ var ErrNotFound = errors.New("no genre found :`(")
 
 type MovieRepo interface {
 	GetAllGenres() ([]Genre, error)
+	GetMovieById(userId string) (Movie, error)
 }
