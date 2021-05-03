@@ -19,9 +19,9 @@ func (ss SetupService) GetAllGenres() ([]domain.Genre, error) {
 	return ss.movieRepo.GetAllGenres()
 }
 
-func (ss SetupService) GetUserById(userId string) (User, error) {
-	return ss.userRepo.GetUserById(userId)
-}
+// func (ss SetupService) GetUserById(userId string) (User, error) {
+// 	return ss.userRepo.GetUserById(userId)
+// }
 
 func (ss SetupService) SaveGenrePreferences(userId string, genres []string) error {
 	user, err := ss.userRepo.GetUserById(userId)

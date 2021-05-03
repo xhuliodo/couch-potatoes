@@ -8,7 +8,6 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"github.com/xhuliodo/couch-potatoes/clean-api/common/commands"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure"
-	"github.com/xhuliodo/couch-potatoes/clean-api/interfaces"
 )
 
 func main() {
@@ -42,9 +41,9 @@ func main() {
 func createApp(driver neo4j.Driver) (r *chi.Mux) {
 	repo := infrastructure.NewNeo4jRepository(driver)
 
-	r = commands.CreateRouter()
+	r = infrastructure.CreateRouter()
 
-	interfaces.AddRoutes(r, repo, repo)
+	infrastructure.CreateRoutes(r, repo)
 
 	return r
 }
