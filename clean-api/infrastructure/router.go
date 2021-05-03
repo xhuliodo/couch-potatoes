@@ -9,7 +9,9 @@ import (
 func CreateRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
 	r.Use(authMiddleware)
+	
 	return r
 }
 
