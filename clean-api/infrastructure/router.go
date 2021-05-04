@@ -11,16 +11,18 @@ func CreateRouter() *chi.Mux {
 	r.Use(middleware.Logger)
 
 	r.Use(authMiddleware)
-	
+
 	return r
 }
 
 func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	initialSetupInterface := interfaces.NewInitialSetupInterface(repo, repo)
 	rateMovieInterface := interfaces.NewRateMovieInterface(repo, repo)
+	registerUserInterface := interfaces.NewRegisterUserInterface(repo)
 
 	router.Get("/genres", initialSetupInterface.GetAllGenres)
 	router.Route("/users", func(r chi.Router) {
+		r.Post("/", registerUserInterface.RegisterUser)
 		// r.Get("/{userId}", initialSetupInterface.GetUserById)
 		r.Post("/genres", initialSetupInterface.SaveGenrePreferences)
 		r.Post("/ratings", rateMovieInterface.RateMovie)

@@ -9,4 +9,3 @@ type User struct {
 	IsAdmin      bool
 	MovieWatcher domain.MovieWatcher
 }
-

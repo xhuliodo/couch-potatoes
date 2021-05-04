@@ -14,3 +14,8 @@ func NewRateMovieInterface(movieRepo domain.MovieRepo, userRepo application.User
 	ratingService := application.NewRatingService(movieRepo, userRepo)
 	return ratingResource{ratingService}
 }
+
+func NewRegisterUserInterface(userRepo application.UserRepo) registerResource {
+	registerService := application.NewRegisterService(userRepo)
+	return registerResource{registerService}
+}

@@ -2,7 +2,9 @@ package infrastructure
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"reflect"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/form3tech-oss/jwt-go"
@@ -31,13 +33,31 @@ func authMiddleware(next http.Handler) http.Handler {
 		c := r.Context()
 		stringToken := c.Value(jwtMiddleware.Options.UserProperty)
 		token := stringToken.(*jwt.Token)
-		userId := token.Claims.(jwt.MapClaims)["sub"]
+		tokenClaims := token.Claims.(jwt.MapClaims)
+		userId := tokenClaims["sub"]
+		isAdmin := getIsAdmin(tokenClaims)
 
-		newRequest := r.WithContext(context.WithValue(c, "userId", userId))
-		*r = *newRequest
+		rWithUserId := r.WithContext(context.WithValue(c, "userId", userId))
+		rWithAdmin := r.WithContext(context.WithValue(rWithUserId.Context(), "isAdmin", isAdmin))
+
+		*r = *rWithAdmin
 
 		next.ServeHTTP(rw, r)
 	})
+}
+
+func getIsAdmin(claims jwt.MapClaims) bool {
+	isAdmin := claims["https://couch-potatoes.com/claims/"]
+	if isAdmin != nil {
+		isAdminArray := reflect.ValueOf(isAdmin)
+		isAdminInterface := isAdminArray.Index(0)
+
+		isAdminString := fmt.Sprintf("%v", isAdminInterface)
+
+		return isAdminString == "admin"
+	}
+	return false
+
 }
 
 // func onAuthorizedReq(w http.ResponseWriter, r *http.Request, err error) {

@@ -140,3 +140,26 @@ func (nr *Neo4jRepository) RateMovie(userId, movieId string, rating int) error {
 
 	return nil
 }
+
+func (nr *Neo4jRepository) RegisterNewUser(user application.User) error {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `merge (u:User{userId:$userId})
+			on create set u.userId=$userId
+			return u.userId as userId`
+	parameters := map[string]interface{}{"userId": user.Id}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return err
+	}
+
+	record, _ := res.Single()
+	_, bool := record.Get("userId")
+	if !bool {
+		return errors.New("user was not registered successfully")
+	}
+
+	return nil
+}

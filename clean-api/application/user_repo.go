@@ -6,4 +6,5 @@ type UserRepo interface {
 	SaveGenrePreferences(userId string, genres []domain.Genre) error
 	GetUserById(userId string) (User, error)
 	RateMovie(userId, movieId string, rating int) error
+	RegisterNewUser(user User) error
 }
