@@ -1,3 +1,18 @@
+// Clean Potatoes API
+// 
+// Docs for Movies API
+// 
+// 	Schemes: http
+// 	Host: localhost
+// 	BasePath: /
+// 	Version: 1.0.0
+// 
+// 	Consumes:
+// 	- application/json
+// 
+// 	Produces:
+// 	- application/json
+// swagger:meta
 package infrastructure
 
 import (
@@ -25,6 +40,9 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 		r.Post("/", registerUserInterface.RegisterUser)
 		// r.Get("/{userId}", initialSetupInterface.GetUserById)
 		r.Post("/genres", initialSetupInterface.SaveGenrePreferences)
+		// TODO: get what setup step a user is at
+		// r.Get("/{userId}/steps", ...)
 		r.Post("/ratings", rateMovieInterface.RateMovie)
 	})
+
 }
