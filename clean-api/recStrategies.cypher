@@ -1,7 +1,7 @@
 // genre based rec
 
 // step: get user favorite genres
-match (u:User{userId:$cypherParams.userId})-[:FAVORITE]->(g:Genre)
+match (u:User{userId:"google-oauth2|104772264931362464545"})-[:FAVORITE]->(g:Genre)
 // step: get all distinct movies that belong in 
 //       those genres that the user has yet to rate.
 with g, u 

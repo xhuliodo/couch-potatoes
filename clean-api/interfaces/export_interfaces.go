@@ -5,17 +5,17 @@ import (
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
-func NewInitialSetupInterface(movieRepo domain.MovieRepo, userRepo application.UserRepo) setupResource {
-	setupService := application.NewSetupService(movieRepo, userRepo)
+func NewInitialSetupInterface(repo domain.Repository) setupResource {
+	setupService := application.NewSetupService(repo)
 	return setupResource{setupService}
 }
 
-func NewRateMovieInterface(movieRepo domain.MovieRepo, userRepo application.UserRepo) ratingResource {
-	ratingService := application.NewRatingService(movieRepo, userRepo)
+func NewRateMovieInterface(repo domain.Repository) ratingResource {
+	ratingService := application.NewRatingService(repo)
 	return ratingResource{ratingService}
 }
 
-func NewRegisterUserInterface(userRepo application.UserRepo) registerResource {
-	registerService := application.NewRegisterService(userRepo)
+func NewRegisterUserInterface(repo domain.Repository) registerResource {
+	registerService := application.NewRegisterService(repo)
 	return registerResource{registerService}
 }

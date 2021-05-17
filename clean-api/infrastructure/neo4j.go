@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
-	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -40,7 +39,7 @@ func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
 	return genres, nil
 }
 
-func (nr *Neo4jRepository) GetUserById(userId string) (application.User, error) {
+func (nr *Neo4jRepository) GetUserById(userId string) (domain.User, error) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -51,15 +50,15 @@ func (nr *Neo4jRepository) GetUserById(userId string) (application.User, error) 
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return application.User{}, err
+		return domain.User{}, err
 	}
 
 	record, _ := res.Single()
 	existingUserId, bool := record.Get("userId")
 	if !bool {
-		return application.User{}, errors.New("user does not exist")
+		return domain.User{}, errors.New("user does not exist")
 	}
-	existingUser := application.User{Id: existingUserId.(string)}
+	existingUser := domain.User{Id: existingUserId.(string)}
 
 	return existingUser, nil
 }
@@ -141,7 +140,7 @@ func (nr *Neo4jRepository) RateMovie(userId, movieId string, rating int) error {
 	return nil
 }
 
-func (nr *Neo4jRepository) RegisterNewUser(user application.User) error {
+func (nr *Neo4jRepository) RegisterNewUser(user domain.User) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 

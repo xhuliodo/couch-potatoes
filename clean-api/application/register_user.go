@@ -2,14 +2,16 @@ package application
 
 import (
 	"errors"
+
+	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
 type RegisterService struct {
-	userRepo UserRepo
+	repo domain.Repository
 }
 
-func NewRegisterService(userRepo UserRepo) RegisterService {
-	return RegisterService{userRepo}
+func NewRegisterService(repo domain.Repository) RegisterService {
+	return RegisterService{repo}
 }
 
 func (rs RegisterService) RegisterUser(userId string, isAdmin bool) error {
@@ -17,9 +19,9 @@ func (rs RegisterService) RegisterUser(userId string, isAdmin bool) error {
 		return errors.New("you are not allowed to register users")
 	}
 
-	newUser := User{Id: userId}
+	newUser := domain.User{Id: userId}
 
-	if err := rs.userRepo.RegisterNewUser(newUser); err != nil {
+	if err := rs.repo.RegisterNewUser(newUser); err != nil {
 		return errors.New("the new user could not be registered")
 	}
 

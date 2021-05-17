@@ -7,16 +7,15 @@ import (
 )
 
 type SetupService struct {
-	movieRepo domain.MovieRepo
-	userRepo  UserRepo
+	repo domain.Repository
 }
 
-func NewSetupService(movieRepo domain.MovieRepo, userRepo UserRepo) SetupService {
-	return SetupService{movieRepo, userRepo}
+func NewSetupService(repo domain.Repository) SetupService {
+	return SetupService{repo}
 }
 
 func (ss SetupService) GetAllGenres() ([]domain.Genre, error) {
-	return ss.movieRepo.GetAllGenres()
+	return ss.repo.GetAllGenres()
 }
 
 // func (ss SetupService) GetUserById(userId string) (User, error) {
@@ -24,12 +23,12 @@ func (ss SetupService) GetAllGenres() ([]domain.Genre, error) {
 // }
 
 func (ss SetupService) SaveGenrePreferences(userId string, genres []string) error {
-	user, err := ss.userRepo.GetUserById(userId)
+	user, err := ss.repo.GetUserById(userId)
 	if err != nil {
 		return errors.New("a user with this identifier does not exist")
 	}
 
-	currentGenres, err := ss.movieRepo.GetAllGenres()
+	currentGenres, err := ss.repo.GetAllGenres()
 	if err != nil {
 		return errors.New("no genres found")
 	}
@@ -43,11 +42,11 @@ func (ss SetupService) SaveGenrePreferences(userId string, genres []string) erro
 		genresToAdd = append(genresToAdd, g)
 	}
 
-	if err := user.MovieWatcher.GiveGenrePreferences(genresToAdd); err != nil {
+	if err := user.GiveGenrePreferences(genresToAdd); err != nil {
 		return err
 	}
 
-	if err := ss.userRepo.SaveGenrePreferences(user.Id, genresToAdd); err != nil {
+	if err := ss.repo.SaveGenrePreferences(user.Id, genresToAdd); err != nil {
 		return err
 	}
 

@@ -31,8 +31,8 @@ func CreateRouter() *chi.Mux {
 }
 
 func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
-	initialSetupInterface := interfaces.NewInitialSetupInterface(repo, repo)
-	rateMovieInterface := interfaces.NewRateMovieInterface(repo, repo)
+	initialSetupInterface := interfaces.NewInitialSetupInterface(repo)
+	rateMovieInterface := interfaces.NewRateMovieInterface(repo)
 	registerUserInterface := interfaces.NewRegisterUserInterface(repo)
 
 	router.Get("/genres", initialSetupInterface.GetAllGenres)

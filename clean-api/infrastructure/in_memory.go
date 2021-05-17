@@ -3,14 +3,13 @@ package infrastructure
 import (
 	"errors"
 
-	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
 type InMemoryRepository struct {
 	movies []domain.Movie
 	genres []domain.Genre
-	users  []application.User
+	users  []domain.User
 }
 
 func NewInMemoryRepository() *InMemoryRepository {
@@ -26,17 +25,14 @@ func NewInMemoryRepository() *InMemoryRepository {
 			{Id: uuid3, Name: "Comedy"},
 			{Id: uuid4, Name: "Thriller"},
 		},
-		users: []application.User{
+		users: []domain.User{
 			{
-				Id:      "1",
-				IsAdmin: false,
-				MovieWatcher: domain.MovieWatcher{
-					Id:             domain.MovieWatcherID("1"),
-					Name:           "Chulio",
-					FavoriteGenres: []domain.Genre{},
-					RatedMovies:    []domain.RatedMovie{},
-					Watchlist:      []domain.Movie{},
-				},
+				Id:             "1",
+				Name:           "Chulio",
+				IsAdmin:        false,
+				FavoriteGenres: []domain.Genre{},
+				RatedMovies:    []domain.RatedMovie{},
+				Watchlist:      []domain.Movie{},
 			},
 		},
 	}
@@ -47,10 +43,10 @@ func (imr *InMemoryRepository) GetAllGenres() ([]domain.Genre, error) {
 	return imr.genres, nil
 }
 
-func (imr *InMemoryRepository) GetUserById(userId string) (application.User, error) {
+func (imr *InMemoryRepository) GetUserById(userId string) (domain.User, error) {
 	u, found := Find(imr.users, userId)
 	if !found {
-		return application.User{}, errors.New("nope")
+		return domain.User{}, errors.New("nope")
 	}
 	return u, nil
 }
@@ -58,17 +54,17 @@ func (imr *InMemoryRepository) GetUserById(userId string) (application.User, err
 func (imr *InMemoryRepository) SaveGenrePreferences(userId string, genres []domain.Genre) error {
 	for _, user := range imr.users {
 		if user.Id == userId {
-			user.MovieWatcher.FavoriteGenres = append(user.MovieWatcher.FavoriteGenres, genres...)
+			user.FavoriteGenres = append(user.FavoriteGenres, genres...)
 		}
 	}
 	return nil
 }
 
-func Find(slice []application.User, val string) (application.User, bool) {
+func Find(slice []domain.User, val string) (domain.User, bool) {
 	for _, item := range slice {
 		if item.Id == val {
 			return item, true
 		}
 	}
-	return application.User{}, false
+	return domain.User{}, false
 }

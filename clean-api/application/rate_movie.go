@@ -7,24 +7,23 @@ import (
 )
 
 type RatingService struct {
-	movieRepo domain.MovieRepo
-	userRepo  UserRepo
+	repo domain.Repository
 }
 
-func NewRatingService(movieRepo domain.MovieRepo, userRepo UserRepo) RatingService {
-	return RatingService{movieRepo, userRepo}
+func NewRatingService(repo domain.Repository) RatingService {
+	return RatingService{repo}
 }
 
 func (rms RatingService) RateMovie(userId, movieId string, rating int) error {
-	if _, err := rms.userRepo.GetUserById(userId); err != nil {
+	if _, err := rms.repo.GetUserById(userId); err != nil {
 		return errors.New("a user with this identifier does not exist")
 	}
 
-	if _, err := rms.movieRepo.GetMovieById(movieId); err != nil {
+	if _, err := rms.repo.GetMovieById(movieId); err != nil {
 		return errors.New("a movie with this identifier does not exist")
 	}
 
-	if err := rms.userRepo.RateMovie(userId, movieId, rating); err != nil {
+	if err := rms.repo.RateMovie(userId, movieId, rating); err != nil {
 		return errors.New("the rating was not successful, try again")
 	}
 

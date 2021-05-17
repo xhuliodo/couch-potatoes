@@ -4,11 +4,10 @@ import (
 	"errors"
 )
 
-type MovieWatcherID string
-
-type MovieWatcher struct {
-	Id             MovieWatcherID
+type User struct {
+	Id             string
 	Name           string
+	IsAdmin        bool
 	FavoriteGenres []Genre
 	RatedMovies    []RatedMovie
 	Watchlist      []Movie
@@ -21,7 +20,7 @@ type RatedMovie struct {
 
 const minimumGenreRequired int = 3
 
-func (mw *MovieWatcher) GiveGenrePreferences(g []Genre) error {
+func (mw *User) GiveGenrePreferences(g []Genre) error {
 	if len(g) < minimumGenreRequired {
 		return errors.New("you have to select at least 3 genres to continue")
 	}
