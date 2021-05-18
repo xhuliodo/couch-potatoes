@@ -162,3 +162,13 @@ func (nr *Neo4jRepository) RegisterNewUser(user domain.User) error {
 
 	return nil
 }
+
+func (nr *Neo4jRepository) GetGenrePreferences(userId string) ([]domain.Genre, error) {
+	emptyGenres := []domain.Genre{}
+	return emptyGenres, nil
+}
+
+func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(genres []domain.Genre) ([]domain.AggregateMovieRatings, error) {
+	emptyMovies := []domain.AggregateMovieRatings{}
+	return emptyMovies, nil
+}

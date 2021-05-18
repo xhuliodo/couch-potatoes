@@ -30,6 +30,7 @@ type PopulatiryScoredMovie struct {
 }
 
 type AggregateMovieRatings struct {
-	Movie      Movie
-	AllRatings []float32
+	Movie        Movie
+	AllRatings   []float32
+	GenreMatched uint
 }

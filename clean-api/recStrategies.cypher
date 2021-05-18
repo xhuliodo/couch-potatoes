@@ -20,8 +20,16 @@ order by howMany desc, reviews desc
 skip toInteger($skip)
 limit toInteger($limit)
 
+// ! if for some reason you might want to remove the multiplier
+// for genres you can replace the above query with this one
+// should be even faster since you're replacing two queries
+// with one
+match (:User)-[r:RATED]->(m:Movie)-[:IN_GENRE]->(g)
+where not exists( (u)-[:RATED]->(m) ) 
+return distinct(m) as movie, collect(r.rating) as ratings
 
-// user based rec
+
+// IMPORTANT: user based rec
 
 //  step: get all user's rated movies, return user and
 //       average of all rated movies

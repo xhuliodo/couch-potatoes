@@ -26,12 +26,7 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 		return emptyRec, errors.New("the user has to give their favorite genre preferences first")
 	}
 
-	moviesInGenre, err := pms.repo.GetMoviesInGenre(genres)
-	if err != nil {
-		return emptyRec, errors.New("there are no movies in the prefered genres")
-	}
-
-	moviesWithRating, err := pms.repo.GetAllRatingsForMovies(moviesInGenre)
+	moviesWithRating, err := pms.repo.GetAllRatingsForMoviesInGenre(genres)
 	if err != nil {
 		return emptyRec, errors.New("there are no movies with ratings in the prefered genres")
 	}
@@ -50,11 +45,15 @@ func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) [
 		for _, rating := range ratings {
 			ratingSum += rating
 		}
+
 		countRatings := len(ratings)
 		avgRating := ratingSum / float32(countRatings)
+
+		genreMultiplier := movieWithAllRatings.GenreMatched
+		countBoosted := countRatings * int(genreMultiplier)
 		entry := domain.PopulatiryScoredMovie{
 			Movie:        movieWithAllRatings.Movie,
-			CountRatings: uint(countRatings),
+			CountRatings: uint(countBoosted),
 			AvgRating:    avgRating,
 		}
 		unsortedList = append(unsortedList, entry)

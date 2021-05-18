@@ -1,15 +1,15 @@
 // Clean Potatoes API
-// 
+//
 // Docs for Movies API
-// 
+//
 // 	Schemes: http
 // 	Host: localhost
 // 	BasePath: /
 // 	Version: 1.0.0
-// 
+//
 // 	Consumes:
 // 	- application/json
-// 
+//
 // 	Produces:
 // 	- application/json
 // swagger:meta
@@ -34,6 +34,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	initialSetupInterface := interfaces.NewInitialSetupInterface(repo)
 	rateMovieInterface := interfaces.NewRateMovieInterface(repo)
 	registerUserInterface := interfaces.NewRegisterUserInterface(repo)
+	popularMoviesInterface := interfaces.NewPopularMoviesInterface(repo)
 
 	router.Get("/genres", initialSetupInterface.GetAllGenres)
 	router.Route("/users", func(r chi.Router) {
@@ -43,6 +44,12 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 		// TODO: get what setup step a user is at
 		// r.Get("/{userId}/steps", ...)
 		r.Post("/ratings", rateMovieInterface.RateMovie)
+	})
+	router.Route("/recommendations", func(r chi.Router) {
+		router.Get("/popular", popularMoviesInterface.GetPopularMoviesBasedOnGenre)
+		// router.Get("/user-based", )
+		// router.Get("/content-based", )
+
 	})
 
 }

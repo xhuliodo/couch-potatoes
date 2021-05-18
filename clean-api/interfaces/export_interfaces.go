@@ -19,3 +19,8 @@ func NewRegisterUserInterface(repo domain.Repository) registerResource {
 	registerService := application.NewRegisterService(repo)
 	return registerResource{registerService}
 }
+
+func NewPopularMoviesInterface(repo domain.Repository) popularMoviesResource {
+	popularMoviesService := application.NewPopularMovieService(repo)
+	return popularMoviesResource{popularMoviesService}
+}

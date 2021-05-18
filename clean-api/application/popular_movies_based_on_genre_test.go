@@ -16,18 +16,22 @@ func TestSorting(t *testing.T) {
 	fourth := []float32{1., .1, .1}
 	unsortedList := []domain.AggregateMovieRatings{
 		{
-			Movie:      domain.Movie{},
-			AllRatings: second,
+			Movie:        domain.Movie{},
+			AllRatings:   second,
+			GenreMatched: 2,
 		}, {
-			Movie:      domain.Movie{},
-			AllRatings: first,
+			Movie:        domain.Movie{},
+			AllRatings:   first,
+			GenreMatched: 1,
 		}, {
-			Movie:      domain.Movie{},
-			AllRatings: third,
+			Movie:        domain.Movie{},
+			AllRatings:   third,
+			GenreMatched: 1,
 		},
 		{
-			Movie:      domain.Movie{},
-			AllRatings: fourth,
+			Movie:        domain.Movie{},
+			AllRatings:   fourth,
+			GenreMatched: 1,
 		},
 	}
 
@@ -35,11 +39,11 @@ func TestSorting(t *testing.T) {
 		{
 			Movie:        domain.Movie{},
 			AvgRating:    .5,
-			CountRatings: 10,
+			CountRatings: 12,
 		}, {
 			Movie:        domain.Movie{},
 			AvgRating:    .5,
-			CountRatings: 6,
+			CountRatings: 10,
 		}, {
 			Movie:        domain.Movie{},
 			AvgRating:    .5,
