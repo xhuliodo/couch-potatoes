@@ -57,7 +57,7 @@ func (nr *Neo4jRepository) GetUserById(userId string) (domain.User, error) {
 	if err != nil {
 		return domain.User{}, errors.New("user does not exist")
 	}
-	
+
 	existingUserId, bool := record.Get("userId")
 	if !bool {
 		return domain.User{}, errors.New("user does not exist")
@@ -167,11 +167,13 @@ func (nr *Neo4jRepository) RegisterNewUser(user domain.User) error {
 	return nil
 }
 
+// TODO: implementing
 func (nr *Neo4jRepository) GetGenrePreferences(userId string) ([]domain.Genre, error) {
 	emptyGenres := []domain.Genre{}
 	return emptyGenres, nil
 }
 
+// TODO: implementing
 func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(genres []domain.Genre) ([]domain.AggregateMovieRatings, error) {
 	emptyMovies := []domain.AggregateMovieRatings{}
 	return emptyMovies, nil
