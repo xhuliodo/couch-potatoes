@@ -22,3 +22,14 @@ type Cast struct {
 	Name string
 	Role string
 }
+
+type PopulatiryScoredMovie struct {
+	Movie
+	AvgRating    float32
+	CountRatings uint
+}
+
+type AggregateMovieRatings struct {
+	Movie      Movie
+	AllRatings []float32
+}
