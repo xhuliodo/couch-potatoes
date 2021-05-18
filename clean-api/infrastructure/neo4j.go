@@ -53,7 +53,11 @@ func (nr *Neo4jRepository) GetUserById(userId string) (domain.User, error) {
 		return domain.User{}, err
 	}
 
-	record, _ := res.Single()
+	record, err := res.Single()
+	if err != nil {
+		return domain.User{}, errors.New("user does not exist")
+	}
+	
 	existingUserId, bool := record.Get("userId")
 	if !bool {
 		return domain.User{}, errors.New("user does not exist")
