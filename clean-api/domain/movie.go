@@ -1,9 +1,7 @@
 package domain
 
-type MovieID string
-
 type Movie struct {
-	Id             MovieID
+	Id             string
 	Title          string
 	ReleaseYear    int
 	Poster         string

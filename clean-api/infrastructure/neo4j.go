@@ -86,7 +86,7 @@ func (nr *Neo4jRepository) GetMovieById(movieId string) (domain.Movie, error) {
 	if !bool {
 		return domain.Movie{}, errors.New("movie does not exist")
 	}
-	existingMovie := domain.Movie{Id: domain.MovieID(existingMovieId.(string))}
+	existingMovie := domain.Movie{Id: existingMovieId.(string)}
 
 	return existingMovie, nil
 }
@@ -167,14 +167,92 @@ func (nr *Neo4jRepository) RegisterNewUser(user domain.User) error {
 	return nil
 }
 
-// TODO: implementing
 func (nr *Neo4jRepository) GetGenrePreferences(userId string) ([]domain.Genre, error) {
-	emptyGenres := []domain.Genre{}
-	return emptyGenres, nil
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User{userId:$userId})-[:FAVORITE]->(g:Genre)
+	return g.genreId as Id
+	`
+	parameters := map[string]interface{}{"userId": userId}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	genres := []domain.Genre{}
+
+	// if _, err := res.Single(); err == nil {
+	// 	return genres, errors.New("tuser has to give their genere preferences firs")
+	// }
+	for res.Next() {
+		genre := res.Record()
+		genreId, _ := genre.Get("Id")
+		g := domain.Genre{Id: genreId.(string)}
+		genres = append(genres, g)
+	}
+
+	if len(genres) == 0 {
+		return genres, errors.New("no genre preference have been given")
+	}
+
+	return genres, nil
 }
 
 // TODO: implementing
-func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(genres []domain.Genre) ([]domain.AggregateMovieRatings, error) {
-	emptyMovies := []domain.AggregateMovieRatings{}
-	return emptyMovies, nil
+func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(userId string, genres []domain.Genre) ([]domain.AggregateMovieRatings, error) {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User{userId:$userId})
+	with u 
+	match (:User)-[r:RATED]->(m:Movie)-[:IN_GENRE]->(g)
+	where not exists( (u)-[:RATED]->(m) ) and g.genreId in $genres
+	return m.movieId as Id, 
+		m.title as Title, 
+		m.releaseYear as ReleaseYear, 
+		m.imdbLink as MoreInfoLink, 
+		count(distinct(g)) as GenreMultiplier, 
+		collect(r.rating) as Ratings
+	`
+	genresIdInterface := make([]interface{}, len(genres))
+	for i, g := range genres {
+		genresIdInterface[i] = g.Id
+	}
+	parameters := map[string]interface{}{"userId": userId, "genres": genresIdInterface}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return nil, err
+	}
+
+	moviesAggregate := []domain.AggregateMovieRatings{}
+
+	for res.Next() {
+		movie := res.Record()
+		movieId, _ := movie.Get("Id")
+		title, _ := movie.Get("Title")
+		releaseYear, _ := movie.Get("ReleaseYear")
+		moreInfoLink, _ := movie.Get("MoreInfoLink")
+		genreMultiplier, _ := movie.Get("GenreMultiplier")
+		ratings, _ := movie.Get("Ratings")
+		m := domain.AggregateMovieRatings{Movie: domain.Movie{
+			Id:           movieId.(string),
+			Title:        title.(string),
+			ReleaseYear:  releaseYear.(int),
+			MoreInfoLink: moreInfoLink.(string),
+		},
+			GenreMatched: genreMultiplier.(uint),
+			AllRatings:   ratings.([]float32),
+		}
+		moviesAggregate = append(moviesAggregate, m)
+	}
+
+	if len(moviesAggregate) == 0 {
+		return moviesAggregate, errors.New("there are no movies with ratings in the prefered genres")
+	}
+	return moviesAggregate, nil
 }

@@ -5,7 +5,7 @@ type Repository interface {
 	GetAllGenres() ([]Genre, error)
 	GetMovieById(userId string) (Movie, error)
 	// TODO: implementing
-	GetAllRatingsForMoviesInGenre(genres []Genre) ([]AggregateMovieRatings, error)
+	GetAllRatingsForMoviesInGenre(userId string, genres []Genre) ([]AggregateMovieRatings, error)
 
 	// user
 	GetUserById(userId string) (User, error)

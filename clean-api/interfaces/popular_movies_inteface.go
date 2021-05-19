@@ -3,6 +3,7 @@ package interfaces
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/render"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
@@ -17,7 +18,6 @@ type movieView struct {
 	Id           string `json:"genreId"`
 	Title        string `json:"title"`
 	ReleaseYear  int    `json:"releaseYear"`
-	Poster       string `json:"posterUrl"`
 	MoreInfoLink string `json:"moreInfoLink"`
 }
 
@@ -31,11 +31,21 @@ func (pmr popularMoviesResource) GetPopularMoviesBasedOnGenre(w http.ResponseWri
 	userIdInterface := r.Context().Value("userId")
 	userId := fmt.Sprintf("%v", userIdInterface)
 
-	limitInterface := r.Context().Value("limit")
-	limit := limitInterface.(uint)
+	var limit uint
+	limitUrlQueryParam := r.URL.Query().Get("limit")
+	limitU64, err := strconv.ParseUint(limitUrlQueryParam, 10, 32)
+	if err != nil {
+		limit = 5
+	}
+	limit = uint(limitU64)
 
-	skipInterface := r.Context().Value("skip")
-	skip := skipInterface.(uint)
+	var skip uint
+	skipUrlQueryParam := r.URL.Query().Get("skip")
+	skipU64, err := strconv.ParseUint(skipUrlQueryParam, 10, 32)
+	if err != nil {
+		skip = 5
+	}
+	skip = uint(skipU64)
 
 	popularMovies, err := pmr.popularMoviesService.GetPopularMoviesBasedOnGenre(userId, limit, skip)
 	if err != nil {
@@ -50,7 +60,6 @@ func (pmr popularMoviesResource) GetPopularMoviesBasedOnGenre(w http.ResponseWri
 				Id:           string(movie.Id),
 				Title:        movie.Title,
 				ReleaseYear:  movie.ReleaseYear,
-				Poster:       movie.Poster,
 				MoreInfoLink: movie.MoreInfoLink,
 			},
 			AvgRating:    movie.AvgRating,

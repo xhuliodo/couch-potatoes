@@ -28,6 +28,14 @@ match (:User)-[r:RATED]->(m:Movie)-[:IN_GENRE]->(g)
 where not exists( (u)-[:RATED]->(m) ) 
 return distinct(m) as movie, collect(r.rating) as ratings
 
+// transformed query
+
+match (u:User{userId:"google-oauth2|104772264931362464545"})
+with u 
+match (:User)-[r:RATED]->(m:Movie)-[:IN_GENRE]->(g)
+where not exists( (u)-[:RATED]->(m) ) and g.genreId in ["c4f88090-9166-4ebf-920b-ff9a34872b84", "acffe5b6-d327-43f6-b5ca-0a86f6780629"]
+return m as movie, count(distinct(g)), collect(r.rating)
+
 
 // IMPORTANT: user based rec
 

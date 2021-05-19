@@ -23,16 +23,17 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 
 	genres, err := pms.repo.GetGenrePreferences(userId)
 	if err != nil {
-		return emptyRec, errors.New("the user has to give their favorite genre preferences first")
+		return emptyRec, err
 	}
 
-	moviesWithRating, err := pms.repo.GetAllRatingsForMoviesInGenre(genres)
+	moviesWithRating, err := pms.repo.GetAllRatingsForMoviesInGenre(userId, genres)
 	if err != nil {
-		return emptyRec, errors.New("there are no movies with ratings in the prefered genres")
+		return emptyRec, errors.New("you're all caught up")
 	}
 
 	sortedList := SortMoviesBasedOnRatings(moviesWithRating)
 
+	// TODO: handle weirdly small recommendations
 	return sortedList[skip : skip+limit], nil
 }
 

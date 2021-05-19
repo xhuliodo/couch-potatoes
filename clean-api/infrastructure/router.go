@@ -45,11 +45,13 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 		// r.Get("/{userId}/steps", ...)
 		r.Post("/ratings", rateMovieInterface.RateMovie)
 	})
-	router.Route("/recommendations", func(r chi.Router) {
-		router.Get("/popular", popularMoviesInterface.GetPopularMoviesBasedOnGenre)
-		// router.Get("/user-based", )
-		// router.Get("/content-based", )
 
-	})
+	// TODO: figure out a way, if possible to group routes
+	// router.Route("/recommendations", func(r chi.Router) {
+	router.Get("/recommendations/popular", popularMoviesInterface.GetPopularMoviesBasedOnGenre)
+	// router.Get("/user-based", )
+	// router.Get("/content-based", )
+
+	// })
 
 }
