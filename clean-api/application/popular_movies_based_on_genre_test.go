@@ -55,7 +55,7 @@ func TestSorting(t *testing.T) {
 		},
 	}
 
-	sortedList := application.SortMoviesBasedOnRatings(unsortedList)
+	sortedList, _ := application.SortMoviesBasedOnRatings(unsortedList)
 
 	if !reflect.DeepEqual(sortedList, want) {
 		t.Errorf("got %v, want %v", sortedList, want)

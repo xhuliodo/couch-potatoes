@@ -31,13 +31,13 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 		return emptyRec, errors.New("you're all caught up")
 	}
 
-	sortedList := SortMoviesBasedOnRatings(moviesWithRating)
-
 	// TODO: handle weirdly small recommendations
+	sortedList, _ := SortMoviesBasedOnRatings(moviesWithRating)
+
 	return sortedList[skip : skip+limit], nil
 }
 
-func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) []domain.PopulatiryScoredMovie {
+func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) ([]domain.PopulatiryScoredMovie, int) {
 	unsortedList := []domain.PopulatiryScoredMovie{}
 
 	for _, movieWithAllRatings := range aggregateRatings {
@@ -67,5 +67,11 @@ func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) [
 		return unsortedList[i].AvgRating > unsortedList[j].AvgRating
 	})
 
-	return unsortedList
+	length := len(unsortedList)
+
+	return unsortedList, length
 }
+
+// func End(begin, end uint, len int) (begin, end uint) {
+
+// }

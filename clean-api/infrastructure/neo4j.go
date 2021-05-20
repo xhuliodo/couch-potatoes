@@ -201,7 +201,6 @@ func (nr *Neo4jRepository) GetGenrePreferences(userId string) ([]domain.Genre, e
 	return genres, nil
 }
 
-// TODO: implementing
 func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(userId string, genres []domain.Genre) ([]domain.AggregateMovieRatings, error) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -235,18 +234,22 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(userId string, genres [
 		movie := res.Record()
 		movieId, _ := movie.Get("Id")
 		title, _ := movie.Get("Title")
-		releaseYear, _ := movie.Get("ReleaseYear")
+		releaseYearInterface, _ := movie.Get("ReleaseYear")
+		releaseYearInt64, _ := releaseYearInterface.(int64)
 		moreInfoLink, _ := movie.Get("MoreInfoLink")
-		genreMultiplier, _ := movie.Get("GenreMultiplier")
-		ratings, _ := movie.Get("Ratings")
+		genreMultiplierInterface, _ := movie.Get("GenreMultiplier")
+		genreMultiplierInt64, _ := genreMultiplierInterface.(int64)
+		ratingsInterface, _ := movie.Get("Ratings")
+		ratingsInterfaceSlice := ratingsInterface.([]interface{})
+
 		m := domain.AggregateMovieRatings{Movie: domain.Movie{
 			Id:           movieId.(string),
 			Title:        title.(string),
-			ReleaseYear:  releaseYear.(int),
+			ReleaseYear:  int(releaseYearInt64),
 			MoreInfoLink: moreInfoLink.(string),
 		},
-			GenreMatched: genreMultiplier.(uint),
-			AllRatings:   ratings.([]float32),
+			GenreMatched: uint(genreMultiplierInt64),
+			AllRatings:   convertRatingsInterfaceToFloatSlice(ratingsInterfaceSlice),
 		}
 		moviesAggregate = append(moviesAggregate, m)
 	}
@@ -255,4 +258,14 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(userId string, genres [
 		return moviesAggregate, errors.New("there are no movies with ratings in the prefered genres")
 	}
 	return moviesAggregate, nil
+}
+
+func convertRatingsInterfaceToFloatSlice(ratingsInterfaceSlice []interface{}) []float32 {
+	ratings := []float32{}
+	for _, rating := range ratingsInterfaceSlice {
+		r64 := rating.(float64)
+		r := float32(r64)
+		ratings = append(ratings, r)
+	}
+	return ratings
 }
