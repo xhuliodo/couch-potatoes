@@ -32,12 +32,18 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 	}
 
 	// TODO: handle weirdly small recommendations
-	sortedList, _ := SortMoviesBasedOnRatings(moviesWithRating)
+	sortedList, length := SortMoviesBasedOnRatings(moviesWithRating)
 
-	return sortedList[skip : skip+limit], nil
+	begin, end, err := handlePagination(length, skip, limit)
+
+	if err != nil {
+		return emptyRec, errors.New("you're all caught up")
+	}
+
+	return sortedList[begin:end], nil
 }
 
-func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) ([]domain.PopulatiryScoredMovie, int) {
+func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) (sortedList []domain.PopulatiryScoredMovie, length uint) {
 	unsortedList := []domain.PopulatiryScoredMovie{}
 
 	for _, movieWithAllRatings := range aggregateRatings {
@@ -56,6 +62,7 @@ func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) (
 			Movie:        movieWithAllRatings.Movie,
 			CountRatings: uint(countBoosted),
 			AvgRating:    avgRating,
+			GenreMatched: genreMultiplier,
 		}
 		unsortedList = append(unsortedList, entry)
 	}
@@ -67,11 +74,40 @@ func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) (
 		return unsortedList[i].AvgRating > unsortedList[j].AvgRating
 	})
 
-	length := len(unsortedList)
+	len := len(unsortedList)
 
-	return unsortedList, length
+	return unsortedList, uint(len)
 }
 
-// func End(begin, end uint, len int) (begin, end uint) {
+const (
+	defaultLimit uint = 5
+	defaultSkip  uint = 0
+)
 
-// }
+func handlePagination(len, skip, limit uint) (begin, end uint, err error) {
+	if skip != defaultSkip {
+		maxSkip := maxSkip(len, limit)
+		if skip > maxSkip {
+			return 0, 0, errors.New("you've reached the limit")
+		}
+	}
+
+	begin = skip
+
+	remaining := len - skip
+	if remaining < limit {
+		end = remaining + skip
+		return begin, end, nil
+	}
+
+	end = limit + skip
+	return begin, end, nil
+
+}
+
+func maxSkip(total uint, limit uint) uint {
+	if limit == 0 {
+		limit = defaultLimit
+	}
+	return ((total - 1) / limit) * limit
+}

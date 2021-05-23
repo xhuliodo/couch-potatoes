@@ -25,6 +25,7 @@ type popularMoviesView struct {
 	Movie        movieView `json:"movie"`
 	AvgRating    float32   `json:"avgRating"`
 	CountRatings uint      `json:"ratingsCount"`
+	GenreMatched uint      `json:"genreMatched"`
 }
 
 func (pmr popularMoviesResource) GetPopularMoviesBasedOnGenre(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +65,7 @@ func (pmr popularMoviesResource) GetPopularMoviesBasedOnGenre(w http.ResponseWri
 			},
 			AvgRating:    movie.AvgRating,
 			CountRatings: movie.CountRatings,
+			GenreMatched: movie.GenreMatched,
 		})
 	}
 
