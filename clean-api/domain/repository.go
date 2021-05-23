@@ -4,7 +4,6 @@ type Repository interface {
 	// movies
 	GetAllGenres() ([]Genre, error)
 	GetMovieById(userId string) (Movie, error)
-	// TODO: implementing
 	GetAllRatingsForMoviesInGenre(userId string, genres []Genre) ([]AggregateMovieRatings, error)
 
 	// user
@@ -12,6 +11,7 @@ type Repository interface {
 	RegisterNewUser(user User) error
 	SaveGenrePreferences(userId string, genres []Genre) error
 	RateMovie(userId, movieId string, rating int) error
-	// TODO: implementing
 	GetGenrePreferences(userId string) ([]Genre, error)
+	// TODO: implementing
+	GetUserRatingsCount(userId string) (uint, error)
 }

@@ -269,3 +269,25 @@ func convertRatingsInterfaceToFloatSlice(ratingsInterfaceSlice []interface{}) []
 	}
 	return ratings
 }
+
+func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (uint, error) {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User{userId: $userId})-[:RATED]->(m:Movie)
+    return count(m) as RatedMoviesCount
+	`
+	parameters := map[string]interface{}{"userId": userId}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return 0, err
+	}
+
+	record, _ := res.Single()
+	ratedMoviesCountInterface, _ := record.Get("RatedMoviesCount")
+	ratedMoviesCountInt64 := ratedMoviesCountInterface.(int64)
+
+	return uint(ratedMoviesCountInt64), nil
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
@@ -67,19 +68,25 @@ func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Requ
 	render.Render(w, r, common_http.ResourceCreated("genre preferences of the user have been saved"))
 }
 
-// type userView struct {
-// 	UserId string `json:"userId"`
-// }
+type SetupStepView struct {
+	Step     uint   `json:"step"`
+	Finished bool   `json:"finished"`
+	Message  string `json:"message"`
+}
 
-// func (sr setupResource) GetUserById(w http.ResponseWriter, r *http.Request) {
-// 	userId := chi.URLParam(r, "userId")
-// 	user, err := sr.setupService.GetUserById(userId)
+func (sr setupResource) GetUserSetupStep(w http.ResponseWriter, r *http.Request) {
+	userId := chi.URLParam(r, "userId")
+	setupStep, err := sr.setupService.GetSetupStep(userId)
 
-// 	if err != nil {
-// 		_ = render.Render(w, r, common_http.ErrInternal(err))
-// 		return
-// 	}
-// 	view := userView{user.Id}
+	if err != nil {
+		_ = render.Render(w, r, common_http.ErrInternal(err))
+		return
+	}
+	view := SetupStepView{
+		Step:     setupStep.Step,
+		Finished: setupStep.Finished,
+		Message:  setupStep.Message,
+	}
 
-// 	render.Respond(w, r, view)
-// }
+	render.Respond(w, r, view)
+}

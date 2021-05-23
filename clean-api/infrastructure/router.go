@@ -39,7 +39,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	router.Get("/genres", initialSetupInterface.GetAllGenres)
 	router.Route("/users", func(r chi.Router) {
 		r.Post("/", registerUserInterface.RegisterUser)
-		// r.Get("/{userId}", initialSetupInterface.GetUserById)
+		r.Get("/{userId}/setup", initialSetupInterface.GetUserSetupStep)
 		r.Post("/genres", initialSetupInterface.SaveGenrePreferences)
 		// TODO: get what setup step a user is at
 		// r.Get("/{userId}/steps", ...)

@@ -18,10 +18,6 @@ func (ss SetupService) GetAllGenres() ([]domain.Genre, error) {
 	return ss.repo.GetAllGenres()
 }
 
-// func (ss SetupService) GetUserById(userId string) (User, error) {
-// 	return ss.userRepo.GetUserById(userId)
-// }
-
 func (ss SetupService) SaveGenrePreferences(userId string, genres []string) error {
 	user, err := ss.repo.GetUserById(userId)
 	if err != nil {
@@ -60,4 +56,40 @@ func Find(slice []domain.Genre, val string) (domain.Genre, bool) {
 		}
 	}
 	return domain.Genre{}, false
+}
+
+type SetupStep struct {
+	Step     uint
+	Finished bool
+	Message  string
+}
+
+func (ss SetupService) GetSetupStep(userId string) (SetupStep, error) {
+	if _, err := ss.repo.GetUserById(userId); err != nil {
+		return SetupStep{}, errors.New("a user with this identifier does not exist")
+	}
+
+	if _, err := ss.repo.GetGenrePreferences(userId); err != nil {
+		return SetupStep{
+			Step:     1,
+			Finished: false,
+			Message:  "user has yet to give genre preferences",
+		}, nil
+	}
+
+	const leastRequiredRatingNr uint = 15
+
+	if ratedMoviesCount, err := ss.repo.GetUserRatingsCount(userId); err != nil || !hasUserRatedLeastRequiredRatedMovies(leastRequiredRatingNr, ratedMoviesCount) {
+		return SetupStep{
+			Step:     2,
+			Finished: false,
+			Message:  "user has not given enough ratings to get to know him yet",
+		}, nil
+	}
+
+	return SetupStep{Step: 3, Finished: true, Message: "user has finished the setup process"}, nil
+}
+
+func hasUserRatedLeastRequiredRatedMovies(leastRequiredRatingNr, ratedMoviesCount uint) bool {
+	return ratedMoviesCount >= leastRequiredRatingNr
 }
