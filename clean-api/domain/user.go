@@ -15,7 +15,7 @@ type User struct {
 
 type RatedMovie struct {
 	Movie
-	Rating float32
+	Rating float64
 }
 
 const minimumGenreRequired int = 3
