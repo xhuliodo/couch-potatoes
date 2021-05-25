@@ -291,3 +291,18 @@ func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (uint, error) {
 
 	return uint(ratedMoviesCountInt64), nil
 }
+
+func (nr *Neo4jRepository) GetAvgRatingAndCollectSimilairUsers(userId string) (domain.UserToRecommend, domain.UsersToCompare, error) {
+	emptyUserToRec := domain.UserToRecommend{}
+	emptyUserToCompare := domain.UsersToCompare{}
+	return emptyUserToRec, emptyUserToCompare, nil
+}
+
+func (nr *Neo4jRepository) GetUsersAvgRating(userIds []string, userComparison *domain.UsersToCompare) error {
+	return nil
+}
+
+func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) ([]domain.User, error) {
+	emptyUsers := []domain.User{}
+	return emptyUsers, nil
+}

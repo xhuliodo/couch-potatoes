@@ -24,3 +24,8 @@ func NewPopularMoviesInterface(repo domain.Repository) popularMoviesResource {
 	popularMoviesService := application.NewPopularMovieService(repo)
 	return popularMoviesResource{popularMoviesService}
 }
+
+func NewUserBasedRecInterface(repo domain.Repository) userBasedRecResource {
+	userBasedRecService := application.NewUserBasedRecommendationService(repo)
+	return userBasedRecResource{userBasedRecService}
+}

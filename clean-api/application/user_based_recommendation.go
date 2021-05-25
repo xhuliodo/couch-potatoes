@@ -19,14 +19,14 @@ const (
 	nearestNeighborCircle uint = 25
 )
 
-func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId string, limit uint) ([]domain.UserBasedRecommendation, error) {
-	emptyRec := []domain.UserBasedRecommendation{}
+func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId string, limit uint) (domain.UsersBasedRecommendation, error) {
+	emptyRec := domain.UsersBasedRecommendation{}
 
 	if _, err := ubrs.repo.GetUserById(userId); err != nil {
 		return emptyRec, errors.New("a user with this identifier does not exist")
 	}
 
-	usersToCompare, err := ubrs.repo.GetAvgRatingAndCollectSimilairUsers(userId)
+	userToRecommend, usersToCompare, err := ubrs.repo.GetAvgRatingAndCollectSimilairUsers(userId)
 	if err != nil {
 		return emptyRec, err
 	}
@@ -35,61 +35,43 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		return emptyRec, err
 	}
 
-	usersLeftIds := getIds(usersToCompare)
+	usersLeftIds := getIds(&usersToCompare)
 
 	if err := ubrs.repo.GetUsersAvgRating(usersLeftIds, &usersToCompare); err != nil {
 		return emptyRec, err
 	}
 
-	if err := usersToCompare.CalculatePearson(); err != nil {
+	if err := usersToCompare.CalculatePearson(&userToRecommend); err != nil {
 		return emptyRec, err
 	}
 
-	usersSorted, _ := SortByPearsonDesc(usersToCompare)
+	usersSorted, _ := sortByPearsonDesc(&usersToCompare)
 
 	similairUser := usersSorted[:nearestNeighborCircle]
 
-	userIds := getIdsFromUsersSorted(similairUser)
+	userIds := getIdsFromSimilairUser(&similairUser)
 
 	usersAndRatedMovies, err := ubrs.repo.GetRatedMoviesForUsers(userIds)
 	if err != nil {
 		return emptyRec, err
 	}
 
-	recommendationsWithNoMovieDetails := calculateScore(usersAndRatedMovies, usersToCompare)
+	usersToCompare.RemoveLowPearson(&userIds)
+
+	recommendationsWithNoMovieDetails := calculateScore(&usersAndRatedMovies, usersToCompare)
 
 	sort.SliceStable(recommendationsWithNoMovieDetails, func(i, j int) bool {
 		return recommendationsWithNoMovieDetails[i].Score > recommendationsWithNoMovieDetails[j].Score
 	})
 
-	rwnd := recommendationsWithNoMovieDetails[:limit]
+	recommendationsWithNoMovieDetails = recommendationsWithNoMovieDetails[:limit]
 
-	
-
-	return emptyRec, nil
+	return recommendationsWithNoMovieDetails, nil
 }
 
-func calculateScore(users []domain.User, otherUsers domain.UserComparison) []domain.UserBasedRecommendation {
-	recs := []domain.UserBasedRecommendation{}
-	for _, user := range users {
-		for _, movie := range user.RatedMovies {
-			pearson := otherUsers.UsersToCompare[user.Id].PearsonCoefficient
-			score := pearson * movie.Rating
-			newRec := domain.UserBasedRecommendation{
-				Movie:                  movie.Movie,
-				CorrelationCoefficient: pearson,
-				Score:                  score,
-			}
-			recs = append(recs, newRec)
-		}
-	}
-
-	return recs
-}
-
-func getIds(userComparison domain.UserComparison) []string {
+func getIds(userComparison *domain.UsersToCompare) []string {
 	usersIds := []string{}
-	for key := range userComparison.UsersToCompare {
+	for key := range *userComparison {
 		usersIds = append(usersIds, key)
 	}
 	return usersIds
@@ -102,11 +84,11 @@ type UserComparisonSortable struct {
 
 type UsersComparisonSortable []UserComparisonSortable
 
-func SortByPearsonDesc(usersToCompare domain.UserComparison) (UsersComparisonSortable, error) {
-	u := make(UsersComparisonSortable, len(usersToCompare.UsersToCompare))
+func sortByPearsonDesc(usersToCompare *domain.UsersToCompare) (UsersComparisonSortable, error) {
+	u := make(UsersComparisonSortable, len(*usersToCompare))
 
 	i := 0
-	for k, v := range usersToCompare.UsersToCompare {
+	for k, v := range *usersToCompare {
 		u[i] = UserComparisonSortable{k, v.PearsonCoefficient}
 		i++
 	}
@@ -118,10 +100,27 @@ func SortByPearsonDesc(usersToCompare domain.UserComparison) (UsersComparisonSor
 	return u, nil
 }
 
-func getIdsFromUsersSorted(users UsersComparisonSortable) []string {
+func getIdsFromSimilairUser(users *UsersComparisonSortable) []string {
 	usersIds := []string{}
-	for _, u := range users {
+	for _, u := range *users {
 		usersIds = append(usersIds, u.UserId)
 	}
 	return usersIds
+}
+
+func calculateScore(users *[]domain.User, otherUsers domain.UsersToCompare) domain.UsersBasedRecommendation {
+	recs := domain.UsersBasedRecommendation{}
+	for _, user := range *users {
+		for _, movie := range user.RatedMovies {
+			pearson := otherUsers[user.Id].PearsonCoefficient
+			score := pearson * movie.Rating
+			newRec := domain.UserBasedRecommendation{
+				Movie: movie.Movie,
+				Score: score,
+			}
+			recs = append(recs, newRec)
+		}
+	}
+
+	return recs
 }

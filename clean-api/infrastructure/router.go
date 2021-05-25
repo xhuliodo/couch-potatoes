@@ -35,6 +35,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	rateMovieInterface := interfaces.NewRateMovieInterface(repo)
 	registerUserInterface := interfaces.NewRegisterUserInterface(repo)
 	popularMoviesInterface := interfaces.NewPopularMoviesInterface(repo)
+	userBasedRecInterface := interfaces.NewUserBasedRecInterface(repo)
 
 	router.Get("/genres", initialSetupInterface.GetAllGenres)
 	router.Route("/users", func(r chi.Router) {
@@ -49,7 +50,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	// TODO: figure out a way, if possible to group routes
 	// router.Route("/recommendations", func(r chi.Router) {
 	router.Get("/recommendations/popular", popularMoviesInterface.GetPopularMoviesBasedOnGenre)
-	// router.Get("/user-based", )
+	router.Get("/recommendations/user-based", userBasedRecInterface.GetUserBasedRecommendation)
 	// router.Get("/content-based", )
 
 	// })
