@@ -2,21 +2,16 @@ package domain
 
 import (
 	"errors"
-	"fmt"
 	"math"
 )
-
-type UserToRecommend struct {
-	UserId        string
-	UserAvgRating float64
-}
 
 type UsersToCompare map[string]*UserToCompare
 
 type UserToCompare struct {
-	UserAvgRating      float64
-	RatingsInCommon    []RatingInCommon
-	PearsonCoefficient float64
+	UserToRecAvgRating  float64
+	UserToCompAvgRating float64
+	RatingsInCommon     []RatingInCommon
+	PearsonCoefficient  float64
 }
 
 type RatingInCommon struct {
@@ -46,25 +41,29 @@ func (utc *UsersToCompare) FilterBasedOnRatingsCount() error {
 	return nil
 }
 
-func (uc *UsersToCompare) CalculatePearson(userToRecommend *UserToRecommend) error {
-	userAvgRating := userToRecommend.UserAvgRating
-	fmt.Println("u1_mean", userAvgRating)
+func (uc *UsersToCompare) CalculatePearson() error {
 	for i, user := range *uc {
-		userToCompareAvgRating := user.UserAvgRating
+		userToRecAvgRating := user.UserToRecAvgRating
+		userToCompareAvgRating := user.UserToCompAvgRating
+
 		var nom float64
+		n := len(user.RatingsInCommon) - 1
 		var denomUserToRecommend float64
 		var denomUserToCompare float64
 		for _, rating := range user.RatingsInCommon {
-			nom += (rating.UserToRecommendRating - userAvgRating) * (rating.UserToCompareRating - userToCompareAvgRating)
-			denomUserToRecommend += math.Pow(rating.UserToRecommendRating-userAvgRating, 2)
+			nom += (rating.UserToRecommendRating - userToRecAvgRating) * (rating.UserToCompareRating - userToCompareAvgRating)
+			denomUserToRecommend += math.Pow(rating.UserToRecommendRating-userToRecAvgRating, 2)
 			denomUserToCompare += math.Pow(rating.UserToCompareRating-userToCompareAvgRating, 2)
 		}
-		denom := math.Sqrt(denomUserToCompare * denomUserToCompare)
+		sX := denomUserToCompare / float64(n)
+		sX = math.Sqrt(sX)
+		sY := denomUserToRecommend / float64(n)
+		sY = math.Sqrt(sY)
+		denom := sX * sY * float64(n)
+
 		if denom != 0 {
 			pearsonCoefficient := nom / denom
 			user.PearsonCoefficient = pearsonCoefficient
-			fmt.Println("denom", denom)
-			fmt.Println("corresponding pearson", pearsonCoefficient)
 		} else {
 			delete(*uc, i)
 		}

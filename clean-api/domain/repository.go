@@ -15,7 +15,6 @@ type Repository interface {
 
 	// recommendation
 	GetAllRatingsForMoviesInGenre(userId string, genres []Genre) ([]AggregateMovieRatings, error)
-	GetAvgRatingAndCollectSimilairUsers(userId string) (UserToRecommend, UsersToCompare, error)
-	GetUsersAvgRating(userIds []string, userComparison *UsersToCompare) error
+	GetSimilairUsersAndTheirAvgRating(userId string) (UsersToCompare, error)
 	GetRatedMoviesForUsers(userIds []string) ([]User, error)
 }

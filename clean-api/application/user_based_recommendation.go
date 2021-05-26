@@ -2,7 +2,6 @@ package application
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
@@ -27,24 +26,16 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		return emptyRec, errors.New("a user with this identifier does not exist")
 	}
 
-	userToRecommend, usersToCompare, err := ubrs.repo.GetAvgRatingAndCollectSimilairUsers(userId)
+	usersToCompare, err := ubrs.repo.GetSimilairUsersAndTheirAvgRating(userId)
 	if err != nil {
 		return emptyRec, err
 	}
-
-	fmt.Println("user to recommend", userToRecommend)
 
 	if err := usersToCompare.FilterBasedOnRatingsCount(); err != nil {
 		return emptyRec, err
 	}
 
-	usersLeftIds := getIds(&usersToCompare)
-
-	if err := ubrs.repo.GetUsersAvgRating(usersLeftIds, &usersToCompare); err != nil {
-		return emptyRec, err
-	}
-
-	if err := usersToCompare.CalculatePearson(&userToRecommend); err != nil {
+	if err := usersToCompare.CalculatePearson(); err != nil {
 		return emptyRec, err
 	}
 

@@ -296,8 +296,7 @@ func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (uint, error) {
 	return uint(ratedMoviesCountInt64), nil
 }
 
-func (nr *Neo4jRepository) GetAvgRatingAndCollectSimilairUsers(userId string) (domain.UserToRecommend, domain.UsersToCompare, error) {
-	emptyUserToRec := domain.UserToRecommend{}
+func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(userId string) (domain.UsersToCompare, error) {
 	emptyUserToCompare := domain.UsersToCompare{}
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
@@ -306,42 +305,42 @@ func (nr *Neo4jRepository) GetAvgRatingAndCollectSimilairUsers(userId string) (d
 	query := `
 	match (u1:User {userId:$userId})-[r1:RATED]->(m:Movie)<-[r2:RATED]-(u2)
 	return u1.userId as UserToRecId, 
-		avg(r1.rating) AS UserToRecAvgRating, 
 		u2.userId as UserToCompareId, 
+		avg(r1.rating) AS UserToRecAvgRating, 
+		avg(r2.rating) AS UserToCompAvgRating, 
 		collect([toFloat(r1.rating), toFloat(r2.rating)]) as RatingsInCommon
 	`
 	parameters := map[string]interface{}{"userId": userId}
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptyUserToRec, emptyUserToCompare, err
+		return emptyUserToCompare, err
 	}
 
-	userToRec := domain.UserToRecommend{}
 	usersToComp := domain.UsersToCompare{}
 
 	for res.Next() {
 		rec := res.Record()
-		userToRecId, _ := rec.Get("UserToRecId")
-		userToRec.UserId = userToRecId.(string)
 		userToRecAvgRating, _ := rec.Get("UserToRecAvgRating")
-		userToRec.UserAvgRating = userToRecAvgRating.(float64)
-		
+		userToCompAvgRating, _ := rec.Get("UserToCompAvgRating")
+
 		userToCompareId, _ := rec.Get("UserToCompareId")
 		ratingsInCommonInterface, _ := rec.Get("RatingsInCommon")
 
 		ratingsInCommonInterfaceSlice := ratingsInCommonInterface.([]interface{})
 
 		usersToComp[userToCompareId.(string)] = &domain.UserToCompare{
-			RatingsInCommon: convertRatingsInCommonInterfaceSlice(ratingsInCommonInterfaceSlice),
+			RatingsInCommon:     convertRatingsInCommonInterfaceSlice(ratingsInCommonInterfaceSlice),
+			UserToRecAvgRating:  userToRecAvgRating.(float64),
+			UserToCompAvgRating: userToCompAvgRating.(float64),
 		}
 	}
 
 	if len(usersToComp) == 0 {
-		return emptyUserToRec, emptyUserToCompare, errors.New("there are no similiar user to you yet, keep rating some more")
+		return emptyUserToCompare, errors.New("there are no similiar user to you yet, keep rating some more")
 	}
 
-	return userToRec, usersToComp, nil
+	return usersToComp, nil
 }
 
 func convertRatingsInCommonInterfaceSlice(ratingsInterfaceSlice []interface{}) []domain.RatingInCommon {
@@ -356,40 +355,6 @@ func convertRatingsInCommonInterfaceSlice(ratingsInterfaceSlice []interface{}) [
 		ratingsInCommon = append(ratingsInCommon, ratingInCommon)
 	}
 	return ratingsInCommon
-}
-
-func (nr *Neo4jRepository) GetUsersAvgRating(userIds []string, userComparison *domain.UsersToCompare) error {
-	session := nr.Driver.NewSession(neo4j.SessionConfig{})
-	defer session.Close()
-
-	query := `
-	match (u:User)-[r:RATED]->(m:Movie)
-	where u.userId in $userIds
-	return u.userId as UserId, 
-		avg(r.rating) AS UserAvgRating
-	`
-	userIdsInterface := make([]interface{}, len(userIds))
-	for i, u := range userIds {
-		userIdsInterface[i] = u
-	}
-	parameters := map[string]interface{}{"userIds": userIdsInterface}
-
-	res, err := session.Run(query, parameters)
-	if err != nil {
-		return err
-	}
-
-	for res.Next() {
-		rec := res.Record()
-		userIdInterface, _ := rec.Get("UserId")
-		userId := userIdInterface.(string)
-		avgRatingInterface, _ := rec.Get("UserAvgRating")
-		avgRating := avgRatingInterface.(float64)
-
-		(*userComparison)[userId].UserAvgRating = avgRating
-	}
-
-	return nil
 }
 
 func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) ([]domain.User, error) {
