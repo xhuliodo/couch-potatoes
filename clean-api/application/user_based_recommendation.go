@@ -2,6 +2,7 @@ package application
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
@@ -31,6 +32,8 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		return emptyRec, err
 	}
 
+	fmt.Println("user to recommend", userToRecommend)
+
 	if err := usersToCompare.FilterBasedOnRatingsCount(); err != nil {
 		return emptyRec, err
 	}
@@ -45,9 +48,18 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		return emptyRec, err
 	}
 
-	usersSorted, _ := sortByPearsonDesc(&usersToCompare)
+	// for k, u := range usersToCompare {
+	// 	fmt.Println(k, u.UserAvgRating, u.PearsonCoefficient)
+	// }
 
-	similairUser := usersSorted[:nearestNeighborCircle]
+	usersSorted, _ := sortByPearsonDesc(&usersToCompare)
+	// fmt.Println(usersSorted)
+	end := nearestNeighborCircle
+	sliceMaxLength := len(usersToCompare)
+	if sliceMaxLength < int(nearestNeighborCircle) {
+		end = uint(sliceMaxLength)
+	}
+	similairUser := usersSorted[:end]
 
 	userIds := getIdsFromSimilairUser(&similairUser)
 
@@ -63,7 +75,6 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 	sort.SliceStable(recommendationsWithNoMovieDetails, func(i, j int) bool {
 		return recommendationsWithNoMovieDetails[i].Score > recommendationsWithNoMovieDetails[j].Score
 	})
-
 	recommendationsWithNoMovieDetails = recommendationsWithNoMovieDetails[:limit]
 
 	return recommendationsWithNoMovieDetails, nil
@@ -111,8 +122,8 @@ func getIdsFromSimilairUser(users *UsersComparisonSortable) []string {
 func calculateScore(users *[]domain.User, otherUsers domain.UsersToCompare) domain.UsersBasedRecommendation {
 	recs := domain.UsersBasedRecommendation{}
 	for _, user := range *users {
+		pearson := otherUsers[user.Id].PearsonCoefficient
 		for _, movie := range user.RatedMovies {
-			pearson := otherUsers[user.Id].PearsonCoefficient
 			score := pearson * movie.Rating
 			newRec := domain.UserBasedRecommendation{
 				Movie: movie.Movie,

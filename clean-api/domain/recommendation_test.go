@@ -10,19 +10,19 @@ import (
 func TestFilterBasedOnRatingCount(t *testing.T) {
 	var r float64 = 0
 	got := domain.UsersToCompare{
-		"1": domain.UserToCompare{
+		"1": &domain.UserToCompare{
 			RatingsInCommon: []domain.RatingInCommon{
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 			},
 		},
-		"2": domain.UserToCompare{
+		"2": &domain.UserToCompare{
 			RatingsInCommon: []domain.RatingInCommon{
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 			},
 		},
-		"3": domain.UserToCompare{
+		"3": &domain.UserToCompare{
 			RatingsInCommon: []domain.RatingInCommon{
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
@@ -32,14 +32,14 @@ func TestFilterBasedOnRatingCount(t *testing.T) {
 	}
 
 	want := domain.UsersToCompare{
-		"1": domain.UserToCompare{
+		"1": &domain.UserToCompare{
 			RatingsInCommon: []domain.RatingInCommon{
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 			},
 		},
-		"3": domain.UserToCompare{
+		"3": &domain.UserToCompare{
 			RatingsInCommon: []domain.RatingInCommon{
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
 				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},

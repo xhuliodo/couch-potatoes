@@ -15,7 +15,7 @@ type popularMoviesResource struct {
 }
 
 type movieView struct {
-	Id           string `json:"genreId"`
+	Id           string `json:"movieId"`
 	Title        string `json:"title"`
 	ReleaseYear  int    `json:"releaseYear"`
 	MoreInfoLink string `json:"moreInfoLink"`

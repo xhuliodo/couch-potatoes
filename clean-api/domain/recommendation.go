@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"fmt"
 	"math"
 )
 
@@ -10,7 +11,7 @@ type UserToRecommend struct {
 	UserAvgRating float64
 }
 
-type UsersToCompare map[string]UserToCompare
+type UsersToCompare map[string]*UserToCompare
 
 type UserToCompare struct {
 	UserAvgRating      float64
@@ -47,6 +48,7 @@ func (utc *UsersToCompare) FilterBasedOnRatingsCount() error {
 
 func (uc *UsersToCompare) CalculatePearson(userToRecommend *UserToRecommend) error {
 	userAvgRating := userToRecommend.UserAvgRating
+	fmt.Println("u1_mean", userAvgRating)
 	for i, user := range *uc {
 		userToCompareAvgRating := user.UserAvgRating
 		var nom float64
@@ -54,13 +56,15 @@ func (uc *UsersToCompare) CalculatePearson(userToRecommend *UserToRecommend) err
 		var denomUserToCompare float64
 		for _, rating := range user.RatingsInCommon {
 			nom += (rating.UserToRecommendRating - userAvgRating) * (rating.UserToCompareRating - userToCompareAvgRating)
-			denomUserToRecommend += math.Pow((rating.UserToRecommendRating - userAvgRating), 2)
-			denomUserToCompare += math.Pow((rating.UserToCompareRating - userToCompareAvgRating), 2)
+			denomUserToRecommend += math.Pow(rating.UserToRecommendRating-userAvgRating, 2)
+			denomUserToCompare += math.Pow(rating.UserToCompareRating-userToCompareAvgRating, 2)
 		}
 		denom := math.Sqrt(denomUserToCompare * denomUserToCompare)
 		if denom != 0 {
 			pearsonCoefficient := nom / denom
 			user.PearsonCoefficient = pearsonCoefficient
+			fmt.Println("denom", denom)
+			fmt.Println("corresponding pearson", pearsonCoefficient)
 		} else {
 			delete(*uc, i)
 		}
