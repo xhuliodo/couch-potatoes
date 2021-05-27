@@ -12,12 +12,26 @@ type UserToCompare struct {
 	UserToCompAvgRating float64
 	RatingsInCommon     []RatingInCommon
 	PearsonCoefficient  float64
+	// RatedMovies         []RatedMovie
 }
 
 type RatingInCommon struct {
 	UserToRecommendRating float64
 	UserToCompareRating   float64
 }
+
+type ScoringMovies map[string]*Details
+
+type Details struct {
+	Movie
+	Ratings Rating
+}
+
+type Rating map[string]float64
+
+// type MoviesScored map[string]*Score
+
+// type Score float64
 
 type UsersBasedRecommendation []UserBasedRecommendation
 
@@ -64,6 +78,7 @@ func (uc *UsersToCompare) CalculatePearson() error {
 		if denom != 0 {
 			pearsonCoefficient := nom / denom
 			user.PearsonCoefficient = pearsonCoefficient
+			// fmt.Println("user with id", i, "pearson", pearsonCoefficient)
 		} else {
 			delete(*uc, i)
 		}

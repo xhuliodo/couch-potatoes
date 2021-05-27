@@ -357,8 +357,8 @@ func convertRatingsInCommonInterfaceSlice(ratingsInterfaceSlice []interface{}) [
 	return ratingsInCommon
 }
 
-func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) ([]domain.User, error) {
-	emptyUsers := []domain.User{}
+func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) (domain.ScoringMovies, error) {
+	emptyScoringMovies := domain.ScoringMovies{}
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -366,8 +366,11 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) ([]domain.Us
 	query := `
 	match (u:User)-[r:RATED]->(m:Movie)
 	where u.userId in $userIds
-	return u.userId as UserId,
-		collect([m.movieId,r.rating,m.title]) as MovieRatingCollection
+	return m.movieId as MovieId,
+	   m.title as MovieTitle,
+	   m.releaseYear as ReleaseYear, 
+	   m.imdbLink as MoreInfoLink,
+	   collect([u.userId, r.rating]) as UserRatingCollection
 	`
 	userIdsInterface := make([]interface{}, len(userIds))
 	for i, u := range userIds {
@@ -377,43 +380,44 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) ([]domain.Us
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptyUsers, err
+		return emptyScoringMovies, err
 	}
 
 	for res.Next() {
 		rec := res.Record()
-		userIdInterface, _ := rec.Get("UserId")
-		userId := userIdInterface.(string)
-		movieRatingCollectionInterface, _ := rec.Get("MovieRatingCollection")
-		movieRatingCollectionInterfaceSlice := movieRatingCollectionInterface.([]interface{})
+		movieIdInterface, _ := rec.Get("MovieId")
+		movieId := movieIdInterface.(string)
+		movieTitleInterface, _ := rec.Get("MovieTitle")
+		movieTitle := movieTitleInterface.(string)
+		releaseYearInterface, _ := rec.Get("ReleaseYear")
+		releaseYearInt64, _ := releaseYearInterface.(int64)
+		moreInfoLink, _ := rec.Get("MoreInfoLink")
+		userRatingCollectionInterface, _ := rec.Get("UserRatingCollection")
+		userRatingCollectionInterfaceSlice := userRatingCollectionInterface.([]interface{})
 
-		user := domain.User{
-			Id: userId,
+		emptyScoringMovies[movieId] = &domain.Details{
+			Movie: domain.Movie{
+				Title:        movieTitle,
+				ReleaseYear:  int(releaseYearInt64),
+				MoreInfoLink: moreInfoLink.(string),
+			},
 		}
 
-		ratedMovies := convertRatedMoviesInterfaceSlice(movieRatingCollectionInterfaceSlice)
+		ratings := convertRatedMoviesInterfaceSlice(userRatingCollectionInterfaceSlice)
 
-		user.RatedMovies = ratedMovies
-
-		emptyUsers = append(emptyUsers, user)
+		emptyScoringMovies[movieId].Ratings = ratings
 	}
 
-	return emptyUsers, nil
+	return emptyScoringMovies, nil
 }
 
-func convertRatedMoviesInterfaceSlice(mrcis []interface{}) []domain.RatedMovie {
-	ratedMovies := []domain.RatedMovie{}
-	for _, m := range mrcis {
-		r := m.([]interface{})
-		ratedMovie := domain.RatedMovie{
-			Movie: domain.Movie{
-				Id:    r[0].(string),
-				Title: r[2].(string),
-			},
-			Rating: r[1].(float64),
-		}
-
-		ratedMovies = append(ratedMovies, ratedMovie)
+func convertRatedMoviesInterfaceSlice(urcis []interface{}) domain.Rating {
+	ratings := domain.Rating{}
+	for _, ur := range urcis {
+		r := ur.([]interface{})
+		userId := r[0].(string)
+		rating := r[1].(float64)
+		ratings[userId] = rating
 	}
-	return ratedMovies
+	return ratings
 }

@@ -2,6 +2,7 @@ package application
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
@@ -51,32 +52,24 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		end = uint(sliceMaxLength)
 	}
 	similairUser := usersSorted[:end]
+	fmt.Println(similairUser)
 
 	userIds := getIdsFromSimilairUser(&similairUser)
+	usersToCompare.RemoveLowPearson(&userIds)
 
-	usersAndRatedMovies, err := ubrs.repo.GetRatedMoviesForUsers(userIds)
+	moviesAndRatings, err := ubrs.repo.GetRatedMoviesForUsers(userIds)
 	if err != nil {
 		return emptyRec, err
 	}
 
-	usersToCompare.RemoveLowPearson(&userIds)
+	recs := calculateScore(usersToCompare, moviesAndRatings)
 
-	recommendationsWithNoMovieDetails := calculateScore(&usersAndRatedMovies, usersToCompare)
-
-	sort.SliceStable(recommendationsWithNoMovieDetails, func(i, j int) bool {
-		return recommendationsWithNoMovieDetails[i].Score > recommendationsWithNoMovieDetails[j].Score
+	sort.SliceStable(recs, func(i, j int) bool {
+		return recs[i].Score > recs[j].Score
 	})
-	recommendationsWithNoMovieDetails = recommendationsWithNoMovieDetails[:limit]
+	recs = recs[:limit]
 
-	return recommendationsWithNoMovieDetails, nil
-}
-
-func getIds(userComparison *domain.UsersToCompare) []string {
-	usersIds := []string{}
-	for key := range *userComparison {
-		usersIds = append(usersIds, key)
-	}
-	return usersIds
+	return recs, nil
 }
 
 type UserComparisonSortable struct {
@@ -110,19 +103,27 @@ func getIdsFromSimilairUser(users *UsersComparisonSortable) []string {
 	return usersIds
 }
 
-func calculateScore(users *[]domain.User, otherUsers domain.UsersToCompare) domain.UsersBasedRecommendation {
-	recs := domain.UsersBasedRecommendation{}
-	for _, user := range *users {
-		pearson := otherUsers[user.Id].PearsonCoefficient
-		for _, movie := range user.RatedMovies {
-			score := pearson * movie.Rating
-			newRec := domain.UserBasedRecommendation{
-				Movie: movie.Movie,
-				Score: score,
-			}
-			recs = append(recs, newRec)
+func calculateScore(users domain.UsersToCompare, moviesAndRatings domain.ScoringMovies) domain.UsersBasedRecommendation {
+	moviesScored := []domain.UserBasedRecommendation{}
+
+	// calculate score for a movie by adding up all
+	// pearson * rating for each user
+	for movieId, movie := range moviesAndRatings {
+		var score float64
+		for userId, rating := range movie.Ratings {
+			score += users[userId].PearsonCoefficient * rating
 		}
+		// append it into a slice that can be sorted out
+		moviesScored = append(moviesScored, domain.UserBasedRecommendation{
+			Movie: domain.Movie{
+				Id:           movieId,
+				Title:        movie.Title,
+				ReleaseYear:  movie.ReleaseYear,
+				MoreInfoLink: movie.MoreInfoLink,
+			},
+			Score: score,
+		})
 	}
 
-	return recs
+	return moviesScored
 }
