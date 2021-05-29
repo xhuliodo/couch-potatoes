@@ -2,7 +2,7 @@ package application
 
 import (
 	"errors"
-	"sort"
+	"fmt"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
@@ -15,68 +15,36 @@ func NewPopularMovieService(repo domain.Repository) PopularMovieService {
 	return PopularMovieService{repo}
 }
 
-func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit uint, skip uint) ([]domain.PopulatiryScoredMovie, error) {
-	emptyRec := []domain.PopulatiryScoredMovie{}
+func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit uint, skip uint) (domain.PopularMovies, error) {
+	emptyRec := []domain.PopularMovie{}
 	if _, err := pms.repo.GetUserById(userId); err != nil {
 		return emptyRec, errors.New("a user with this identifier does not exist")
 	}
 
-	genres, err := pms.repo.GetGenrePreferences(userId)
-	if err != nil {
-		return emptyRec, err
-	}
-
-	moviesWithRating, err := pms.repo.GetAllRatingsForMoviesInGenre(userId, genres)
+	movies, err := pms.repo.GetAllRatingsForMoviesInGenre(userId)
 	if err != nil {
 		return emptyRec, errors.New("you're all caught up")
 	}
 
-	// TODO: handle weirdly small recommendations
-	sortedList, length := SortMoviesBasedOnRatings(moviesWithRating)
+	movies.CalculateBoostedScore()
 
-	begin, end, err := handlePagination(length, skip, limit)
+	movies.SortMoviesBasedOnRatings()
 
+	// handle pagination
+	length := len(movies)
+	begin, end, err := handlePagination(uint(length), skip, limit)
 	if err != nil {
 		return emptyRec, errors.New("you're all caught up")
 	}
+	recs := movies[begin:end]
 
-	return sortedList[begin:end], nil
-}
+	moviesIds := getMovieIds(recs)
+	moviesDetails, _ := pms.repo.GetMoviesDetails(moviesIds)
+	fmt.Println(moviesDetails)
 
-func SortMoviesBasedOnRatings(aggregateRatings []domain.AggregateMovieRatings) (sortedList []domain.PopulatiryScoredMovie, length uint) {
-	unsortedList := []domain.PopulatiryScoredMovie{}
+	recs.PopulateMoviesWithDetails(moviesDetails)
 
-	for _, movieWithAllRatings := range aggregateRatings {
-		ratings := movieWithAllRatings.AllRatings
-		var ratingSum float32 = 0.0
-		for _, rating := range ratings {
-			ratingSum += rating
-		}
-
-		countRatings := len(ratings)
-		avgRating := ratingSum / float32(countRatings)
-
-		genreMultiplier := movieWithAllRatings.GenreMatched
-		countBoosted := countRatings * int(genreMultiplier)
-		entry := domain.PopulatiryScoredMovie{
-			Movie:        movieWithAllRatings.Movie,
-			CountRatings: uint(countBoosted),
-			AvgRating:    avgRating,
-			GenreMatched: genreMultiplier,
-		}
-		unsortedList = append(unsortedList, entry)
-	}
-
-	sort.SliceStable(unsortedList, func(i, j int) bool {
-		if unsortedList[i].CountRatings != unsortedList[j].CountRatings {
-			return unsortedList[i].CountRatings > unsortedList[j].CountRatings
-		}
-		return unsortedList[i].AvgRating > unsortedList[j].AvgRating
-	})
-
-	len := len(unsortedList)
-
-	return unsortedList, uint(len)
+	return recs, nil
 }
 
 const (
@@ -86,7 +54,7 @@ const (
 
 func handlePagination(len, skip, limit uint) (begin, end uint, err error) {
 	if skip != defaultSkip {
-		maxSkip := maxSkip(len, limit)
+		maxSkip := maxSkip(uint(len), limit)
 		if skip > maxSkip {
 			return 0, 0, errors.New("you've reached the limit")
 		}
@@ -110,4 +78,13 @@ func maxSkip(total uint, limit uint) uint {
 		limit = defaultLimit
 	}
 	return ((total - 1) / limit) * limit
+}
+
+func getMovieIds(recs domain.PopularMovies) []string {
+	moviesIds := []string{}
+	for _, rec := range recs {
+		movieId := rec.Movie.Id
+		moviesIds = append(moviesIds, movieId)
+	}
+	return moviesIds
 }

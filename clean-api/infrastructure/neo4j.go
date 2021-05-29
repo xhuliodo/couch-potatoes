@@ -39,7 +39,9 @@ func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
 	return genres, nil
 }
 
-func (nr *Neo4jRepository) GetUserById(userId string) (domain.User, error) {
+func (nr *Neo4jRepository) GetUserById(
+	userId string,
+) (domain.User, error) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -67,7 +69,9 @@ func (nr *Neo4jRepository) GetUserById(userId string) (domain.User, error) {
 	return existingUser, nil
 }
 
-func (nr *Neo4jRepository) GetMovieById(movieId string) (domain.Movie, error) {
+func (nr *Neo4jRepository) GetMovieById(
+	movieId string,
+) (domain.Movie, error) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -95,7 +99,9 @@ func (nr *Neo4jRepository) GetMovieById(movieId string) (domain.Movie, error) {
 	return existingMovie, nil
 }
 
-func (nr *Neo4jRepository) SaveGenrePreferences(userId string, genres []domain.Genre) error {
+func (nr *Neo4jRepository) SaveGenrePreferences(
+	userId string, genres []domain.Genre,
+) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -123,7 +129,9 @@ func (nr *Neo4jRepository) SaveGenrePreferences(userId string, genres []domain.G
 	return nil
 }
 
-func (nr *Neo4jRepository) RateMovie(userId, movieId string, rating int) error {
+func (nr *Neo4jRepository) RateMovie(
+	userId, movieId string, rating int,
+) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -148,7 +156,9 @@ func (nr *Neo4jRepository) RateMovie(userId, movieId string, rating int) error {
 	return nil
 }
 
-func (nr *Neo4jRepository) RegisterNewUser(user domain.User) error {
+func (nr *Neo4jRepository) RegisterNewUser(
+	user domain.User,
+) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -171,7 +181,9 @@ func (nr *Neo4jRepository) RegisterNewUser(user domain.User) error {
 	return nil
 }
 
-func (nr *Neo4jRepository) GetGenrePreferences(userId string) ([]domain.Genre, error) {
+func (nr *Neo4jRepository) GetGenrePreferences(
+	userId string,
+) ([]domain.Genre, error) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -205,66 +217,60 @@ func (nr *Neo4jRepository) GetGenrePreferences(userId string) ([]domain.Genre, e
 	return genres, nil
 }
 
-func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(userId string, genres []domain.Genre) ([]domain.AggregateMovieRatings, error) {
+func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(
+	userId string,
+) (domain.PopularMovies, error) {
+	popularMovies := domain.PopularMovies{}
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
 	query := `
 	match (u:User{userId:$userId})
 	with u 
-	match (:User)-[r:RATED]->(m:Movie)-[:IN_GENRE]->(g)
-	where not exists( (u)-[:RATED]->(m) ) and g.genreId in $genres
+	match (:User)-[r:RATED]->(m:Movie)-[:IN_GENRE]->(g)<-[:FAVORITE]-(u)
+	where not exists( (u)-[:RATED]->(m) )
 	return m.movieId as Id, 
-		m.title as Title, 
-		m.releaseYear as ReleaseYear, 
-		m.imdbLink as MoreInfoLink, 
 		count(distinct(g)) as GenreMultiplier, 
-		collect(r.rating) as Ratings
+		count(r.rating) as RatingsCount,
+        avg(r.rating) as AvgRating
 	`
-	genresIdInterface := make([]interface{}, len(genres))
-	for i, g := range genres {
-		genresIdInterface[i] = g.Id
-	}
-	parameters := map[string]interface{}{"userId": userId, "genres": genresIdInterface}
+	parameters := map[string]interface{}{"userId": userId}
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
 		return nil, err
 	}
 
-	moviesAggregate := []domain.AggregateMovieRatings{}
-
 	for res.Next() {
 		movie := res.Record()
 		movieId, _ := movie.Get("Id")
-		title, _ := movie.Get("Title")
-		releaseYearInterface, _ := movie.Get("ReleaseYear")
-		releaseYearInt64, _ := releaseYearInterface.(int64)
-		moreInfoLink, _ := movie.Get("MoreInfoLink")
-		genreMultiplierInterface, _ := movie.Get("GenreMultiplier")
-		genreMultiplierInt64, _ := genreMultiplierInterface.(int64)
-		ratingsInterface, _ := movie.Get("Ratings")
-		ratingsInterfaceSlice := ratingsInterface.([]interface{})
+		genreMatchedInterface, _ := movie.Get("GenreMultiplier")
+		genreMatchedInt64, _ := genreMatchedInterface.(int64)
+		ratingsCountInterface, _ := movie.Get("RatingsCount")
+		ratingCount := ratingsCountInterface.(int64)
+		avgRatingInterface, _ := movie.Get("AvgRating")
+		avgRating := avgRatingInterface.(float64)
 
-		m := domain.AggregateMovieRatings{Movie: domain.Movie{
-			Id:           movieId.(string),
-			Title:        title.(string),
-			ReleaseYear:  int(releaseYearInt64),
-			MoreInfoLink: moreInfoLink.(string),
+		m := domain.PopularMovie{Movie: domain.Movie{
+			Id: movieId.(string),
 		},
-			GenreMatched: uint(genreMultiplierInt64),
-			AllRatings:   convertRatingsInterfaceToFloatSlice(ratingsInterfaceSlice),
+			AvgRating:    avgRating,
+			GenreMatched: uint(genreMatchedInt64),
+			RatingsCount: uint(ratingCount),
 		}
-		moviesAggregate = append(moviesAggregate, m)
+
+		popularMovies = append(popularMovies, m)
 	}
 
-	if len(moviesAggregate) == 0 {
-		return moviesAggregate, errors.New("there are no movies with ratings in the prefered genres")
+	if len(popularMovies) == 0 {
+		return popularMovies, errors.New("there are no movies with ratings in the prefered genres")
 	}
-	return moviesAggregate, nil
+	return popularMovies, nil
 }
 
-func convertRatingsInterfaceToFloatSlice(ratingsInterfaceSlice []interface{}) []float32 {
+func convertRatingsInterfaceToFloatSlice(
+	ratingsInterfaceSlice []interface{},
+) []float32 {
 	ratings := []float32{}
 	for _, rating := range ratingsInterfaceSlice {
 		r64 := rating.(float64)
@@ -274,7 +280,55 @@ func convertRatingsInterfaceToFloatSlice(ratingsInterfaceSlice []interface{}) []
 	return ratings
 }
 
-func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (uint, error) {
+func (nr *Neo4jRepository) GetMoviesDetails(
+	userIds []string,
+) (domain.MoviesDetails, error) {
+	emptyMovieDetails := domain.MoviesDetails{}
+
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (m:Movie)
+	where m.movieId in $movieIds
+	return m.movieId as Id,
+		m.title as Title, 
+		m.releaseYear as ReleaseYear, 
+		m.imdbLink as MoreInfoLink
+	`
+	movieIdsInterface := make([]interface{}, len(userIds))
+	for i, u := range userIds {
+		movieIdsInterface[i] = u
+	}
+	parameters := map[string]interface{}{"movieIds": movieIdsInterface}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return emptyMovieDetails, err
+	}
+
+	for res.Next() {
+		rec := res.Record()
+		movieIdInterface, _ := rec.Get("Id")
+		movieId, _ := movieIdInterface.(string)
+		title, _ := rec.Get("Title")
+		releaseYearInterface, _ := rec.Get("ReleaseYear")
+		releaseYearInt64, _ := releaseYearInterface.(int64)
+		moreInfoLink, _ := rec.Get("MoreInfoLink")
+
+		emptyMovieDetails[movieId] = domain.MovieDetails{
+			Title:        title.(string),
+			ReleaseYear:  int(releaseYearInt64),
+			MoreInfoLink: moreInfoLink.(string),
+		}
+	}
+
+	return emptyMovieDetails, nil
+}
+
+func (nr *Neo4jRepository) GetUserRatingsCount(
+	userId string,
+) (uint, error) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -296,7 +350,9 @@ func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (uint, error) {
 	return uint(ratedMoviesCountInt64), nil
 }
 
-func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(userId string) (domain.UsersToCompare, error) {
+func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(
+	userId string,
+) (domain.UsersToCompare, error) {
 	emptyUserToCompare := domain.UsersToCompare{}
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
@@ -357,15 +413,22 @@ func convertRatingsInCommonInterfaceSlice(ratingsInterfaceSlice []interface{}) [
 	return ratingsInCommon
 }
 
-func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) (domain.ScoringMovies, error) {
+func (nr *Neo4jRepository) GetRatedMoviesForUsersYetToBeConsidered(
+	userId string,
+	userIds []string,
+) (domain.ScoringMovies, error) {
 	emptyScoringMovies := domain.ScoringMovies{}
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
 	query := `
+	match (userToRec:User{userId:$userToRecId})
+    with userToRec
 	match (u:User)-[r:RATED]->(m:Movie)
 	where u.userId in $userIds
+	and not exists ((userToRec)-[:RATED]->(m))
+	and not exists ((userToRec)-[:WATCH_LATER]->(m))
 	return m.movieId as MovieId,
 	   m.title as MovieTitle,
 	   m.releaseYear as ReleaseYear, 
@@ -376,7 +439,7 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsers(userIds []string) (domain.Scor
 	for i, u := range userIds {
 		userIdsInterface[i] = u
 	}
-	parameters := map[string]interface{}{"userIds": userIdsInterface}
+	parameters := map[string]interface{}{"userToRecId": userId, "userIds": userIdsInterface}
 
 	res, err := session.Run(query, parameters)
 	if err != nil {

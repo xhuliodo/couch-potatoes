@@ -4,6 +4,7 @@ type Repository interface {
 	// movies
 	GetAllGenres() ([]Genre, error)
 	GetMovieById(userId string) (Movie, error)
+	GetMoviesDetails(movieIds []string) (MoviesDetails, error)
 
 	// user
 	GetUserById(userId string) (User, error)
@@ -14,7 +15,7 @@ type Repository interface {
 	GetUserRatingsCount(userId string) (uint, error)
 
 	// recommendation
-	GetAllRatingsForMoviesInGenre(userId string, genres []Genre) ([]AggregateMovieRatings, error)
+	GetAllRatingsForMoviesInGenre(userId string) (PopularMovies, error)
 	GetSimilairUsersAndTheirAvgRating(userId string) (UsersToCompare, error)
-	GetRatedMoviesForUsers(userIds []string) (ScoringMovies, error)
+	GetRatedMoviesForUsersYetToBeConsidered(userId string, userIds []string) (ScoringMovies, error)
 }

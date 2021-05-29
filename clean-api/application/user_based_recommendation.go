@@ -52,12 +52,13 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		end = uint(sliceMaxLength)
 	}
 	similairUser := usersSorted[:end]
-	fmt.Println(similairUser)
+	// fmt.Println(similairUser)
 
 	userIds := getIdsFromSimilairUser(&similairUser)
 	usersToCompare.RemoveLowPearson(&userIds)
+	fmt.Println(userIds)
 
-	moviesAndRatings, err := ubrs.repo.GetRatedMoviesForUsers(userIds)
+	moviesAndRatings, err := ubrs.repo.GetRatedMoviesForUsersYetToBeConsidered(userId, userIds)
 	if err != nil {
 		return emptyRec, err
 	}

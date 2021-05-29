@@ -23,9 +23,7 @@ type movieView struct {
 
 type popularMoviesView struct {
 	Movie        movieView `json:"movie"`
-	AvgRating    float32   `json:"avgRating"`
-	CountRatings uint      `json:"ratingsCount"`
-	GenreMatched uint      `json:"genreMatched"`
+	BoostedScore uint      `json:"score"`
 }
 
 func (pmr popularMoviesResource) GetPopularMoviesBasedOnGenre(w http.ResponseWriter, r *http.Request) {
@@ -58,14 +56,12 @@ func (pmr popularMoviesResource) GetPopularMoviesBasedOnGenre(w http.ResponseWri
 	for _, movie := range popularMovies {
 		view = append(view, popularMoviesView{
 			Movie: movieView{
-				Id:           string(movie.Id),
-				Title:        movie.Title,
-				ReleaseYear:  movie.ReleaseYear,
-				MoreInfoLink: movie.MoreInfoLink,
+				Id:           string(movie.Movie.Id),
+				Title:        movie.Movie.Title,
+				ReleaseYear:  movie.Movie.ReleaseYear,
+				MoreInfoLink: movie.Movie.MoreInfoLink,
 			},
-			AvgRating:    movie.AvgRating,
-			CountRatings: movie.CountRatings,
-			GenreMatched: movie.GenreMatched,
+			BoostedScore: movie.BoostedScore,
 		})
 	}
 
