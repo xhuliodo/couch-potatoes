@@ -18,4 +18,7 @@ type Repository interface {
 	GetAllRatingsForMoviesInGenre(userId string) (PopularMovies, error)
 	GetSimilairUsersAndTheirAvgRating(userId string) (UsersToCompare, error)
 	GetRatedMoviesForUsersYetToBeConsidered(userId string, userIds []string) (ScoringMovies, error)
+	GetAllLikedMovies(userId string) (UsersLikedMovies, error)
+	GetMoviesCasts(movieIds []string, movies MoviesWithoutCastDetails) error
+	GetSimilarMoviesToAlreadyLikedOnes(userId string, movieIds []string) (SimilarMoviesToLikedOnes, error)
 }

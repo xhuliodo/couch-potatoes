@@ -1,20 +1,25 @@
+// DONE
 // IMPORTANT: content based rec
 
-// step:
+// step: get users all liked movies
 match (u:User {userId:$cypherParams.userId})-[r:RATED{rating:1}]->(m:Movie)
 with u, m
-// step: 
+// step: compare these movies with all other movies that the user has yet
+//       to consider, and count how many things in common they share
+//       (actors, directors, writers)
 match (m)<-[:ACTED_IN|:DIRECTED|:WROTE]-(t)-[:ACTED_IN|:DIRECTED|:WROTE]->(other:Movie)
 where not exists( (u)-[:RATED]->(other) ) and not exists ( (u)-[:WATCH_LATER]->(other) )
 with m, other, count(t) as intersection
-// step:
+// step: get all details for liked movies
 match (m)<-[:ACTED_IN|:DIRECTED|:WROTE]-(mt)
 with m, other, intersection, collect(mt.name) as s1
-// step:
+// step: get all details for rec movies
 match (other)<-[:ACTED_IN|:DIRECTED|:WROTE]-(ot)
 with other, intersection, s1, collect(ot.name) as s2
 with other, intersection,s1,s2
+// step: calculate the things in common
 with other, intersection, s1+[x in s2 where not x in s1] as union, s1, s2
+// step: calculate the jaccard and order by and limit 
 with other, s1,s2,((1.0*intersection)/size(union)) as jaccard
 order by jaccard desc
 return distinct other

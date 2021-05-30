@@ -29,3 +29,8 @@ func NewUserBasedRecInterface(repo domain.Repository) userBasedRecResource {
 	userBasedRecService := application.NewUserBasedRecommendationService(repo)
 	return userBasedRecResource{userBasedRecService}
 }
+
+func NewContentBasedRecInterface(repo domain.Repository) contentBasedRecResource {
+	contentBasedRecService := application.NewContentBasedRecommendationService(repo)
+	return contentBasedRecResource{contentBasedRecService}
+}

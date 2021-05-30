@@ -268,18 +268,6 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(
 	return popularMovies, nil
 }
 
-func convertRatingsInterfaceToFloatSlice(
-	ratingsInterfaceSlice []interface{},
-) []float32 {
-	ratings := []float32{}
-	for _, rating := range ratingsInterfaceSlice {
-		r64 := rating.(float64)
-		r := float32(r64)
-		ratings = append(ratings, r)
-	}
-	return ratings
-}
-
 func (nr *Neo4jRepository) GetMoviesDetails(
 	userIds []string,
 ) (domain.MoviesDetails, error) {
@@ -484,3 +472,112 @@ func convertRatedMoviesInterfaceSlice(urcis []interface{}) domain.Rating {
 	}
 	return ratings
 }
+
+func (nr *Neo4jRepository) GetAllLikedMovies(userId string) (domain.UsersLikedMovies, error) {
+	emptyLikedMovies := domain.UsersLikedMovies{}
+
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User {userId:$userId})-[r:RATED{rating:1}]->(m:Movie)
+	return m.movieId as MovieId
+	`
+	parameters := map[string]interface{}{"userId": userId}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return emptyLikedMovies, err
+	}
+
+	for res.Next() {
+		rec := res.Record()
+		movieIdInterface, _ := rec.Get("MovieId")
+		movieId := movieIdInterface.(string)
+
+		emptyLikedMovies[movieId] = domain.UsersLikedMovie{AllCast: map[string]bool{}}
+	}
+
+	return emptyLikedMovies, nil
+}
+
+func (nr *Neo4jRepository) GetMoviesCasts(movieIds []string, movies domain.MoviesWithoutCastDetails) error {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (m)<-[:ACTED_IN|:DIRECTED|:WROTE]-(cast)
+	where m.movieId in $movieIds
+	return m.movieId as MovieId, 
+		collect(cast.castId) as CastDetails
+	`
+	movieIdsInterface := make([]interface{}, len(movieIds))
+	for i, m := range movieIds {
+		movieIdsInterface[i] = m
+	}
+	parameters := map[string]interface{}{"movieIds": movieIdsInterface}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return err
+	}
+
+	for res.Next() {
+		rec := res.Record()
+		movieIdInterface, _ := rec.Get("MovieId")
+		movieId := movieIdInterface.(string)
+		castDetailsInterface, _ := rec.Get("CastDetails")
+		castDetailsInterfaceSlice := castDetailsInterface.([]interface{})
+		castDetailsSlice := getCastDetailsSlice(castDetailsInterfaceSlice)
+
+		movies.PopulateWithCast(movieId, castDetailsSlice)
+	}
+
+	return nil
+}
+
+func getCastDetailsSlice(castDetailsInterfaceSlice []interface{}) []string {
+	castSlice := []string{}
+	for _, castDetailsInterface := range castDetailsInterfaceSlice {
+		castDetails := castDetailsInterface.(string)
+		castSlice = append(castSlice, castDetails)
+	}
+	return castSlice
+}
+
+func (nr *Neo4jRepository) GetSimilarMoviesToAlreadyLikedOnes(userId string, movieIds []string) (domain.SimilarMoviesToLikedOnes, error) {
+	emptySimilarMovies := domain.SimilarMoviesToLikedOnes{}
+
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User{userId:$userId})
+	match (m:Movie)<-[:ACTED_IN|:DIRECTED|:WROTE]-(t)-[:ACTED_IN|:DIRECTED|:WROTE]->(other:Movie)
+	where m.movieId in $movieIds
+    and not exists( (u)-[:RATED]->(other) ) 
+    and not exists ( (u)-[:WATCH_LATER]->(other) )
+	return other.movieId as MovieId
+	`
+	movieIdsInterface := make([]interface{}, len(movieIds))
+	for i, m := range movieIds {
+		movieIdsInterface[i] = m
+	}
+	parameters := map[string]interface{}{"userId": userId, "movieIds": movieIdsInterface}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return emptySimilarMovies, err
+	}
+
+	for res.Next() {
+		rec := res.Record()
+		movieIdInterface, _ := rec.Get("MovieId")
+		movieId := movieIdInterface.(string)
+
+		emptySimilarMovies[movieId] = domain.SimilarMovieToLikedOnes{}
+	}
+
+	return emptySimilarMovies, nil
+}
+
