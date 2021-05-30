@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
@@ -75,7 +74,9 @@ type SetupStepView struct {
 }
 
 func (sr setupResource) GetUserSetupStep(w http.ResponseWriter, r *http.Request) {
-	userId := chi.URLParam(r, "userId")
+	userIdInterface := r.Context().Value("userId")
+	userId := fmt.Sprintf("%v", userIdInterface)
+
 	setupStep, err := sr.setupService.GetSetupStep(userId)
 
 	if err != nil {
