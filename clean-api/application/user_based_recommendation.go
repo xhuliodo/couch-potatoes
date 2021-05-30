@@ -2,7 +2,6 @@ package application
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
@@ -40,10 +39,6 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		return emptyRec, err
 	}
 
-	// for k, u := range usersToCompare {
-	// 	fmt.Println(k, u.UserAvgRating, u.PearsonCoefficient)
-	// }
-
 	usersSorted, _ := sortByPearsonDesc(&usersToCompare)
 	// fmt.Println(usersSorted)
 	end := nearestNeighborCircle
@@ -52,11 +47,9 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 		end = uint(sliceMaxLength)
 	}
 	similairUser := usersSorted[:end]
-	// fmt.Println(similairUser)
 
 	userIds := getIdsFromSimilairUser(&similairUser)
 	usersToCompare.RemoveLowPearson(&userIds)
-	fmt.Println(userIds)
 
 	moviesAndRatings, err := ubrs.repo.GetRatedMoviesForUsersYetToBeConsidered(userId, userIds)
 	if err != nil {
@@ -68,7 +61,14 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 	sort.SliceStable(recs, func(i, j int) bool {
 		return recs[i].Score > recs[j].Score
 	})
-	recs = recs[:limit]
+
+	// handle pagination
+	length := len(recs)
+	begin, end, err := handlePagination(uint(length), defaultSkip, limit)
+	if err != nil {
+		return emptyRec, errors.New("you're all caught up")
+	}
+	recs = recs[begin:end]
 
 	return recs, nil
 }
