@@ -21,4 +21,8 @@ type Repository interface {
 	GetAllLikedMovies(userId string) (UsersLikedMovies, error)
 	GetMoviesCasts(movieIds []string, movies MoviesWithoutCastDetails) error
 	GetSimilarMoviesToAlreadyLikedOnes(userId string, movieIds []string) (SimilarMoviesToLikedOnes, error)
+
+	// watchlist
+	AddToWatchlist(userId, movieId string, timeOfAdding int64) error
+	RemoveFromWatchlist(userId, movieId string) error
 }

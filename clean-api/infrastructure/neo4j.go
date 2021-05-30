@@ -581,3 +581,46 @@ func (nr *Neo4jRepository) GetSimilarMoviesToAlreadyLikedOnes(userId string, mov
 	return emptySimilarMovies, nil
 }
 
+func (nr *Neo4jRepository) AddToWatchlist(userId, movieId string, timeOfAdding int64) error {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User{userId:$userId}), (m:Movie{movieId:$movieId})
+    merge (u)-[w:WATCH_LATER]->(m) on create set w.createdAt=$timeOfAdding
+	return m.movieId as MovieId
+	`
+	parameters := map[string]interface{}{"userId": userId, "movieId": movieId, "timeOfAdding": timeOfAdding}
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return err
+	}
+
+	if _, err := res.Single(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (nr *Neo4jRepository) RemoveFromWatchlist(userId, movieId string) error {
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User {userId:$userId})-[w:WATCH_LATER]->(m:Movie{movieId:$movieId})
+    delete w
+	return m.movieId as MovieId
+	`
+	parameters := map[string]interface{}{"userId": userId, "movieId": movieId}
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return err
+	}
+
+	if _, err := res.Single(); err != nil {
+		return err
+	}
+
+	return nil
+}

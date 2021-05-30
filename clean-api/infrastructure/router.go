@@ -37,25 +37,26 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	popularMoviesInterface := interfaces.NewPopularMoviesInterface(repo)
 	userBasedRecInterface := interfaces.NewUserBasedRecInterface(repo)
 	contentBasedRecInterface := interfaces.NewContentBasedRecInterface(repo)
+	addToWatchlistInterface := interfaces.NewAddToWatchlistInterface(repo)
+	removeFromWatchlistInterface := interfaces.NewRemoveFromWatchlistInterface(repo)
 
 	router.Get("/genres", initialSetupInterface.GetAllGenres)
-	router.Route("/users", func(r chi.Router) {
+	r := router.Route("/users", func(r chi.Router) {
 		r.Post("/", registerUserInterface.RegisterUser)
 		r.Get("/setup", initialSetupInterface.GetUserSetupStep)
 		r.Post("/genres", initialSetupInterface.SaveGenrePreferences)
 		r.Post("/ratings", rateMovieInterface.RateMovie)
-		// r.Post("/watchlist/{movieId}")
-		// r.Delete("/watchlist/{movieId}")
+		r.Post("/watchlist/{movieId}", addToWatchlistInterface.AddToWatchlist)
+		r.Delete("/watchlist/{movieId}", removeFromWatchlistInterface.RemoveFromWatchlist)
 		// todo: these two are with pagination
 		// r.Get("/watchlist")
 		// r.Get("/watchlist-history")
 	})
 
-	// TODO: figure out a way, if possible to group routes
-	// router.Route("/recommendations", func(r chi.Router) {
-	router.Get("/recommendations/popular", popularMoviesInterface.GetPopularMoviesBasedOnGenre)
-	router.Get("/recommendations/user-based", userBasedRecInterface.GetUserBasedRecommendation)
-	router.Get("/recommendations/content-based", contentBasedRecInterface.GetContentBasedRecommendation)
-	// })
+	r.Route("/recommendations", func(r chi.Router) {
+		router.Get("/recommendations/popular", popularMoviesInterface.GetPopularMoviesBasedOnGenre)
+		router.Get("/recommendations/user-based", userBasedRecInterface.GetUserBasedRecommendation)
+		router.Get("/recommendations/content-based", contentBasedRecInterface.GetContentBasedRecommendation)
+	})
 
 }

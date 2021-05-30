@@ -173,3 +173,11 @@ func (imr *InMemoryRepository) GetMoviesDetails(movieIds []string) (domain.Movie
 	}
 	return emptyMovieDetails, nil
 }
+
+func (imr *InMemoryRepository) AddToWatchlist(userId, movieId string, timeOfAdding int64) error {
+	return nil
+}
+
+func (imr *InMemoryRepository) RemoveFromWatchlist(userId, movieId string) error {
+	return nil
+}

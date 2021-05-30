@@ -34,3 +34,13 @@ func NewContentBasedRecInterface(repo domain.Repository) contentBasedRecResource
 	contentBasedRecService := application.NewContentBasedRecommendationService(repo)
 	return contentBasedRecResource{contentBasedRecService}
 }
+
+func NewAddToWatchlistInterface(repo domain.Repository) addToWatchlistResource {
+	addToWatchlistService := application.NewAddToWatchlistService(repo)
+	return addToWatchlistResource{addToWatchlistService}
+}
+
+func NewRemoveFromWatchlistInterface(repo domain.Repository) removeFromWatchlistResource {
+	removeFromWatchlistService := application.NewRemoveFromWatchlistService(repo)
+	return removeFromWatchlistResource{removeFromWatchlistService}
+}
