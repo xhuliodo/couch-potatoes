@@ -2,7 +2,6 @@ package application
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
@@ -40,7 +39,6 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 
 	moviesIds := getMovieIds(recs)
 	moviesDetails, _ := pms.repo.GetMoviesDetails(moviesIds)
-	fmt.Println(moviesDetails)
 
 	recs.PopulateMoviesWithDetails(moviesDetails)
 
