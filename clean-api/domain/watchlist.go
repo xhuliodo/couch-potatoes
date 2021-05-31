@@ -7,6 +7,7 @@ type UserWatchlist []Watchlist
 type Watchlist struct {
 	Movie
 	TimeAdded int64
+	Rating    float64
 }
 
 func (uw UserWatchlist) SortByTimeAdded() {

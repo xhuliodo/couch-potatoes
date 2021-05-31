@@ -51,7 +51,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 		r.Delete("/watchlist/{movieId}", removeFromWatchlistInterface.RemoveFromWatchlist)
 		// todo: these two are with pagination
 		r.Get("/watchlist", getWatchlistInterface.GetWatchlist)
-		// r.Get("/watchlist/history")
+		r.Get("/watchlist/history", getWatchlistInterface.GetWatchlistHistory)
 	})
 
 	r.Route("/recommendations", func(r chi.Router) {
