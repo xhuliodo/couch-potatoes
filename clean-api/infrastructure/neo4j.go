@@ -624,3 +624,46 @@ func (nr *Neo4jRepository) RemoveFromWatchlist(userId, movieId string) error {
 
 	return nil
 }
+
+func (nr *Neo4jRepository) GetWatchlist(userId string) (domain.UserWatchlist, error) {
+	emptyWatchlist := domain.UserWatchlist{}
+
+	session := nr.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	query := `
+	match (u:User{userId:$userId})-[w:WATCH_LATER]->(m:Movie)
+	where  not exists((u)-[:RATED]->(m))
+	return m.movieId as MovieId,
+		w.createdAt as TimeAdded
+	`
+	parameters := map[string]interface{}{"userId": userId}
+
+	res, err := session.Run(query, parameters)
+	if err != nil {
+		return emptyWatchlist, err
+	}
+
+	for res.Next() {
+		rec := res.Record()
+		movieIdInterface, _ := rec.Get("MovieId")
+		movieId := movieIdInterface.(string)
+		timeAddedInterface, _ := rec.Get("TimeAdded")
+		timeAdded := timeAddedInterface.(int64)
+
+		watchlistItem := domain.Watchlist{
+			Movie: domain.Movie{
+				Id: movieId,
+			},
+			TimeAdded: timeAdded,
+		}
+
+		emptyWatchlist = append(emptyWatchlist, watchlistItem)
+	}
+
+	if len(emptyWatchlist) == 0 {
+		return emptyWatchlist, errors.New("there are no more movies in your watchlist")
+	}
+
+	return emptyWatchlist, nil
+}

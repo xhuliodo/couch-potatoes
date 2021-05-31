@@ -10,7 +10,7 @@ type User struct {
 	IsAdmin        bool
 	FavoriteGenres []Genre
 	RatedMovies    []RatedMovie
-	Watchlist      []Movie
+	Watchlists     []Watchlist
 }
 
 type RatedMovie struct {

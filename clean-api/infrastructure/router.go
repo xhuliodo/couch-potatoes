@@ -39,6 +39,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	contentBasedRecInterface := interfaces.NewContentBasedRecInterface(repo)
 	addToWatchlistInterface := interfaces.NewAddToWatchlistInterface(repo)
 	removeFromWatchlistInterface := interfaces.NewRemoveFromWatchlistInterface(repo)
+	getWatchlistInterface := interfaces.NewGetWatchlistInterface(repo)
 
 	router.Get("/genres", initialSetupInterface.GetAllGenres)
 	r := router.Route("/users", func(r chi.Router) {
@@ -49,8 +50,8 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 		r.Post("/watchlist/{movieId}", addToWatchlistInterface.AddToWatchlist)
 		r.Delete("/watchlist/{movieId}", removeFromWatchlistInterface.RemoveFromWatchlist)
 		// todo: these two are with pagination
-		// r.Get("/watchlist")
-		// r.Get("/watchlist-history")
+		r.Get("/watchlist", getWatchlistInterface.GetWatchlist)
+		// r.Get("/watchlist/history")
 	})
 
 	r.Route("/recommendations", func(r chi.Router) {

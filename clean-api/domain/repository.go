@@ -25,4 +25,5 @@ type Repository interface {
 	// watchlist
 	AddToWatchlist(userId, movieId string, timeOfAdding int64) error
 	RemoveFromWatchlist(userId, movieId string) error
+	GetWatchlist(userId string) (UserWatchlist, error)
 }

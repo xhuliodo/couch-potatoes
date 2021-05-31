@@ -44,3 +44,8 @@ func NewRemoveFromWatchlistInterface(repo domain.Repository) removeFromWatchlist
 	removeFromWatchlistService := application.NewRemoveFromWatchlistService(repo)
 	return removeFromWatchlistResource{removeFromWatchlistService}
 }
+
+func NewGetWatchlistInterface(repo domain.Repository) getWatchlistResource {
+	getWatchlistService := application.NewGetWatchlistService(repo)
+	return getWatchlistResource{getWatchlistService}
+}
