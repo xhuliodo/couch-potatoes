@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
 )
@@ -43,7 +44,9 @@ type inputSaveGenrePref struct {
 func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Request) {
 	var inputSaveGenrePref inputSaveGenrePref
 	if err := json.NewDecoder(r.Body).Decode(&inputSaveGenrePref); err != nil || len(inputSaveGenrePref.InputGenresUuid) == 0 {
-		_ = render.Render(w, r, common_http.ErrBadRequest("please send genre preferences in the required json format", err))
+		cause := errors.New("bad_request")
+		errStack := errors.Wrap(cause, "please send genre preferences in the required json format")
+		_ = render.Render(w, r, common_http.DetermineErr(errStack))
 		return
 	}
 
