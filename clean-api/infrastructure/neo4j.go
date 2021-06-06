@@ -306,10 +306,10 @@ func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (
 	return userRatingsCount, nil
 }
 
-func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(
-	userId string,
-) (domain.UsersToCompare, error) {
-	emptyUserToCompare := domain.UsersToCompare{}
+func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(userId string) (
+	domain.UsersToCompare, error,
+) {
+	usersToCompare := make(domain.UsersToCompare)
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -327,10 +327,8 @@ func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(
 	res, err := session.Run(query, parameters)
 	if err != nil {
 		cause := errors.New("db_connection")
-		return emptyUserToCompare, errors.Wrap(cause, err.Error())
+		return usersToCompare, errors.Wrap(cause, err.Error())
 	}
-
-	usersToComp := domain.UsersToCompare{}
 
 	for res.Next() {
 		rec := res.Record()
@@ -342,18 +340,14 @@ func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(
 
 		ratingsInCommonInterfaceSlice := ratingsInCommonInterface.([]interface{})
 
-		usersToComp[userToCompareId.(string)] = &domain.UserToCompare{
+		usersToCompare[userToCompareId.(string)] = &domain.UserToCompare{
 			RatingsInCommon:     convertRatingsInCommonInterfaceSlice(ratingsInCommonInterfaceSlice),
 			UserToRecAvgRating:  userToRecAvgRating.(float64),
 			UserToCompAvgRating: userToCompAvgRating.(float64),
 		}
 	}
 
-	if len(usersToComp) == 0 {
-		return emptyUserToCompare, errors.New("there are no similiar user to you yet, keep rating some more")
-	}
-
-	return usersToComp, nil
+	return usersToCompare, nil
 }
 
 func convertRatingsInCommonInterfaceSlice(ratingsInterfaceSlice []interface{}) []domain.RatingInCommon {
@@ -374,7 +368,7 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsersYetToBeConsidered(
 	userId string,
 	userIds []string,
 ) (domain.ScoringMovies, error) {
-	emptyScoringMovies := domain.ScoringMovies{}
+	scoringMovies := make(domain.ScoringMovies)
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -400,7 +394,8 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsersYetToBeConsidered(
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptyScoringMovies, err
+		cause := errors.New("db_connection")
+		return scoringMovies, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -415,7 +410,7 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsersYetToBeConsidered(
 		userRatingCollectionInterface, _ := rec.Get("UserRatingCollection")
 		userRatingCollectionInterfaceSlice := userRatingCollectionInterface.([]interface{})
 
-		emptyScoringMovies[movieId] = &domain.Details{
+		scoringMovies[movieId] = &domain.Details{
 			Movie: domain.Movie{
 				Title:        movieTitle,
 				ReleaseYear:  int(releaseYearInt64),
@@ -425,10 +420,10 @@ func (nr *Neo4jRepository) GetRatedMoviesForUsersYetToBeConsidered(
 
 		ratings := convertRatedMoviesInterfaceSlice(userRatingCollectionInterfaceSlice)
 
-		emptyScoringMovies[movieId].Ratings = ratings
+		scoringMovies[movieId].Ratings = ratings
 	}
 
-	return emptyScoringMovies, nil
+	return scoringMovies, nil
 }
 
 func convertRatedMoviesInterfaceSlice(urcis []interface{}) domain.Rating {

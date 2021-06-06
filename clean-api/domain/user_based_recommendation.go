@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"errors"
 	"math"
+
+	"github.com/pkg/errors"
 )
 
 type UsersToCompare map[string]*UserToCompare
@@ -12,7 +13,6 @@ type UserToCompare struct {
 	UserToCompAvgRating float64
 	RatingsInCommon     []RatingInCommon
 	PearsonCoefficient  float64
-	// RatedMovies         []RatedMovie
 }
 
 type RatingInCommon struct {
@@ -29,10 +29,6 @@ type Details struct {
 
 type Rating map[string]float64
 
-// type MoviesScored map[string]*Score
-
-// type Score float64
-
 type UsersBasedRecommendation []UserBasedRecommendation
 
 type UserBasedRecommendation struct {
@@ -40,7 +36,10 @@ type UserBasedRecommendation struct {
 	Score float64
 }
 
-const requiredRatingsCompatibility int = 10
+const (
+	requiredRatingsCompatibility int    = 10
+	noSimilarUsersYet            string = "there are no similiar user to you yet, keep rating some more"
+)
 
 func (utc *UsersToCompare) FilterBasedOnRatingsCount() error {
 	for i, userToCompare := range *utc {
@@ -49,8 +48,10 @@ func (utc *UsersToCompare) FilterBasedOnRatingsCount() error {
 			delete(*utc, i)
 		}
 	}
+
 	if len(*utc) < 1 {
-		return errors.New("no similar users were found")
+		cause := errors.New("not_found")
+		return errors.Wrap(cause, noSimilarUsersYet)
 	}
 	return nil
 }
@@ -78,10 +79,13 @@ func (uc *UsersToCompare) CalculatePearson() error {
 		if denom != 0 {
 			pearsonCoefficient := nom / denom
 			user.PearsonCoefficient = pearsonCoefficient
-			// fmt.Println("user with id", i, "pearson", pearsonCoefficient)
 		} else {
 			delete(*uc, i)
 		}
+	}
+	if len(*uc) < 1 {
+		cause := errors.New("not_found")
+		return errors.Wrap(cause, noSimilarUsersYet)
 	}
 	return nil
 }
@@ -92,6 +96,11 @@ func (uc *UsersToCompare) RemoveLowPearson(remainingUserIds *[]string) error {
 		if !ok {
 			delete(*uc, u)
 		}
+	}
+	
+	if len(*uc) < 1 {
+		cause := errors.New("not_found")
+		return errors.Wrap(cause, noSimilarUsersYet)
 	}
 	return nil
 }

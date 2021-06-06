@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	not_authenticated = "not_authenticated"
-	forbidden         = "forbidden"
-	db_connection     = "db_connection"
-	not_found         = "not_found"
-	bad_request       = "bad_request"
-	rate_limiting     = "rate_limiting"
-	app_logic         = "app_logic"
+	not_authenticated string = "not_authenticated"
+	forbidden         string = "forbidden"
+	db_connection     string = "db_connection"
+	not_found         string = "not_found"
+	bad_request       string = "bad_request"
+	rate_limiting     string = "rate_limiting"
+	app_logic         string = "app_logic"
 )
 
 func DetermineErr(err error) render.Renderer {

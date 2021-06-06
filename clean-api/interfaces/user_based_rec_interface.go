@@ -1,9 +1,7 @@
 package interfaces
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/render"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
@@ -20,20 +18,12 @@ type userBasedRecView struct {
 }
 
 func (ubrr userBasedRecResource) GetUserBasedRecommendation(w http.ResponseWriter, r *http.Request) {
-	userIdInterface := r.Context().Value("userId")
-	userId := fmt.Sprintf("%v", userIdInterface)
-
-	var limit uint
-	limitUrlQueryParam := r.URL.Query().Get("limit")
-	limitU64, err := strconv.ParseUint(limitUrlQueryParam, 10, 32)
-	if err != nil {
-		limit = 5
-	}
-	limit = uint(limitU64)
+	userId := getUserId(r)
+	limit := getLimit(r)
 
 	userBasedRec, err := ubrr.userBasedRecService.GetUserBasedRecommendation(userId, limit)
 	if err != nil {
-		_ = render.Render(w, r, common_http.ErrInternal(err))
+		render.Render(w, r, common_http.DetermineErr(err))
 		return
 	}
 
@@ -50,5 +40,5 @@ func (ubrr userBasedRecResource) GetUserBasedRecommendation(w http.ResponseWrite
 		})
 	}
 
-	render.Respond(w, r, view)
+	render.Render(w, r, common_http.SendPayload(view))
 }

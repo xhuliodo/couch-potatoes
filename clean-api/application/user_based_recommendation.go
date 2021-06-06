@@ -1,9 +1,9 @@
 package application
 
 import (
-	"errors"
 	"sort"
 
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -16,31 +16,37 @@ func NewUserBasedRecommendationService(repo domain.Repository) UserBasedRecommen
 }
 
 const (
-	nearestNeighborCircle uint = 25
+	nearestNeighborCircle uint   = 25
+	noSimilarUsersYet     string = "there are no similiar user to you yet, keep rating some more"
 )
 
-func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId string, limit uint) (domain.UsersBasedRecommendation, error) {
-	emptyRec := domain.UsersBasedRecommendation{}
-
+func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId string, limit uint) (
+	recs domain.UsersBasedRecommendation, err error,
+) {
 	if _, err := ubrs.repo.GetUserById(userId); err != nil {
-		return emptyRec, errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return recs, errStack
 	}
 
 	usersToCompare, err := ubrs.repo.GetSimilairUsersAndTheirAvgRating(userId)
 	if err != nil {
-		return emptyRec, err
+		return recs, err
+	}
+
+	if len(usersToCompare) < 1 {
+		cause := errors.New("not_found")
+		return recs, errors.Wrap(cause, noSimilarUsersYet)
 	}
 
 	if err := usersToCompare.FilterBasedOnRatingsCount(); err != nil {
-		return emptyRec, err
+		return recs, err
 	}
 
 	if err := usersToCompare.CalculatePearson(); err != nil {
-		return emptyRec, err
+		return recs, err
 	}
 
-	usersSorted, _ := sortByPearsonDesc(&usersToCompare)
-	// fmt.Println(usersSorted)
+	usersSorted := sortByPearsonDesc(&usersToCompare)
 	end := nearestNeighborCircle
 	sliceMaxLength := len(usersToCompare)
 	if sliceMaxLength < int(nearestNeighborCircle) {
@@ -49,14 +55,17 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 	similairUser := usersSorted[:end]
 
 	userIds := getIdsFromSimilairUser(&similairUser)
-	usersToCompare.RemoveLowPearson(&userIds)
+	if err := usersToCompare.RemoveLowPearson(&userIds); err != nil {
+		return recs, err
+	}
 
 	moviesAndRatings, err := ubrs.repo.GetRatedMoviesForUsersYetToBeConsidered(userId, userIds)
 	if err != nil {
-		return emptyRec, err
+		return recs, errors.Wrap(err, "could not get rated movies for users yet to be considered")
+
 	}
 
-	recs := calculateScore(usersToCompare, moviesAndRatings)
+	recs = calculateScore(usersToCompare, moviesAndRatings)
 
 	sort.SliceStable(recs, func(i, j int) bool {
 		return recs[i].Score > recs[j].Score
@@ -66,7 +75,7 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 	length := len(recs)
 	begin, end, err := handlePagination(uint(length), defaultSkip, limit)
 	if err != nil {
-		return emptyRec, errors.New("you're all caught up")
+		return recs, err
 	}
 	recs = recs[begin:end]
 
@@ -80,7 +89,7 @@ type UserComparisonSortable struct {
 
 type UsersComparisonSortable []UserComparisonSortable
 
-func sortByPearsonDesc(usersToCompare *domain.UsersToCompare) (UsersComparisonSortable, error) {
+func sortByPearsonDesc(usersToCompare *domain.UsersToCompare) UsersComparisonSortable {
 	u := make(UsersComparisonSortable, len(*usersToCompare))
 
 	i := 0
@@ -93,7 +102,7 @@ func sortByPearsonDesc(usersToCompare *domain.UsersToCompare) (UsersComparisonSo
 		return u[i].PearsonCoefficient > u[j].PearsonCoefficient
 	})
 
-	return u, nil
+	return u
 }
 
 func getIdsFromSimilairUser(users *UsersComparisonSortable) []string {
