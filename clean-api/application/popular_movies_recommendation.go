@@ -13,21 +13,28 @@ func NewPopularMovieService(repo domain.Repository) PopularMovieService {
 	return PopularMovieService{repo}
 }
 
-func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit uint, skip uint) (domain.PopularMovies, error) {
-	emptyRec := []domain.PopularMovie{}
+const (
+	noRatingsForMoviesInGenreInDb = "could not get ratings for movies in genre"
+	noMoviesInPreferedGenres      = "there are no movies with ratings in the prefered genres"
+	tooMuchSkipping               = "you're all caught up"
+)
+
+func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit uint, skip uint) (
+	recs domain.PopularMovies, err error,
+) {
 	if _, err := pms.repo.GetUserById(userId); err != nil {
 		errStack := errors.Wrap(err, "a user with this identifier does not exist")
-		return emptyRec, errStack
+		return recs, errStack
 	}
 
 	movies, err := pms.repo.GetAllRatingsForMoviesInGenre(userId)
 	if err != nil {
-		return emptyRec, errors.Wrap(err, noRatingsForMoviesInGenreInDb)
+		return recs, errors.Wrap(err, noRatingsForMoviesInGenreInDb)
 	}
 
 	if len(movies) < 1 {
 		cause := errors.New("not_found")
-		return emptyRec, errors.Wrap(cause, noMoviesInPreferedGenres)
+		return recs, errors.Wrap(cause, noMoviesInPreferedGenres)
 	}
 
 	movies.CalculateBoostedScore()
@@ -38,12 +45,15 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 	length := len(movies)
 	begin, end, err := handlePagination(uint(length), skip, limit)
 	if err != nil {
-		return emptyRec, err
+		return recs, err
 	}
-	recs := movies[begin:end]
+	recs = movies[begin:end]
 
 	moviesIds := getMovieIds(recs)
-	moviesDetails, _ := pms.repo.GetMoviesDetails(moviesIds)
+	moviesDetails, err := pms.repo.GetMoviesDetails(moviesIds)
+	if err != nil {
+		return recs, errors.Wrap(err, "could not get movie details for popular movies")
+	}
 
 	recs.PopulateMoviesWithDetails(moviesDetails)
 
@@ -58,9 +68,3 @@ func getMovieIds(recs domain.PopularMovies) []string {
 	}
 	return moviesIds
 }
-
-const (
-	noRatingsForMoviesInGenreInDb = "could not get ratings for movies in genre"
-	noMoviesInPreferedGenres      = "there are no movies with ratings in the prefered genres"
-	tooMuchSkipping               = "you're all caught up"
-)
