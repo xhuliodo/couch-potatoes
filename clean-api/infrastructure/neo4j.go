@@ -235,8 +235,10 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(userId string) (
 }
 
 func (nr *Neo4jRepository) GetMoviesDetails(userIds []string) (
-	movieDetails domain.MoviesDetails, err error,
+	domain.MoviesDetails, error,
 ) {
+	moviesDetails := make(domain.MoviesDetails)
+
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -257,7 +259,7 @@ func (nr *Neo4jRepository) GetMoviesDetails(userIds []string) (
 	res, err := session.Run(query, parameters)
 	if err != nil {
 		cause := errors.New("db_connection")
-		return movieDetails, errors.Wrap(cause, err.Error())
+		return moviesDetails, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -268,15 +270,14 @@ func (nr *Neo4jRepository) GetMoviesDetails(userIds []string) (
 		releaseYearInterface, _ := rec.Get("ReleaseYear")
 		releaseYearInt64, _ := releaseYearInterface.(int64)
 		moreInfoLink, _ := rec.Get("MoreInfoLink")
-
-		movieDetails[movieId] = domain.MovieDetails{
+		moviesDetails[movieId] = domain.MovieDetails{
 			Title:        title.(string),
 			ReleaseYear:  int(releaseYearInt64),
 			MoreInfoLink: moreInfoLink.(string),
 		}
 	}
 
-	return movieDetails, nil
+	return moviesDetails, nil
 }
 
 func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (
