@@ -93,7 +93,7 @@ func (imr *InMemoryRepository) GetMovieById(movieId string) (domain.Movie, error
 	return emptyMovie, nil
 }
 
-func (imr *InMemoryRepository) RegisterNewUser(user domain.User) error {
+func (imr *InMemoryRepository) RegisterNewUser(userId string) error {
 	return nil
 }
 

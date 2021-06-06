@@ -46,7 +46,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 
 	// user routes
 	router.Route("/users", func(r chi.Router) {
-		r.Post("/", registerUserInterface.RegisterUser)
+		r.Post("/{userId}", registerUserInterface.RegisterUser)
 		r.Get("/setup", initialSetupInterface.GetUserSetupStep)
 		r.Post("/genres", initialSetupInterface.SaveGenrePreferences)
 		r.Post("/ratings", rateMovieInterface.RateMovie)

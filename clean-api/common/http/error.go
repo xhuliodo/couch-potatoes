@@ -45,10 +45,11 @@ func ErrUnauthorized(err error) render.Renderer {
 // when a user is trying to get recommendations
 // without finishing up the setup process
 // ERROR_CAUSE: not_authorized
-func ErrForbidden(err error) render.Renderer {
+func ErrForbidden(errText string, stackTrace error) render.Renderer {
 	return &ErrorResponse{
-		ErrStack:       err,
+		ErrStack:       stackTrace,
 		HTTPStatusCode: http.StatusForbidden,
+		ErrorText:      errText,
 	}
 }
 

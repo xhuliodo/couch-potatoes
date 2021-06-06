@@ -36,3 +36,10 @@ func getUserId(r *http.Request) string {
 
 	return userId
 }
+
+func getIsAdmin(r *http.Request) bool {
+	isAdminInterface := r.Context().Value("isAdmin")
+	isAdmin := isAdminInterface.(bool)
+
+	return isAdmin
+}

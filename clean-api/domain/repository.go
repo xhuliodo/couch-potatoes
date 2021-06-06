@@ -8,7 +8,7 @@ type Repository interface {
 
 	// user
 	GetUserById(userId string) (User, error)
-	RegisterNewUser(user User) error
+	RegisterNewUser(userId string) error
 	SaveGenrePreferences(userId string, genres []Genre) error
 	RateMovie(userId, movieId string, rating int) error
 	GetGenrePreferencesCount(userId string) (uint, error)

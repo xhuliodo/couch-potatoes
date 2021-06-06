@@ -9,7 +9,7 @@ import (
 
 const (
 	not_authenticated = "not_authenticated"
-	not_authorized    = "not_authorized"
+	forbidden         = "forbidden"
 	db_connection     = "db_connection"
 	not_found         = "not_found"
 	bad_request       = "bad_request"
@@ -30,6 +30,9 @@ func DetermineErr(err error) render.Renderer {
 	case bad_request:
 		lastErr := getLastErr(err)
 		return ErrBadRequest(lastErr, err)
+	case forbidden:
+		lastErr := getLastErr(err)
+		return ErrForbidden(lastErr, err)
 	default:
 		return ErrInternal(err)
 

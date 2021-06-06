@@ -112,8 +112,7 @@ func (nr *Neo4jRepository) SaveGenrePreferences(userId string, genres []domain.G
 	}
 	parameters := map[string]interface{}{"userId": userId, "genres": genresIdInterface}
 
-	_, err := session.Run(query, parameters)
-	if err != nil {
+	if _, err := session.Run(query, parameters); err != nil {
 		cause := errors.New("db_connection")
 		return errors.Wrap(cause, err.Error())
 	}
@@ -149,7 +148,7 @@ func (nr *Neo4jRepository) RateMovie(
 }
 
 func (nr *Neo4jRepository) RegisterNewUser(
-	user domain.User,
+	userId string,
 ) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -157,17 +156,11 @@ func (nr *Neo4jRepository) RegisterNewUser(
 	query := `merge (u:User{userId:$userId})
 			on create set u.userId=$userId
 			return u.userId as userId`
-	parameters := map[string]interface{}{"userId": user.Id}
+	parameters := map[string]interface{}{"userId": userId}
 
-	res, err := session.Run(query, parameters)
-	if err != nil {
-		return err
-	}
-
-	record, _ := res.Single()
-	_, bool := record.Get("userId")
-	if !bool {
-		return errors.New("user was not registered successfully")
+	if _, err := session.Run(query, parameters); err != nil {
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	return nil
