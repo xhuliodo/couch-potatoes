@@ -1,8 +1,6 @@
 package domain
 
-import (
-	"errors"
-)
+import "github.com/pkg/errors"
 
 type User struct {
 	Id             string

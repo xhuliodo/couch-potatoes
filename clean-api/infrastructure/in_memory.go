@@ -97,9 +97,8 @@ func (imr *InMemoryRepository) RegisterNewUser(user domain.User) error {
 	return nil
 }
 
-func (imr *InMemoryRepository) GetGenrePreferences(userId string) ([]domain.Genre, error) {
-	emptyGenres := []domain.Genre{}
-	return emptyGenres, nil
+func (imr *InMemoryRepository) GetGenrePreferencesCount(userId string) (uint, error) {
+	return 0, nil
 }
 
 func (imr *InMemoryRepository) GetAllRatingsForMoviesInGenre(userId string) (domain.PopularMovies, error) {

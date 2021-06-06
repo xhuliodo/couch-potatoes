@@ -11,7 +11,7 @@ type Repository interface {
 	RegisterNewUser(user User) error
 	SaveGenrePreferences(userId string, genres []Genre) error
 	RateMovie(userId, movieId string, rating int) error
-	GetGenrePreferences(userId string) ([]Genre, error)
+	GetGenrePreferencesCount(userId string) (uint, error)
 	GetUserRatingsCount(userId string) (uint, error)
 
 	// recommendation

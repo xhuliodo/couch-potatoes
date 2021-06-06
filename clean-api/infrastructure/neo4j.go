@@ -14,7 +14,9 @@ func NewNeo4jRepository(Driver neo4j.Driver) *Neo4jRepository {
 	return &Neo4jRepository{Driver}
 }
 
-func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
+func (nr *Neo4jRepository) GetAllGenres() (
+	genres []domain.Genre, err error,
+) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -23,10 +25,9 @@ func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return nil, err
+		cause := errors.New("db_connection")
+		return genres, errors.Wrap(cause, err.Error())
 	}
-
-	genres := []domain.Genre{}
 
 	for res.Next() {
 		genre := res.Record()
@@ -35,12 +36,13 @@ func (nr *Neo4jRepository) GetAllGenres() ([]domain.Genre, error) {
 		g := domain.Genre{Id: genreId.(string), Name: genreName.(string)}
 		genres = append(genres, g)
 	}
+
 	return genres, nil
 }
 
-func (nr *Neo4jRepository) GetUserById(
-	userId string,
-) (domain.User, error) {
+func (nr *Neo4jRepository) GetUserById(userId string) (
+	existingUser domain.User, err error,
+) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -52,24 +54,24 @@ func (nr *Neo4jRepository) GetUserById(
 	res, err := session.Run(query, parameters)
 	if err != nil {
 		cause := errors.New("db_connection")
-		return domain.User{}, errors.Wrap(cause, err.Error())
+		return existingUser, errors.Wrap(cause, err.Error())
 	}
 
 	record, err := res.Single()
 	if err != nil {
 		cause := errors.New("not_found")
-		return domain.User{}, errors.Wrap(cause, err.Error())
+		return existingUser, errors.Wrap(cause, err.Error())
 	}
 
 	existingUserId, _ := record.Get("userId")
-	existingUser := domain.User{Id: existingUserId.(string)}
+	existingUser = domain.User{Id: existingUserId.(string)}
 
 	return existingUser, nil
 }
 
-func (nr *Neo4jRepository) GetMovieById(
-	movieId string,
-) (domain.Movie, error) {
+func (nr *Neo4jRepository) GetMovieById(movieId string) (
+	existingMovie domain.Movie, err error,
+) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -81,24 +83,22 @@ func (nr *Neo4jRepository) GetMovieById(
 	res, err := session.Run(query, parameters)
 	if err != nil {
 		cause := errors.New("db_connection")
-		return domain.Movie{}, errors.Wrap(cause, err.Error())
+		return existingMovie, errors.Wrap(cause, err.Error())
 	}
 
 	record, err := res.Single()
 	if err != nil {
 		cause := errors.New("not_found")
-		return domain.Movie{}, errors.Wrap(cause, err.Error())
+		return existingMovie, errors.Wrap(cause, err.Error())
 	}
 
 	existingMovieId, _ := record.Get("movieId")
-	existingMovie := domain.Movie{Id: existingMovieId.(string)}
+	existingMovie = domain.Movie{Id: existingMovieId.(string)}
 
 	return existingMovie, nil
 }
 
-func (nr *Neo4jRepository) SaveGenrePreferences(
-	userId string, genres []domain.Genre,
-) error {
+func (nr *Neo4jRepository) SaveGenrePreferences(userId string, genres []domain.Genre) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -112,15 +112,10 @@ func (nr *Neo4jRepository) SaveGenrePreferences(
 	}
 	parameters := map[string]interface{}{"userId": userId, "genres": genresIdInterface}
 
-	res, err := session.Run(query, parameters)
+	_, err := session.Run(query, parameters)
 	if err != nil {
-		return err
-	}
-
-	record, _ := res.Single()
-	_, bool := record.Get("userId")
-	if !bool {
-		return errors.New("genre preferences did not get saved")
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	return nil
@@ -178,47 +173,37 @@ func (nr *Neo4jRepository) RegisterNewUser(
 	return nil
 }
 
-func (nr *Neo4jRepository) GetGenrePreferences(
-	userId string,
-) ([]domain.Genre, error) {
+func (nr *Neo4jRepository) GetGenrePreferencesCount(userId string) (
+	genreCount uint, err error,
+) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
 	query := `
 	match (u:User{userId:$userId})-[:FAVORITE]->(g:Genre)
-	return g.genreId as Id
+	return count(g) as genreCount
 	`
 	parameters := map[string]interface{}{"userId": userId}
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return nil, err
+		cause := errors.New("db_connection")
+		return genreCount, errors.Wrap(cause, err.Error())
 	}
 
-	genres := []domain.Genre{}
+	rec, _ := res.Single()
+	countInterface, _ := rec.Get("genreCount")
+	count := countInterface.(int64)
+	genreCount = uint(count)
 
-	// if _, err := res.Single(); err == nil {
-	// 	return genres, errors.New("tuser has to give their genere preferences firs")
-	// }
-	for res.Next() {
-		genre := res.Record()
-		genreId, _ := genre.Get("Id")
-		g := domain.Genre{Id: genreId.(string)}
-		genres = append(genres, g)
-	}
-
-	if len(genres) == 0 {
-		return genres, errors.New("no genre preference have been given")
-	}
-
-	return genres, nil
+	return genreCount, nil
 }
 
 func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(
 	userId string,
 ) (domain.PopularMovies, error) {
 	popularMovies := domain.PopularMovies{}
-	
+
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -310,9 +295,9 @@ func (nr *Neo4jRepository) GetMoviesDetails(
 	return emptyMovieDetails, nil
 }
 
-func (nr *Neo4jRepository) GetUserRatingsCount(
-	userId string,
-) (uint, error) {
+func (nr *Neo4jRepository) GetUserRatingsCount(userId string) (
+	userRatingsCount uint, err error,
+) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -324,14 +309,16 @@ func (nr *Neo4jRepository) GetUserRatingsCount(
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return 0, err
+		cause := errors.New("db_connection")
+		return userRatingsCount, errors.Wrap(cause, err.Error())
 	}
 
-	record, _ := res.Single()
-	ratedMoviesCountInterface, _ := record.Get("RatedMoviesCount")
-	ratedMoviesCountInt64 := ratedMoviesCountInterface.(int64)
+	rec, _ := res.Single()
+	countInterface, _ := rec.Get("RatedMoviesCount")
+	count := countInterface.(int64)
+	userRatingsCount = uint(count)
 
-	return uint(ratedMoviesCountInt64), nil
+	return userRatingsCount, nil
 }
 
 func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(
