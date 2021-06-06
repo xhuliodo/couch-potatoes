@@ -25,7 +25,7 @@ func (rfws RemoveFromWatchlistService) RemoveFromWatchlist(userId, movieId strin
 	}
 
 	if err := rfws.repo.RemoveFromWatchlist(userId, movieId); err != nil {
-		errStack := errors.Wrap(err, "movie was not removed from watchlist, try again")
+		errStack := errors.Wrap(err, "movie was not removed from watchlist")
 		return errStack
 	}
 

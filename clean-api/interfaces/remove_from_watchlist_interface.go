@@ -1,7 +1,6 @@
 package interfaces
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -19,9 +18,7 @@ func NewRemoveFromWatchlistResource(removeFromWatchlistService application.Remov
 }
 
 func (rfwr removeFromWatchlistResource) RemoveFromWatchlist(w http.ResponseWriter, r *http.Request) {
-	userIdInterface := r.Context().Value("userId")
-	userId := fmt.Sprintf("%v", userIdInterface)
-
+	userId := getUserId(r)
 	movieId := chi.URLParam(r, "movieId")
 
 	if errStack := rfwr.removeFromWatchlistService.RemoveFromWatchlist(userId, movieId); errStack != nil {
@@ -29,6 +26,5 @@ func (rfwr removeFromWatchlistResource) RemoveFromWatchlist(w http.ResponseWrite
 		return
 	}
 
-	// successMsg := fmt.Sprintf("you just removed from watchlist the movie with id: %s", movieId)
 	render.Render(w, r, common_http.NoContent())
 }

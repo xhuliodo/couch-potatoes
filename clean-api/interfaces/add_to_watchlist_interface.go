@@ -19,9 +19,7 @@ func NewAddToWatchlistResource(addToWatchlistService application.AddToWatchlistS
 }
 
 func (atwr addToWatchlistResource) AddToWatchlist(w http.ResponseWriter, r *http.Request) {
-	userIdInterface := r.Context().Value("userId")
-	userId := fmt.Sprintf("%v", userIdInterface)
-
+	userId := getUserId(r)
 	movieId := chi.URLParam(r, "movieId")
 
 	if errStack := atwr.addToWatchlistService.AddToWatchlist(userId, movieId); errStack != nil {

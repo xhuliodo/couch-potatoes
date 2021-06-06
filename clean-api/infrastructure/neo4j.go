@@ -550,7 +550,9 @@ func (nr *Neo4jRepository) GetSimilarMoviesToAlreadyLikedOnes(userId string, mov
 	return emptySimilarMovies, nil
 }
 
-func (nr *Neo4jRepository) AddToWatchlist(userId, movieId string, timeOfAdding int64) error {
+func (nr *Neo4jRepository) AddToWatchlist(
+	userId, movieId string, timeOfAdding int64,
+) error {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -560,14 +562,8 @@ func (nr *Neo4jRepository) AddToWatchlist(userId, movieId string, timeOfAdding i
 	return m.movieId as MovieId
 	`
 	parameters := map[string]interface{}{"userId": userId, "movieId": movieId, "timeOfAdding": timeOfAdding}
-	res, err := session.Run(query, parameters)
-	if err != nil {
+	if _, err := session.Run(query, parameters); err != nil {
 		cause := errors.New("db_connection")
-		return errors.Wrap(cause, err.Error())
-	}
-
-	if _, err := res.Single(); err != nil {
-		cause := errors.New("not_found")
 		return errors.Wrap(cause, err.Error())
 	}
 
@@ -584,14 +580,8 @@ func (nr *Neo4jRepository) RemoveFromWatchlist(userId, movieId string) error {
 	return m.movieId as MovieId
 	`
 	parameters := map[string]interface{}{"userId": userId, "movieId": movieId}
-	res, err := session.Run(query, parameters)
-	if err != nil {
+	if _, err := session.Run(query, parameters); err != nil {
 		cause := errors.New("db_connection")
-		return errors.Wrap(cause, err.Error())
-	}
-
-	if _, err := res.Single(); err != nil {
-		cause := errors.New("not_found")
 		return errors.Wrap(cause, err.Error())
 	}
 
