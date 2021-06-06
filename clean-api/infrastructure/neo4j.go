@@ -1,9 +1,8 @@
 package infrastructure
 
 import (
-	"errors"
-
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -52,18 +51,17 @@ func (nr *Neo4jRepository) GetUserById(
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return domain.User{}, err
+		cause := errors.New("db_connection")
+		return domain.User{}, errors.Wrap(cause, err.Error())
 	}
 
 	record, err := res.Single()
 	if err != nil {
-		return domain.User{}, errors.New("user does not exist")
+		cause := errors.New("not_found")
+		return domain.User{}, errors.Wrap(cause, err.Error())
 	}
 
-	existingUserId, bool := record.Get("userId")
-	if !bool {
-		return domain.User{}, errors.New("user does not exist")
-	}
+	existingUserId, _ := record.Get("userId")
 	existingUser := domain.User{Id: existingUserId.(string)}
 
 	return existingUser, nil
@@ -82,18 +80,17 @@ func (nr *Neo4jRepository) GetMovieById(
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return domain.Movie{}, err
+		cause := errors.New("db_connection")
+		return domain.Movie{}, errors.Wrap(cause, err.Error())
 	}
 
 	record, err := res.Single()
 	if err != nil {
-		return domain.Movie{}, errors.New("movie does not exist")
+		cause := errors.New("not_found")
+		return domain.Movie{}, errors.Wrap(cause, err.Error())
 	}
 
-	existingMovieId, bool := record.Get("movieId")
-	if !bool {
-		return domain.Movie{}, errors.New("movie does not exist")
-	}
+	existingMovieId, _ := record.Get("movieId")
 	existingMovie := domain.Movie{Id: existingMovieId.(string)}
 
 	return existingMovie, nil
@@ -221,6 +218,7 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(
 	userId string,
 ) (domain.PopularMovies, error) {
 	popularMovies := domain.PopularMovies{}
+	
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -238,7 +236,8 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return nil, err
+		cause := errors.New("db_connection")
+		return nil, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -262,9 +261,6 @@ func (nr *Neo4jRepository) GetAllRatingsForMoviesInGenre(
 		popularMovies = append(popularMovies, m)
 	}
 
-	if len(popularMovies) == 0 {
-		return popularMovies, errors.New("there are no movies with ratings in the prefered genres")
-	}
 	return popularMovies, nil
 }
 
@@ -358,7 +354,8 @@ func (nr *Neo4jRepository) GetSimilairUsersAndTheirAvgRating(
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptyUserToCompare, err
+		cause := errors.New("db_connection")
+		return emptyUserToCompare, errors.Wrap(cause, err.Error())
 	}
 
 	usersToComp := domain.UsersToCompare{}
@@ -487,7 +484,8 @@ func (nr *Neo4jRepository) GetAllLikedMovies(userId string) (domain.UsersLikedMo
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptyLikedMovies, err
+		cause := errors.New("db_connection")
+		return emptyLikedMovies, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -519,7 +517,8 @@ func (nr *Neo4jRepository) GetMoviesCasts(movieIds []string, movies domain.Movie
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return err
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -567,7 +566,8 @@ func (nr *Neo4jRepository) GetSimilarMoviesToAlreadyLikedOnes(userId string, mov
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptySimilarMovies, err
+		cause := errors.New("db_connection")
+		return emptySimilarMovies, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -593,11 +593,13 @@ func (nr *Neo4jRepository) AddToWatchlist(userId, movieId string, timeOfAdding i
 	parameters := map[string]interface{}{"userId": userId, "movieId": movieId, "timeOfAdding": timeOfAdding}
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return err
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	if _, err := res.Single(); err != nil {
-		return err
+		cause := errors.New("not_found")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	return nil
@@ -615,11 +617,13 @@ func (nr *Neo4jRepository) RemoveFromWatchlist(userId, movieId string) error {
 	parameters := map[string]interface{}{"userId": userId, "movieId": movieId}
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return err
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	if _, err := res.Single(); err != nil {
-		return err
+		cause := errors.New("not_found")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	return nil

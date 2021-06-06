@@ -1,9 +1,9 @@
 package application
 
 import (
-	"errors"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -17,17 +17,20 @@ func NewAddToWatchlistService(repo domain.Repository) AddToWatchlistService {
 
 func (atws AddToWatchlistService) AddToWatchlist(userId, movieId string) error {
 	if _, err := atws.repo.GetUserById(userId); err != nil {
-		return errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return errStack
 	}
 
 	if _, err := atws.repo.GetMovieById(movieId); err != nil {
-		return errors.New("a movie with this identifier does not exist")
+		errStack := errors.Wrap(err, "a movie with this identifier does not exist")
+		return errStack
 	}
 
 	now := time.Now()
 	timeOfAdding := now.Unix()
 	if err := atws.repo.AddToWatchlist(userId, movieId, timeOfAdding); err != nil {
-		return errors.New("movie was not added to watchlist, try again")
+		errStack := errors.Wrap(err, "movie was not added to watchlist")
+		return errStack
 	}
 
 	return nil

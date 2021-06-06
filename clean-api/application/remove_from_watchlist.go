@@ -1,8 +1,7 @@
 package application
 
 import (
-	"errors"
-
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -16,15 +15,18 @@ func NewRemoveFromWatchlistService(repo domain.Repository) RemoveFromWatchlistSe
 
 func (rfws RemoveFromWatchlistService) RemoveFromWatchlist(userId, movieId string) error {
 	if _, err := rfws.repo.GetUserById(userId); err != nil {
-		return errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return errStack
 	}
 
 	if _, err := rfws.repo.GetMovieById(movieId); err != nil {
-		return errors.New("a movie with this identifier does not exist")
+		errStack := errors.Wrap(err, "a movie with this identifier does not exist")
+		return errStack
 	}
 
 	if err := rfws.repo.RemoveFromWatchlist(userId, movieId); err != nil {
-		return errors.New("movie was not removed from watchlist, try again")
+		errStack := errors.Wrap(err, "movie was not removed from watchlist, try again")
+		return errStack
 	}
 
 	return nil

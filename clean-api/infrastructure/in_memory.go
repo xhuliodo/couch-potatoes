@@ -181,3 +181,12 @@ func (imr *InMemoryRepository) AddToWatchlist(userId, movieId string, timeOfAddi
 func (imr *InMemoryRepository) RemoveFromWatchlist(userId, movieId string) error {
 	return nil
 }
+
+func (imr *InMemoryRepository) GetWatchlist(userId string) (domain.UserWatchlist, error) {
+	emptyWatchlist := domain.UserWatchlist{}
+	return emptyWatchlist, nil
+}
+func (imr *InMemoryRepository) GetWatchlistHistory(userId string) (domain.UserWatchlist, error) {
+	emptyWatchlist := domain.UserWatchlist{}
+	return emptyWatchlist, nil
+}

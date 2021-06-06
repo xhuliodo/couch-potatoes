@@ -31,9 +31,9 @@ func (cbrr contentBasedRecResource) GetContentBasedRecommendation(w http.Respons
 	}
 	limit = uint(limitU64)
 
-	contentBasedRec, err := cbrr.contentBasedRecService.GetContentBasedRecommendation(userId, limit)
-	if err != nil {
-		_ = render.Render(w, r, common_http.ErrInternal(err))
+	contentBasedRec, errStack := cbrr.contentBasedRecService.GetContentBasedRecommendation(userId, limit)
+	if errStack != nil {
+		_ = render.Render(w, r, common_http.DetermineErr(errStack))
 		return
 	}
 
@@ -50,5 +50,5 @@ func (cbrr contentBasedRecResource) GetContentBasedRecommendation(w http.Respons
 		})
 	}
 
-	render.Respond(w, r, view)
+	render.Respond(w, r, common_http.SendPayload(view))
 }

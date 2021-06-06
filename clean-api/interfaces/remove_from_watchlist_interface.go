@@ -24,11 +24,11 @@ func (rfwr removeFromWatchlistResource) RemoveFromWatchlist(w http.ResponseWrite
 
 	movieId := chi.URLParam(r, "movieId")
 
-	if err := rfwr.removeFromWatchlistService.RemoveFromWatchlist(userId, movieId); err != nil {
-		_ = render.Render(w, r, common_http.ErrInternal(err))
+	if errStack := rfwr.removeFromWatchlistService.RemoveFromWatchlist(userId, movieId); errStack != nil {
+		_ = render.Render(w, r, common_http.DetermineErr(errStack))
 		return
 	}
 
-	successMsg := fmt.Sprintf("you just removed from watchlist the movie with id: %s", movieId)
-	render.Render(w, r, common_http.ResourceCreated(successMsg))
+	// successMsg := fmt.Sprintf("you just removed from watchlist the movie with id: %s", movieId)
+	render.Render(w, r, common_http.NoContent())
 }

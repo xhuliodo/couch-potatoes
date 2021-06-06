@@ -1,8 +1,7 @@
 package application
 
 import (
-	"errors"
-
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -17,12 +16,18 @@ func NewPopularMovieService(repo domain.Repository) PopularMovieService {
 func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit uint, skip uint) (domain.PopularMovies, error) {
 	emptyRec := []domain.PopularMovie{}
 	if _, err := pms.repo.GetUserById(userId); err != nil {
-		return emptyRec, errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return emptyRec, errStack
 	}
 
 	movies, err := pms.repo.GetAllRatingsForMoviesInGenre(userId)
 	if err != nil {
-		return emptyRec, errors.New("you're all caught up")
+		return emptyRec, errors.Wrap(err, noRatingsForMoviesInGenreInDb)
+	}
+
+	if len(movies) < 1 {
+		cause := errors.New("not_found")
+		return emptyRec, errors.Wrap(cause, noMoviesInPreferedGenres)
 	}
 
 	movies.CalculateBoostedScore()
@@ -33,7 +38,7 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 	length := len(movies)
 	begin, end, err := handlePagination(uint(length), skip, limit)
 	if err != nil {
-		return emptyRec, errors.New("you're all caught up")
+		return emptyRec, err
 	}
 	recs := movies[begin:end]
 
@@ -45,39 +50,6 @@ func (pms PopularMovieService) GetPopularMoviesBasedOnGenre(userId string, limit
 	return recs, nil
 }
 
-const (
-	defaultLimit uint = 5
-	defaultSkip  uint = 0
-)
-
-func handlePagination(len, skip, limit uint) (begin, end uint, err error) {
-	if skip != defaultSkip {
-		maxSkip := maxSkip(uint(len), limit)
-		if skip > maxSkip {
-			return 0, 0, errors.New("you've reached the limit")
-		}
-	}
-
-	begin = skip
-
-	remaining := len - skip
-	if remaining < limit {
-		end = remaining + skip
-		return begin, end, nil
-	}
-
-	end = limit + skip
-	return begin, end, nil
-
-}
-
-func maxSkip(total uint, limit uint) uint {
-	if limit == 0 {
-		limit = defaultLimit
-	}
-	return ((total - 1) / limit) * limit
-}
-
 func getMovieIds(recs domain.PopularMovies) []string {
 	moviesIds := []string{}
 	for _, rec := range recs {
@@ -86,3 +58,9 @@ func getMovieIds(recs domain.PopularMovies) []string {
 	}
 	return moviesIds
 }
+
+const (
+	noRatingsForMoviesInGenreInDb = "could not get ratings for movies in genre"
+	noMoviesInPreferedGenres      = "there are no movies with ratings in the prefered genres"
+	tooMuchSkipping               = "you're all caught up"
+)

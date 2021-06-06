@@ -2,6 +2,8 @@ package domain
 
 import (
 	"sort"
+
+	"github.com/pkg/errors"
 )
 
 type MoviesWithoutCastDetails interface {
@@ -17,7 +19,6 @@ type UsersLikedMovie struct {
 func (ulm UsersLikedMovies) PopulateWithCast(movieId string, castDetails []string) {
 	for _, castId := range castDetails {
 		ulm[movieId].AllCast[castId] = true
-
 	}
 }
 
@@ -57,7 +58,7 @@ func (cbr ContentBasedRecommendations) PopulateWithMovieDetails(moviesDetails Mo
 
 const leastThingsInCommon float64 = 2
 
-func CalculateJaccard(ulm UsersLikedMovies, similarMovies SimilarMoviesToLikedOnes) ContentBasedRecommendations {
+func CalculateJaccard(ulm UsersLikedMovies, similarMovies SimilarMoviesToLikedOnes) (ContentBasedRecommendations, error) {
 	recs := ContentBasedRecommendations{}
 
 	for _, likedMovie := range ulm {
@@ -85,7 +86,11 @@ func CalculateJaccard(ulm UsersLikedMovies, similarMovies SimilarMoviesToLikedOn
 			}
 		}
 	}
-	return recs
+	if len(recs) < 1 {
+		cause := errors.New("not_found")
+		return recs, errors.Wrap(cause, noSimilarMovies)
+	}
+	return recs, nil
 }
 
 func (cbr ContentBasedRecommendations) RemoveDuplicates() ContentBasedRecommendations {
@@ -107,3 +112,7 @@ func (cbr ContentBasedRecommendations) RemoveDuplicates() ContentBasedRecommenda
 	}
 	return recsWithNoDups
 }
+
+const (
+	noSimilarMovies = "could not find similar movies to recommend, please rate some more and try again"
+)

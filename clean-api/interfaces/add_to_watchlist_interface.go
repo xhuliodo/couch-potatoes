@@ -24,8 +24,8 @@ func (atwr addToWatchlistResource) AddToWatchlist(w http.ResponseWriter, r *http
 
 	movieId := chi.URLParam(r, "movieId")
 
-	if err := atwr.addToWatchlistService.AddToWatchlist(userId, movieId); err != nil {
-		_ = render.Render(w, r, common_http.ErrInternal(err))
+	if errStack := atwr.addToWatchlistService.AddToWatchlist(userId, movieId); errStack != nil {
+		_ = render.Render(w, r, common_http.DetermineErr(errStack))
 		return
 	}
 

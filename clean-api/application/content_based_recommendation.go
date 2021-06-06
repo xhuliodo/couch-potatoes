@@ -1,7 +1,7 @@
 package application
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
@@ -18,30 +18,48 @@ func (cbrs ContentBasedRecommendationService) GetContentBasedRecommendation(user
 	emptyRec := domain.ContentBasedRecommendations{}
 
 	if _, err := cbrs.repo.GetUserById(userId); err != nil {
-		return emptyRec, errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return emptyRec, errStack
 	}
 
 	likedMovies, err := cbrs.repo.GetAllLikedMovies(userId)
 	if err != nil {
-		return emptyRec, errors.New("you have not rated any movies yet, please return and complete the setup")
+		errStack := errors.Wrap(err, noLikedMovies)
+		return emptyRec, errStack
+	}
+
+	if len(likedMovies) < 1 {
+		cause := errors.New("not_found")
+		return emptyRec, errors.Wrap(cause, noLikedMovies)
 	}
 
 	likedMovieIds := getIdsFromLikedMovies(&likedMovies)
 	if err := cbrs.repo.GetMoviesCasts(likedMovieIds, likedMovies); err != nil {
-		return emptyRec, err
+		errStack := errors.Wrap(err, "could not get movie casts for likedMovies")
+		return emptyRec, errStack
 	}
 
 	similarMovies, err := cbrs.repo.GetSimilarMoviesToAlreadyLikedOnes(userId, likedMovieIds)
 	if err != nil {
-		return emptyRec, err
+		errStack := errors.Wrap(err, noSimilarMovies)
+		return emptyRec, errStack
+	}
+
+	if len(similarMovies) < 1 {
+		cause := errors.New("not_found")
+		return emptyRec, errors.Wrap(cause, noSimilarMovies)
 	}
 
 	similarMoviesIds := getIdsFromSimilarMovies(&similarMovies)
 	if err := cbrs.repo.GetMoviesCasts(similarMoviesIds, similarMovies); err != nil {
-		return emptyRec, err
+		errStack := errors.Wrap(err, "could not get movie casts for similarMovies")
+		return emptyRec, errStack
 	}
 
-	recs := domain.CalculateJaccard(likedMovies, similarMovies)
+	recs, err := domain.CalculateJaccard(likedMovies, similarMovies)
+	if err != nil {
+		return emptyRec, err
+	}
 
 	recsWithNoDups := recs.RemoveDuplicates()
 
@@ -87,3 +105,8 @@ func getIdFromRemainingRecs(recs domain.ContentBasedRecommendations) []string {
 	}
 	return movieIds
 }
+
+const (
+	noLikedMovies   = "you have not rated any movies yet, please return and complete the setup"
+	noSimilarMovies = "could not find similar movies to recommend, please rate some more and try again"
+)
