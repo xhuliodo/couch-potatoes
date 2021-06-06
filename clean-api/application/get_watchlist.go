@@ -1,8 +1,7 @@
 package application
 
 import (
-	"errors"
-
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -14,15 +13,22 @@ func NewGetWatchlistService(repo domain.Repository) GetWatchlistService {
 	return GetWatchlistService{repo}
 }
 
-func (gws GetWatchlistService) GetWatchlist(userId string, limit uint, skip uint) ([]domain.Watchlist, error) {
-	emptyWatchlist := []domain.Watchlist{}
+func (gws GetWatchlistService) GetWatchlist(userId string, limit uint, skip uint) (
+	watchlist domain.UserWatchlist, err error,
+) {
 	if _, err := gws.repo.GetUserById(userId); err != nil {
-		return emptyWatchlist, errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return watchlist, errStack
 	}
 
-	watchlist, err := gws.repo.GetWatchlist(userId)
+	watchlist, err = gws.repo.GetWatchlist(userId)
 	if err != nil {
-		return emptyWatchlist, errors.New("there are no more movies in your watchlist")
+		return watchlist, errors.Wrap(err, "could not get user watchlist")
+	}
+
+	if len(watchlist) < 1 {
+		cause := errors.New("not_found")
+		return watchlist, errors.Wrap(cause, "there are no more movies in your watchlist")
 	}
 
 	watchlist.SortByTimeAdded()
@@ -31,16 +37,15 @@ func (gws GetWatchlistService) GetWatchlist(userId string, limit uint, skip uint
 	length := len(watchlist)
 	begin, end, err := handlePagination(uint(length), skip, limit)
 	if err != nil {
-		return emptyWatchlist, errors.New("you're all caught up")
+		return watchlist, err
 	}
-	userWatchlist := watchlist[begin:end]
+	watchlist = watchlist[begin:end]
 
-	moviesIds := getWatchlistMovieIds(userWatchlist)
+	moviesIds := getWatchlistMovieIds(watchlist)
 	moviesDetails, _ := gws.repo.GetMoviesDetails(moviesIds)
+	watchlist.PopulateMoviesWithDetails(moviesDetails)
 
-	userWatchlist.PopulateMoviesWithDetails(moviesDetails)
-
-	return userWatchlist, nil
+	return watchlist, nil
 }
 
 func getWatchlistMovieIds(watchlist domain.UserWatchlist) []string {
