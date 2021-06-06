@@ -437,8 +437,10 @@ func convertRatedMoviesInterfaceSlice(urcis []interface{}) domain.Rating {
 	return ratings
 }
 
-func (nr *Neo4jRepository) GetAllLikedMovies(userId string) (domain.UsersLikedMovies, error) {
-	emptyLikedMovies := domain.UsersLikedMovies{}
+func (nr *Neo4jRepository) GetAllLikedMovies(userId string) (
+	domain.UsersLikedMovies, error,
+) {
+	likedMovies := make(domain.UsersLikedMovies)
 
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -452,7 +454,7 @@ func (nr *Neo4jRepository) GetAllLikedMovies(userId string) (domain.UsersLikedMo
 	res, err := session.Run(query, parameters)
 	if err != nil {
 		cause := errors.New("db_connection")
-		return emptyLikedMovies, errors.Wrap(cause, err.Error())
+		return likedMovies, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -460,10 +462,10 @@ func (nr *Neo4jRepository) GetAllLikedMovies(userId string) (domain.UsersLikedMo
 		movieIdInterface, _ := rec.Get("MovieId")
 		movieId := movieIdInterface.(string)
 
-		emptyLikedMovies[movieId] = domain.UsersLikedMovie{AllCast: map[string]bool{}}
+		likedMovies[movieId] = domain.UsersLikedMovie{AllCast: map[string]bool{}}
 	}
 
-	return emptyLikedMovies, nil
+	return likedMovies, nil
 }
 
 func (nr *Neo4jRepository) GetMoviesCasts(movieIds []string, movies domain.MoviesWithoutCastDetails) error {

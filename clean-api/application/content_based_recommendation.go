@@ -14,51 +14,56 @@ func NewContentBasedRecommendationService(repo domain.Repository) ContentBasedRe
 	return ContentBasedRecommendationService{repo}
 }
 
-func (cbrs ContentBasedRecommendationService) GetContentBasedRecommendation(userId string, limit uint) (domain.ContentBasedRecommendations, error) {
-	emptyRec := domain.ContentBasedRecommendations{}
+const (
+	noLikedMovies   = "you have not rated any movies yet, please return and complete the setup"
+	noSimilarMovies = "could not find similar movies to recommend, please rate some more and try again"
+)
 
+func (cbrs ContentBasedRecommendationService) GetContentBasedRecommendation(userId string, limit uint) (
+	recs domain.ContentBasedRecommendations, err error,
+) {
 	if _, err := cbrs.repo.GetUserById(userId); err != nil {
 		errStack := errors.Wrap(err, "a user with this identifier does not exist")
-		return emptyRec, errStack
+		return recs, errStack
 	}
 
 	likedMovies, err := cbrs.repo.GetAllLikedMovies(userId)
 	if err != nil {
 		errStack := errors.Wrap(err, noLikedMovies)
-		return emptyRec, errStack
+		return recs, errStack
 	}
 
 	if len(likedMovies) < 1 {
 		cause := errors.New("not_found")
-		return emptyRec, errors.Wrap(cause, noLikedMovies)
+		return recs, errors.Wrap(cause, noLikedMovies)
 	}
 
 	likedMovieIds := getIdsFromLikedMovies(&likedMovies)
 	if err := cbrs.repo.GetMoviesCasts(likedMovieIds, likedMovies); err != nil {
 		errStack := errors.Wrap(err, "could not get movie casts for likedMovies")
-		return emptyRec, errStack
+		return recs, errStack
 	}
 
 	similarMovies, err := cbrs.repo.GetSimilarMoviesToAlreadyLikedOnes(userId, likedMovieIds)
 	if err != nil {
 		errStack := errors.Wrap(err, noSimilarMovies)
-		return emptyRec, errStack
+		return recs, errStack
 	}
 
 	if len(similarMovies) < 1 {
 		cause := errors.New("not_found")
-		return emptyRec, errors.Wrap(cause, noSimilarMovies)
+		return recs, errors.Wrap(cause, noSimilarMovies)
 	}
 
 	similarMoviesIds := getIdsFromSimilarMovies(&similarMovies)
 	if err := cbrs.repo.GetMoviesCasts(similarMoviesIds, similarMovies); err != nil {
 		errStack := errors.Wrap(err, "could not get movie casts for similarMovies")
-		return emptyRec, errStack
+		return recs, errStack
 	}
 
-	recs, err := domain.CalculateJaccard(likedMovies, similarMovies)
+	recs, err = domain.CalculateJaccard(likedMovies, similarMovies)
 	if err != nil {
-		return emptyRec, err
+		return recs, err
 	}
 
 	recsWithNoDups := recs.RemoveDuplicates()
@@ -69,17 +74,15 @@ func (cbrs ContentBasedRecommendationService) GetContentBasedRecommendation(user
 	length := len(recsWithNoDups)
 	begin, end, err := handlePagination(uint(length), defaultSkip, limit)
 	if err != nil {
-		return emptyRec, errors.New("you're all caught up")
+		return recs, err
 	}
-	remainingRecs := recsWithNoDups[begin:end]
+	recs = recsWithNoDups[begin:end]
 
-	remainingRecsIds := getIdFromRemainingRecs(remainingRecs)
-
+	remainingRecsIds := getIdFromRemainingRecs(recs)
 	moviesDetails, _ := cbrs.repo.GetMoviesDetails(remainingRecsIds)
+	recs.PopulateWithMovieDetails(moviesDetails)
 
-	remainingRecs.PopulateWithMovieDetails(moviesDetails)
-
-	return remainingRecs, nil
+	return recs, nil
 }
 
 func getIdsFromLikedMovies(movies *domain.UsersLikedMovies) []string {
@@ -105,8 +108,3 @@ func getIdFromRemainingRecs(recs domain.ContentBasedRecommendations) []string {
 	}
 	return movieIds
 }
-
-const (
-	noLikedMovies   = "you have not rated any movies yet, please return and complete the setup"
-	noSimilarMovies = "could not find similar movies to recommend, please rate some more and try again"
-)

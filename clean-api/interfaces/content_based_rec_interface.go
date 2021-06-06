@@ -1,9 +1,7 @@
 package interfaces
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/render"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
@@ -20,16 +18,8 @@ type contentBasedRecView struct {
 }
 
 func (cbrr contentBasedRecResource) GetContentBasedRecommendation(w http.ResponseWriter, r *http.Request) {
-	userIdInterface := r.Context().Value("userId")
-	userId := fmt.Sprintf("%v", userIdInterface)
-
-	var limit uint
-	limitUrlQueryParam := r.URL.Query().Get("limit")
-	limitU64, err := strconv.ParseUint(limitUrlQueryParam, 10, 32)
-	if err != nil {
-		limit = 5
-	}
-	limit = uint(limitU64)
+	userId := getUserId(r)
+	limit := getLimit(r)
 
 	contentBasedRec, errStack := cbrr.contentBasedRecService.GetContentBasedRecommendation(userId, limit)
 	if errStack != nil {
