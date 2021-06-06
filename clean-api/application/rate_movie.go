@@ -1,8 +1,7 @@
 package application
 
 import (
-	"errors"
-
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -16,15 +15,18 @@ func NewRatingService(repo domain.Repository) RatingService {
 
 func (rms RatingService) RateMovie(userId, movieId string, rating int) error {
 	if _, err := rms.repo.GetUserById(userId); err != nil {
-		return errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return errStack
 	}
 
 	if _, err := rms.repo.GetMovieById(movieId); err != nil {
-		return errors.New("a movie with this identifier does not exist")
+		errStack := errors.Wrap(err, "a movie with this identifier does not exist")
+		return errStack
 	}
 
 	if err := rms.repo.RateMovie(userId, movieId, rating); err != nil {
-		return errors.New("the rating was not successful, try again")
+		errStack := errors.Wrap(err, "rating a movie was not successful")
+		return errStack
 	}
 
 	return nil

@@ -133,15 +133,9 @@ func (nr *Neo4jRepository) RateMovie(
 			return m.movieId as movieId`
 	parameters := map[string]interface{}{"userId": userId, "movieId": movieId, "rating": rating}
 
-	res, err := session.Run(query, parameters)
-	if err != nil {
-		return err
-	}
-
-	record, _ := res.Single()
-	_, bool := record.Get("movieId")
-	if !bool {
-		return errors.New("rating was not successful")
+	if _, err := session.Run(query, parameters); err != nil {
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
 	}
 
 	return nil
