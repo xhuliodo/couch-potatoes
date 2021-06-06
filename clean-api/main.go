@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -14,13 +15,15 @@ func main() {
 	log.Println("po ngrihet avioni...")
 	ctx := commands.Context()
 
-	driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth("neo4j", "letmein", "neo4j"))
+	driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth("neo4j", "letmein", "neo4j"), func(c *neo4j.Config) {
+		time := time.Second * 5
+		c.ConnectionAcquisitionTimeout = time
+		c.MaxTransactionRetryTime = time * 2
+	})
 	if err != nil {
 		log.Fatal("db config is fucked up")
 	}
 	router := createApp(driver)
-
-	// router := createApp()
 
 	server := &http.Server{Addr: ":4000", Handler: router}
 	go func() {
@@ -47,13 +50,3 @@ func createApp(driver neo4j.Driver) (r *chi.Mux) {
 
 	return r
 }
-
-// func createApp() (r *chi.Mux) {
-// 	repo := infrastructure.NewInMemoryRepository()
-
-// 	r = commands.CreateRouter()
-
-// 	interfaces.AddRoutes(r, repo, repo)
-
-// 	return r
-// }
