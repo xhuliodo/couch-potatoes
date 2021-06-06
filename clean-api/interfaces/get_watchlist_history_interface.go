@@ -1,9 +1,7 @@
 package interfaces
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/render"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
@@ -16,28 +14,13 @@ type watchlistHistoryView struct {
 }
 
 func (gwr getWatchlistResource) GetWatchlistHistory(w http.ResponseWriter, r *http.Request) {
-	userIdInterface := r.Context().Value("userId")
-	userId := fmt.Sprintf("%v", userIdInterface)
-
-	var limit uint
-	limitUrlQueryParam := r.URL.Query().Get("limit")
-	limitU64, err := strconv.ParseUint(limitUrlQueryParam, 10, 32)
-	if err != nil {
-		limit = 5
-	}
-	limit = uint(limitU64)
-
-	var skip uint
-	skipUrlQueryParam := r.URL.Query().Get("skip")
-	skipU64, err := strconv.ParseUint(skipUrlQueryParam, 10, 32)
-	if err != nil {
-		skip = 5
-	}
-	skip = uint(skipU64)
+	userId := getUserId(r)
+	limit := getLimit(r)
+	skip := getSkip(r)
 
 	watchlistHistory, err := gwr.getWatchlistService.GetWatchlistHistory(userId, limit, skip)
 	if err != nil {
-		_ = render.Render(w, r, common_http.ErrInternal(err))
+		_ = render.Render(w, r, common_http.DetermineErr(err))
 		return
 	}
 	view := []watchlistHistoryView{}
@@ -53,5 +36,6 @@ func (gwr getWatchlistResource) GetWatchlistHistory(w http.ResponseWriter, r *ht
 			TimeAdded: w.TimeAdded,
 		})
 	}
-	render.Respond(w, r, view)
+
+	render.Render(w, r, common_http.SendPayload(view))
 }

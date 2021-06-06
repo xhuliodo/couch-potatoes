@@ -1,20 +1,26 @@
 package application
 
 import (
-	"errors"
-
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
-func (gws GetWatchlistService) GetWatchlistHistory(userId string, limit uint, skip uint) ([]domain.Watchlist, error) {
-	emptyWatchlistHistory := []domain.Watchlist{}
+func (gws GetWatchlistService) GetWatchlistHistory(userId string, limit uint, skip uint) (
+	watchlistHistory domain.UserWatchlist, err error,
+) {
 	if _, err := gws.repo.GetUserById(userId); err != nil {
-		return emptyWatchlistHistory, errors.New("a user with this identifier does not exist")
+		errStack := errors.Wrap(err, "a user with this identifier does not exist")
+		return watchlistHistory, errStack
 	}
 
-	watchlistHistory, err := gws.repo.GetWatchlistHistory(userId)
+	watchlistHistory, err = gws.repo.GetWatchlistHistory(userId)
 	if err != nil {
-		return emptyWatchlistHistory, errors.New("there are no more movies in your watchlist history")
+		return watchlistHistory, errors.Wrap(err, "could not get user watchlist history")
+	}
+
+	if len(watchlistHistory) < 1 {
+		cause := errors.New("not_found")
+		return watchlistHistory, errors.Wrap(cause, "there are no movies in your watchlist history")
 	}
 
 	watchlistHistory.SortByTimeAdded()
@@ -23,14 +29,13 @@ func (gws GetWatchlistService) GetWatchlistHistory(userId string, limit uint, sk
 	length := len(watchlistHistory)
 	begin, end, err := handlePagination(uint(length), skip, limit)
 	if err != nil {
-		return emptyWatchlistHistory, errors.New("you're all caught up")
+		return watchlistHistory, err
 	}
-	userWatchlistHistory := watchlistHistory[begin:end]
+	watchlistHistory = watchlistHistory[begin:end]
 
-	moviesIds := getWatchlistMovieIds(userWatchlistHistory)
+	moviesIds := getWatchlistMovieIds(watchlistHistory)
 	moviesDetails, _ := gws.repo.GetMoviesDetails(moviesIds)
+	watchlistHistory.PopulateMoviesWithDetails(moviesDetails)
 
-	userWatchlistHistory.PopulateMoviesWithDetails(moviesDetails)
-
-	return userWatchlistHistory, nil
+	return watchlistHistory, nil
 }

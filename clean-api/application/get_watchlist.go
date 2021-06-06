@@ -28,7 +28,7 @@ func (gws GetWatchlistService) GetWatchlist(userId string, limit uint, skip uint
 
 	if len(watchlist) < 1 {
 		cause := errors.New("not_found")
-		return watchlist, errors.Wrap(cause, "there are no more movies in your watchlist")
+		return watchlist, errors.Wrap(cause, "there are no movies in your watchlist")
 	}
 
 	watchlist.SortByTimeAdded()

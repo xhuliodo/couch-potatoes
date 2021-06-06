@@ -638,9 +638,9 @@ func (nr *Neo4jRepository) GetWatchlist(userId string) (
 	return watchlist, nil
 }
 
-func (nr *Neo4jRepository) GetWatchlistHistory(userId string) (domain.UserWatchlist, error) {
-	emptyWatchlist := domain.UserWatchlist{}
-
+func (nr *Neo4jRepository) GetWatchlistHistory(userId string) (
+	watchlistHistory domain.UserWatchlist, err error,
+) {
 	session := nr.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
 
@@ -654,7 +654,8 @@ func (nr *Neo4jRepository) GetWatchlistHistory(userId string) (domain.UserWatchl
 
 	res, err := session.Run(query, parameters)
 	if err != nil {
-		return emptyWatchlist, err
+		cause := errors.New("db_connection")
+		return watchlistHistory, errors.Wrap(cause, err.Error())
 	}
 
 	for res.Next() {
@@ -674,12 +675,8 @@ func (nr *Neo4jRepository) GetWatchlistHistory(userId string) (domain.UserWatchl
 			Rating:    float64(rating),
 		}
 
-		emptyWatchlist = append(emptyWatchlist, watchlistItem)
+		watchlistHistory = append(watchlistHistory, watchlistItem)
 	}
 
-	if len(emptyWatchlist) == 0 {
-		return emptyWatchlist, errors.New("there are no more movies in your watchlist")
-	}
-
-	return emptyWatchlist, nil
+	return watchlistHistory, nil
 }
