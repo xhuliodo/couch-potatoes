@@ -30,6 +30,9 @@ func DetermineErr(err error) render.Renderer {
 	case bad_request:
 		lastErr := getLastErr(err)
 		return ErrBadRequest(lastErr, err)
+	case not_authenticated:
+		lastErr := getLastErr(err)
+		return ErrUnauthorized(lastErr, err)
 	case forbidden:
 		lastErr := getLastErr(err)
 		return ErrForbidden(lastErr, err)

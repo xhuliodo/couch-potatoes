@@ -32,10 +32,11 @@ func ErrBadRequest(errText string, stackTrace error) render.Renderer {
 // when a user is trying to access api without
 // presenting a token
 // ERROR_CAUSE: not_authenticated
-func ErrUnauthorized(err error) render.Renderer {
+func ErrUnauthorized(errText string, stackTrace error) render.Renderer {
 	return &ErrorResponse{
-		ErrStack:       err,
+		ErrStack:       stackTrace,
 		HTTPStatusCode: http.StatusUnauthorized,
+		ErrorText:      errText,
 	}
 }
 

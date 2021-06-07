@@ -18,6 +18,7 @@ package infrastructure
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/auth"
 	"github.com/xhuliodo/couch-potatoes/clean-api/interfaces"
 )
 
@@ -26,7 +27,7 @@ func CreateRouter() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Use(authMiddleware)
+	r.Use(auth.AuthMiddleware)
 
 	return r
 }
