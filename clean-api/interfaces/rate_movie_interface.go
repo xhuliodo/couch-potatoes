@@ -22,8 +22,18 @@ func NewRatingResource(ratingService application.RatingService) ratingResource {
 type inputRateMovie struct {
 	MovieId string `json:"movieId"`
 	Rating  int    `json:"rating"`
-}
+} //@name RateMovieInput
 
+// @router /users/ratings [post]
+// @param authorization header string true "Bearer token"
+// @param rating body inputRateMovie true "an object of movieId and user rating for that movie"
+// @summary user rates a movie
+// @tags users
+// @produce  json
+// @success 201 {object} ResourceCreatedView "api response"
+// @failure 400 {object} common_http.ErrorResponse "when the input provided was not in the specified json format"
+// @failure 404 {object} common_http.ErrorResponse "when the movie provided does not exist"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (rs ratingResource) RateMovie(w http.ResponseWriter, r *http.Request) {
 	var inputRateMovie inputRateMovie
 	if err := json.NewDecoder(r.Body).Decode(&inputRateMovie); err != nil || isInputEmpty(inputRateMovie) {

@@ -13,6 +13,14 @@ type registerResource struct {
 	registerService application.RegisterService
 }
 
+// @router /users/{userId} [post]
+// @param userId path string true "the id of the new user"
+// @param authorization header string true "Bearer token"
+// @summary registering a user to the app, it can be done only through users with the role admin
+// @tags users
+// @produce json
+// @success 201 {object} ResourceCreatedView "api response"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (rs registerResource) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "userId")
 	isAdmin := getIsAdmin(r)

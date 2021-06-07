@@ -18,12 +18,810 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Xhulio Doda",
+            "url": "https://www.linkedin.com/in/xhulio-doda-745b41164/",
+            "email": "xhuliodo@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/genres": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "movies"
+                ],
+                "summary": "get all genres",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/GenreResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/recommendations/content-based": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recommendations"
+                ],
+                "summary": "get users based recommendation from similar users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/UserBasedRecommendationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "when there are no more recommendations to give",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/recommendations/popular": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recommendations"
+                ],
+                "summary": "get most popular movies based on provided genre preferences",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "skip",
+                        "name": "skip",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/PopularMoviesRecommendationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "when the skip query param gets too big",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/recommendations/user-based": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "recommendations"
+                ],
+                "summary": "get content based recommendation from previously liked movies",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/ContentBasedRecommendationResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "when there are no more recommendations to give",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/genres": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "give genre preference for a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "an array of genre ids (minimum number of genreId's required is 3)",
+                        "name": "genres",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GenrePreferencesInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "api response",
+                        "schema": {
+                            "$ref": "#/definitions/ResourceCreatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "when either a genre provided does not exist or the minumum number of genre preferences have not been given",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/ratings": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "user rates a movie",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "an object of movieId and user rating for that movie",
+                        "name": "rating",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RateMovieInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "api response",
+                        "schema": {
+                            "$ref": "#/definitions/ResourceCreatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "when the input provided was not in the specified json format",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the movie provided does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/setup": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "get user's current step in the setup process",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/SetupStepResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "registering a user to the app, it can be done only through users with the role admin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the id of the new user",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "api response",
+                        "schema": {
+                            "$ref": "#/definitions/ResourceCreatedResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/watchlist": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "watchlists"
+                ],
+                "summary": "get all movies in a user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/WatchlistResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "when either a movie of a user does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/watchlist/history": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "watchlists"
+                ],
+                "summary": "get all movies in a user's watchlist history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/WatchlistHistoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "when either a movie of a user does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/watchlist/{movieId}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "watchlists"
+                ],
+                "summary": "add a movie to a user's watchlist",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "the id of the movie the user is adding to their watchlist",
+                        "name": "movieId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "api response",
+                        "schema": {
+                            "$ref": "#/definitions/ResourceCreatedResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when either a movie or a user does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "watchlists"
+                ],
+                "summary": "remove a movie from a user's watchlist or watchlist history",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "the id of the movie the user is removing to their watchlist",
+                        "name": "movieId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no response it it's successful",
+                        "schema": {
+                            "$ref": "#/definitions/EmptyResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when either a movie or a user does not exist",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ContentBasedRecommendationResponse": {
+            "type": "object",
+            "properties": {
+                "movie": {
+                    "$ref": "#/definitions/MovieResponse"
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "EmptyResponse": {
+            "type": "object"
+        },
+        "ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "description": "application-level error message",
+                    "type": "string"
+                },
+                "statusCode": {
+                    "description": "http response status code",
+                    "type": "integer"
+                }
+            }
+        },
+        "GenrePreferencesInput": {
+            "type": "object",
+            "properties": {
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "GenreResponse": {
+            "type": "object",
+            "properties": {
+                "genreId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "MovieResponse": {
+            "type": "object",
+            "properties": {
+                "moreInfoLink": {
+                    "type": "string"
+                },
+                "movieId": {
+                    "type": "string"
+                },
+                "releaseYear": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "PopularMoviesRecommendationResponse": {
+            "type": "object",
+            "properties": {
+                "movie": {
+                    "$ref": "#/definitions/MovieResponse"
+                },
+                "score": {
+                    "type": "integer"
+                }
+            }
+        },
+        "RateMovieInput": {
+            "type": "object",
+            "properties": {
+                "movieId": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ResourceCreatedResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "SetupStepResponse": {
+            "type": "object",
+            "properties": {
+                "finished": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "step": {
+                    "type": "integer"
+                }
+            }
+        },
+        "SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "any kind of success payload",
+                    "$ref": "#/definitions/data"
+                },
+                "message": {
+                    "description": "a comment when necessary",
+                    "type": "string"
+                },
+                "statusCode": {
+                    "description": "http response status code",
+                    "type": "integer"
+                }
+            }
+        },
+        "UserBasedRecommendationResponse": {
+            "type": "object",
+            "properties": {
+                "movie": {
+                    "$ref": "#/definitions/MovieResponse"
+                },
+                "score": {
+                    "type": "number"
+                }
+            }
+        },
+        "WatchlistHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "movie": {
+                    "$ref": "#/definitions/MovieResponse"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "timeAdded": {
+                    "type": "integer"
+                }
+            }
+        },
+        "WatchlistResponse": {
+            "type": "object",
+            "properties": {
+                "movie": {
+                    "$ref": "#/definitions/MovieResponse"
+                },
+                "timeAdded": {
+                    "type": "integer"
+                }
+            }
+        },
+        "data": {
+            "type": "object"
+        }
+    }
 }`
 
 type swaggerInfo struct {
@@ -38,9 +836,9 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "",
+	Host:        "localhost:4000",
 	BasePath:    "/",
-	Schemes:     []string{},
+	Schemes:     []string{"http"},
 	Title:       "Couch Potatoes clean API",
 	Description: "more movie more problems",
 }

@@ -1,18 +1,3 @@
-// Clean Potatoes API
-//
-// Docs for Movies API
-//
-// 	Schemes: http
-// 	Host: localhost
-// 	BasePath: /
-// 	Version: 1.0.0
-//
-// 	Consumes:
-// 	- application/json
-//
-// 	Produces:
-// 	- application/json
-// swagger:meta
 package infrastructure
 
 import (
@@ -49,7 +34,10 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	getWatchlistInterface := interfaces.NewGetWatchlistInterface(repo)
 
 	// movie routes
-	router.Get("/genres", initialSetupInterface.GetAllGenres)
+	router.Route("/genres", func(r chi.Router) {
+		r.Use(auth.AuthMiddleware)
+		r.Get("/", initialSetupInterface.GetAllGenres)
+	})
 
 	// user routes
 	router.Route("/users", func(r chi.Router) {

@@ -6,13 +6,12 @@ import (
 	"github.com/go-chi/render"
 )
 
-// A ErrorResponse is an response that is used when a request cannot be fulfilled, it ranges from the 4XX to 5XX
-// swagger:response errorResponse
+// A ErrorResponse is a response that is used when a request cannot be fulfilled, it ranges from the 4XX to 5XX
 type ErrorResponse struct {
 	ErrStack       error  `json:"-"`               // low-level runtime error
 	HTTPStatusCode int    `json:"statusCode"`      // http response status code
 	ErrorText      string `json:"error,omitempty"` // application-level error message
-}
+} //@name ErrorResponse
 
 func (e *ErrorResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	render.Status(r, e.HTTPStatusCode)

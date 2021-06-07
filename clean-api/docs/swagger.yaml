@@ -1,8 +1,518 @@
 basePath: /
+definitions:
+  ContentBasedRecommendationResponse:
+    properties:
+      movie:
+        $ref: '#/definitions/MovieResponse'
+      score:
+        type: number
+    type: object
+  EmptyResponse:
+    type: object
+  ErrorResponse:
+    properties:
+      error:
+        description: application-level error message
+        type: string
+      statusCode:
+        description: http response status code
+        type: integer
+    type: object
+  GenrePreferencesInput:
+    properties:
+      genres:
+        items:
+          type: string
+        type: array
+    type: object
+  GenreResponse:
+    properties:
+      genreId:
+        type: string
+      name:
+        type: string
+    type: object
+  MovieResponse:
+    properties:
+      moreInfoLink:
+        type: string
+      movieId:
+        type: string
+      releaseYear:
+        type: integer
+      title:
+        type: string
+    type: object
+  PopularMoviesRecommendationResponse:
+    properties:
+      movie:
+        $ref: '#/definitions/MovieResponse'
+      score:
+        type: integer
+    type: object
+  RateMovieInput:
+    properties:
+      movieId:
+        type: string
+      rating:
+        type: integer
+    type: object
+  ResourceCreatedResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  SetupStepResponse:
+    properties:
+      finished:
+        type: boolean
+      message:
+        type: string
+      step:
+        type: integer
+    type: object
+  SuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/data'
+        description: any kind of success payload
+      message:
+        description: a comment when necessary
+        type: string
+      statusCode:
+        description: http response status code
+        type: integer
+    type: object
+  UserBasedRecommendationResponse:
+    properties:
+      movie:
+        $ref: '#/definitions/MovieResponse'
+      score:
+        type: number
+    type: object
+  WatchlistHistoryResponse:
+    properties:
+      movie:
+        $ref: '#/definitions/MovieResponse'
+      rating:
+        type: number
+      timeAdded:
+        type: integer
+    type: object
+  WatchlistResponse:
+    properties:
+      movie:
+        $ref: '#/definitions/MovieResponse'
+      timeAdded:
+        type: integer
+    type: object
+  data:
+    type: object
+host: localhost:4000
 info:
-  contact: {}
+  contact:
+    email: xhuliodo@gmail.com
+    name: Xhulio Doda
+    url: https://www.linkedin.com/in/xhulio-doda-745b41164/
   description: more movie more problems
   title: Couch Potatoes clean API
   version: "1.0"
-paths: {}
+paths:
+  /genres:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/GenreResponse'
+              type: object
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get all genres
+      tags:
+      - movies
+  /recommendations/content-based:
+    get:
+      parameters:
+      - default: 5
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserBasedRecommendationResponse'
+              type: object
+        "400":
+          description: when there are no more recommendations to give
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get users based recommendation from similar users
+      tags:
+      - recommendations
+  /recommendations/popular:
+    get:
+      parameters:
+      - default: 0
+        description: skip
+        in: query
+        minimum: 0
+        name: skip
+        required: true
+        type: integer
+      - default: 5
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/PopularMoviesRecommendationResponse'
+              type: object
+        "400":
+          description: when the skip query param gets too big
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get most popular movies based on provided genre preferences
+      tags:
+      - recommendations
+  /recommendations/user-based:
+    get:
+      parameters:
+      - default: 5
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/ContentBasedRecommendationResponse'
+              type: object
+        "400":
+          description: when there are no more recommendations to give
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get content based recommendation from previously liked movies
+      tags:
+      - recommendations
+  /users/{userId}:
+    post:
+      parameters:
+      - description: the id of the new user
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: api response
+          schema:
+            $ref: '#/definitions/ResourceCreatedResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: registering a user to the app, it can be done only through users with
+        the role admin
+      tags:
+      - users
+  /users/genres:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: an array of genre ids (minimum number of genreId's required is
+          3)
+        in: body
+        name: genres
+        required: true
+        schema:
+          $ref: '#/definitions/GenrePreferencesInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: api response
+          schema:
+            $ref: '#/definitions/ResourceCreatedResponse'
+        "400":
+          description: when either a genre provided does not exist or the minumum
+            number of genre preferences have not been given
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: give genre preference for a user
+      tags:
+      - users
+  /users/ratings:
+    post:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: an object of movieId and user rating for that movie
+        in: body
+        name: rating
+        required: true
+        schema:
+          $ref: '#/definitions/RateMovieInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: api response
+          schema:
+            $ref: '#/definitions/ResourceCreatedResponse'
+        "400":
+          description: when the input provided was not in the specified json format
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the movie provided does not exist
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: user rates a movie
+      tags:
+      - users
+  /users/setup:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/SetupStepResponse'
+              type: object
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get user's current step in the setup process
+      tags:
+      - users
+  /watchlist:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/WatchlistResponse'
+              type: object
+        "404":
+          description: when either a movie of a user does not exist
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get all movies in a user's watchlist
+      tags:
+      - watchlists
+  /watchlist/{movieId}:
+    delete:
+      parameters:
+      - description: the id of the movie the user is removing to their watchlist
+        in: path
+        name: movieId
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: no response it it's successful
+          schema:
+            $ref: '#/definitions/EmptyResponse'
+        "404":
+          description: when either a movie or a user does not exist
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: remove a movie from a user's watchlist or watchlist history
+      tags:
+      - watchlists
+    post:
+      parameters:
+      - description: the id of the movie the user is adding to their watchlist
+        in: path
+        name: movieId
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: api response
+          schema:
+            $ref: '#/definitions/ResourceCreatedResponse'
+        "404":
+          description: when either a movie or a user does not exist
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: add a movie to a user's watchlist
+      tags:
+      - watchlists
+  /watchlist/history:
+    get:
+      parameters:
+      - description: Bearer token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/WatchlistHistoryResponse'
+              type: object
+        "404":
+          description: when either a movie of a user does not exist
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get all movies in a user's watchlist history
+      tags:
+      - watchlists
+schemes:
+- http
 swagger: "2.0"

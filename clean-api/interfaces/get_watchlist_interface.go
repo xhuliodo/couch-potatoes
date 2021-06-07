@@ -15,8 +15,16 @@ type getWatchlistResource struct {
 type watchlistView struct {
 	Movie     movieView `json:"movie"`
 	TimeAdded int64     `json:"timeAdded"`
-}
+}//@name WatchlistResponse
 
+// @router /watchlist [get]
+// @param authorization header string true "Bearer token"
+// @summary get all movies in a user's watchlist
+// @tags watchlists
+// @produce  json
+// @success 200 {object} common_http.SuccessResponse{data=watchlistView} "api response"
+// @failure 404 {object} common_http.ErrorResponse "when either a movie of a user does not exist"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (gwr getWatchlistResource) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)
 	limit := getLimit(r)

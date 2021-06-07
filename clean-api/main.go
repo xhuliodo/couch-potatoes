@@ -14,7 +14,16 @@ import (
 // @title Couch Potatoes clean API
 // @version 1.0
 // @description more movie more problems
-// @BasePath /
+// host api.cp.dev.cloudapp.al
+// @host localhost:4000
+// @basepath /
+// schemes https
+// @schemes http
+// @accept json
+// @produce json
+// @contact.name Xhulio Doda
+// @contact.url https://www.linkedin.com/in/xhulio-doda-745b41164/
+// @contact.email xhuliodo@gmail.com
 
 func main() {
 	log.Println("po ngrihet avioni...")

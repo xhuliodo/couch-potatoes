@@ -17,8 +17,15 @@ type setupResource struct {
 type genreView struct {
 	Id   string `json:"genreId"`
 	Name string `json:"name"`
-}
+} //@name GenreResponse
 
+// @router /genres [get]
+// @param authorization header string true "Bearer token"
+// @summary get all genres
+// @tags movies
+// @produce  json
+// @success 200 {object} common_http.SuccessResponse{data=genreView} "api response"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (sr setupResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
 	genres, err := sr.setupService.GetAllGenres()
 	if err != nil {
@@ -39,8 +46,18 @@ func (sr setupResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
 
 type inputSaveGenrePref struct {
 	InputGenresUuid []string `json:"genres"`
-}
+}//@name GenrePreferencesInput
 
+// @router /users/genres [post]
+// @param authorization header string true "Bearer token"
+// @param genres body inputSaveGenrePref true "an array of genre ids (minimum number of genreId's required is 3)" minItems(3)
+// @summary give genre preference for a user
+// @tags users
+// @accept json
+// @produce json
+// @success 201 {object} ResourceCreatedView "api response"
+// @failure 400 {object} common_http.ErrorResponse "when either a genre provided does not exist or the minumum number of genre preferences have not been given"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Request) {
 	var inputSaveGenrePref inputSaveGenrePref
 	if err := json.NewDecoder(r.Body).Decode(&inputSaveGenrePref); err != nil || len(inputSaveGenrePref.InputGenresUuid) == 0 {
@@ -60,12 +77,19 @@ func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Requ
 	render.Render(w, r, common_http.ResourceCreated("genre preferences have been saved"))
 }
 
-type SetupStepView struct {
+type setupStepView struct {
 	Step     uint   `json:"step"`
 	Finished bool   `json:"finished"`
 	Message  string `json:"message"`
-}
+}//@name SetupStepResponse
 
+// @router /users/setup [get]
+// @param authorization header string true "Bearer token"
+// @summary get user's current step in the setup process
+// @tags users
+// @produce  json
+// @success 200 {object} common_http.SuccessResponse{data=setupStepView} "api response"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (sr setupResource) GetUserSetupStep(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)
 
@@ -75,7 +99,7 @@ func (sr setupResource) GetUserSetupStep(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	view := SetupStepView{
+	view := setupStepView{
 		Step:     setupStep.Step,
 		Finished: setupStep.Finished,
 		Message:  setupStep.Message,

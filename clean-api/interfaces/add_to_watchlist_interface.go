@@ -18,17 +18,16 @@ func NewAddToWatchlistResource(addToWatchlistService application.AddToWatchlistS
 	return addToWatchlistResource{addToWatchlistService}
 }
 
-
-
+// @router /watchlist/{movieId} [post]
+// @param movieId path int true "the id of the movie the user is adding to their watchlist"
+// @param authorization header string true "Bearer token"
+// @summary add a movie to a user's watchlist
+// @tags watchlists
+// @produce  json
+// @success 201 {object} ResourceCreatedView "api response"
+// @failure 404 {object} common_http.ErrorResponse "when either a movie or a user does not exist"
+// @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (atwr addToWatchlistResource) AddToWatchlist(w http.ResponseWriter, r *http.Request) {
-	// swagger:route POST /watchlist/{movieId} watchlist addToWatchlist
-	// add a new movie to a user's watchlist
-	//
-	// responses:
-	// 		201: resourceCreatedView
-	// 	404: errorResponse
-	// 	503: errorResponse
-
 	userId := getUserId(r)
 	movieId := chi.URLParam(r, "movieId")
 
