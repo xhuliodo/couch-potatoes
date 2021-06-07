@@ -11,6 +11,11 @@ import (
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure"
 )
 
+// @title Couch Potatoes clean API
+// @version 1.0
+// @description more movie more problems
+// @BasePath /
+
 func main() {
 	log.Println("po ngrihet avioni...")
 	ctx := commands.Context()
@@ -23,8 +28,8 @@ func main() {
 	if err != nil {
 		log.Fatal("db config is fucked up")
 	}
-	router := createApp(driver)
 
+	router := createApp(driver)
 	server := &http.Server{Addr: ":4000", Handler: router}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {

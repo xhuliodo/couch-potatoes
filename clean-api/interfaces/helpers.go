@@ -6,6 +6,12 @@ import (
 	"strconv"
 )
 
+// A ResourceCreatedView is an response that is used when the resource creation was successful
+// swagger:response resourceCreatedView
+type ResourceCreatedView struct {
+	Message string `json:"message"`
+}
+
 const (
 	defaultLimit uint = 5
 	defaultSkip  uint = 0

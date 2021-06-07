@@ -18,7 +18,17 @@ func NewAddToWatchlistResource(addToWatchlistService application.AddToWatchlistS
 	return addToWatchlistResource{addToWatchlistService}
 }
 
+
+
 func (atwr addToWatchlistResource) AddToWatchlist(w http.ResponseWriter, r *http.Request) {
+	// swagger:route POST /watchlist/{movieId} watchlist addToWatchlist
+	// add a new movie to a user's watchlist
+	//
+	// responses:
+	// 		201: resourceCreatedView
+	// 	404: errorResponse
+	// 	503: errorResponse
+
 	userId := getUserId(r)
 	movieId := chi.URLParam(r, "movieId")
 

@@ -28,7 +28,7 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 
 func onUnauthorizedReq(w http.ResponseWriter, r *http.Request, errString string) {
 	cause := errors.New("not_authenticated")
-	errStack := errors.Wrap(cause, errString)
+	errStack := errors.Wrap(cause, "please provide a valid jwt token")
 	render.Render(w, r, common_http.DetermineErr(errStack))
 }
 

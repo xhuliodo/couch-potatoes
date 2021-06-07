@@ -6,6 +6,8 @@ import (
 	"github.com/go-chi/render"
 )
 
+// A ErrorResponse is an response that is used when a request cannot be fulfilled, it ranges from the 4XX to 5XX
+// swagger:response errorResponse
 type ErrorResponse struct {
 	ErrStack       error  `json:"-"`               // low-level runtime error
 	HTTPStatusCode int    `json:"statusCode"`      // http response status code
@@ -54,9 +56,8 @@ func ErrForbidden(errText string, stackTrace error) render.Renderer {
 	}
 }
 
-// when a resource (user, movie, genre) with
-// provided id does not exist
-// ERROR_CAUSE: not_found
+// A ErrNotFound is an response that is used when a resource could not located
+// swagger:response errNotFound
 func ErrNotFound(errText string, stackTrace error) render.Renderer {
 	return &ErrorResponse{
 		ErrStack:       stackTrace,
@@ -80,6 +81,9 @@ func ErrTooManyRequests(err error) render.Renderer {
 // when it's not possible to connect to db or
 // other dependend external api's
 // ERROR_CAUSE: db_connection
+
+// A ErrServiceUnavailable is an response that is used when the API cannot serve any request for reasons such as cannot connect to database etc
+// swagger:response errServiceUnavailable
 func ErrServiceUnavailable(errText string, stackTrace error) render.Renderer {
 	return &ErrorResponse{
 		ErrStack:       stackTrace,
@@ -88,7 +92,8 @@ func ErrServiceUnavailable(errText string, stackTrace error) render.Renderer {
 	}
 }
 
-// when none of the other errors are applicable
+// A ErrInternal is an response that is used when the error that happened doesn't fall in any of the other defined errors
+// swagger:response errInternal
 func ErrInternal(err error) render.Renderer {
 	return &ErrorResponse{
 		ErrStack:       err,

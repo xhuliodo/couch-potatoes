@@ -1,0 +1,8 @@
+basePath: /
+info:
+  contact: {}
+  description: more movie more problems
+  title: Couch Potatoes clean API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
