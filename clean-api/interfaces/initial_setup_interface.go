@@ -25,6 +25,7 @@ type genreView struct {
 // @tags movies
 // @produce  json
 // @success 200 {object} common_http.SuccessResponse{data=genreView} "api response"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (sr setupResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
 	genres, err := sr.setupService.GetAllGenres()
@@ -46,7 +47,7 @@ func (sr setupResource) GetAllGenres(w http.ResponseWriter, r *http.Request) {
 
 type inputSaveGenrePref struct {
 	InputGenresUuid []string `json:"genres"`
-}//@name GenrePreferencesInput
+} //@name GenrePreferencesInput
 
 // @router /users/genres [post]
 // @param authorization header string true "Bearer token"
@@ -57,6 +58,8 @@ type inputSaveGenrePref struct {
 // @produce json
 // @success 201 {object} ResourceCreatedView "api response"
 // @failure 400 {object} common_http.ErrorResponse "when either a genre provided does not exist or the minumum number of genre preferences have not been given"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when the user making the request has not been registered in the database yet"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Request) {
 	var inputSaveGenrePref inputSaveGenrePref
@@ -78,10 +81,11 @@ func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Requ
 }
 
 type setupStepView struct {
-	Step     uint   `json:"step"`
-	Finished bool   `json:"finished"`
-	Message  string `json:"message"`
-}//@name SetupStepResponse
+	Step         uint   `json:"step"`
+	Finished     bool   `json:"finished"`
+	Message      string `json:"message"`
+	RatingsGiven uint   `json:"ratingsGiven"`
+} //@name SetupStepResponse
 
 // @router /users/setup [get]
 // @param authorization header string true "Bearer token"
@@ -89,6 +93,8 @@ type setupStepView struct {
 // @tags users
 // @produce  json
 // @success 200 {object} common_http.SuccessResponse{data=setupStepView} "api response"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when the user making the request has not been registered in the database yet"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (sr setupResource) GetUserSetupStep(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)
@@ -100,9 +106,10 @@ func (sr setupResource) GetUserSetupStep(w http.ResponseWriter, r *http.Request)
 	}
 
 	view := setupStepView{
-		Step:     setupStep.Step,
-		Finished: setupStep.Finished,
-		Message:  setupStep.Message,
+		Step:         setupStep.Step,
+		Finished:     setupStep.Finished,
+		Message:      setupStep.Message,
+		RatingsGiven: setupStep.RatingsGiven,
 	}
 
 	render.Render(w, r, common_http.SendPayload(view))

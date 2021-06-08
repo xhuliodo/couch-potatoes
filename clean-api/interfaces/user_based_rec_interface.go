@@ -15,7 +15,7 @@ type userBasedRecResource struct {
 type userBasedRecView struct {
 	Movie movieView `json:"movie"`
 	Score float64   `json:"score"`
-}//@name UserBasedRecommendationResponse
+} //@name UserBasedRecommendationResponse
 
 // @router /recommendations/content-based [get]
 // @param limit query int true "limit" default(5)
@@ -25,6 +25,8 @@ type userBasedRecView struct {
 // @produce json
 // @success 200 {object} common_http.SuccessResponse{data=userBasedRecView} "api response"
 // @failure 400 {object} common_http.ErrorResponse "when there are no more recommendations to give"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when the user has yet to be registered in the database"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (ubrr userBasedRecResource) GetUserBasedRecommendation(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)

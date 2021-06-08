@@ -68,6 +68,8 @@ definitions:
         type: boolean
       message:
         type: string
+      ratingsGiven:
+        type: integer
       step:
         type: integer
     type: object
@@ -138,6 +140,10 @@ paths:
                 data:
                   $ref: '#/definitions/GenreResponse'
               type: object
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
@@ -175,6 +181,14 @@ paths:
           description: when there are no more recommendations to give
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the user has yet to be registered in the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
@@ -188,15 +202,12 @@ paths:
       - default: 0
         description: skip
         in: query
-        minimum: 0
         name: skip
-        required: true
         type: integer
       - default: 5
         description: limit
         in: query
         name: limit
-        required: true
         type: integer
       - description: Bearer token
         in: header
@@ -217,6 +228,14 @@ paths:
               type: object
         "400":
           description: when the skip query param gets too big
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the user has yet to be registered in the database
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":
@@ -256,6 +275,14 @@ paths:
           description: when there are no more recommendations to give
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the user has yet to be registered in the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
@@ -283,6 +310,15 @@ paths:
           description: api response
           schema:
             $ref: '#/definitions/ResourceCreatedResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the user making the request has not been registered in
+            the database yet
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
@@ -320,6 +356,15 @@ paths:
             number of genre preferences have not been given
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the user making the request has not been registered in
+            the database yet
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
@@ -352,8 +397,13 @@ paths:
           description: when the input provided was not in the specified json format
           schema:
             $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when the movie provided does not exist
+          description: when the movie provided does not exist or when the user has
+            yet to be registered in the database
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":
@@ -383,6 +433,15 @@ paths:
                 data:
                   $ref: '#/definitions/SetupStepResponse'
               type: object
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: when the user making the request has not been registered in
+            the database yet
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
@@ -393,6 +452,16 @@ paths:
   /watchlist:
     get:
       parameters:
+      - default: 0
+        description: skip
+        in: query
+        name: skip
+        type: integer
+      - default: 5
+        description: limit
+        in: query
+        name: limit
+        type: integer
       - description: Bearer token
         in: header
         name: authorization
@@ -410,8 +479,16 @@ paths:
                 data:
                   $ref: '#/definitions/WatchlistResponse'
               type: object
+        "400":
+          description: when the skip query param gets too big
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when either a movie of a user does not exist
+          description: when there are no movies in the user's watchlist
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":
@@ -441,6 +518,10 @@ paths:
           description: no response it it's successful
           schema:
             $ref: '#/definitions/EmptyResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: when either a movie or a user does not exist
           schema:
@@ -471,6 +552,10 @@ paths:
           description: api response
           schema:
             $ref: '#/definitions/ResourceCreatedResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
           description: when either a movie or a user does not exist
           schema:
@@ -485,6 +570,16 @@ paths:
   /watchlist/history:
     get:
       parameters:
+      - default: 0
+        description: skip
+        in: query
+        name: skip
+        type: integer
+      - default: 5
+        description: limit
+        in: query
+        name: limit
+        type: integer
       - description: Bearer token
         in: header
         name: authorization
@@ -502,8 +597,16 @@ paths:
                 data:
                   $ref: '#/definitions/WatchlistHistoryResponse'
               type: object
+        "400":
+          description: when the skip query param gets too big
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "401":
+          description: when a request without a valid Bearer token is provided
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when either a movie of a user does not exist
+          description: when there are no movies in the user's watchlist
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":

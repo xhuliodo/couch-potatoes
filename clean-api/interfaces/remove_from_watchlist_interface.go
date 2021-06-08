@@ -24,6 +24,7 @@ func NewRemoveFromWatchlistResource(removeFromWatchlistService application.Remov
 // @tags watchlists
 // @produce  json
 // @success 204 {object} EmptyView "no response it it's successful"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
 // @failure 404 {object} common_http.ErrorResponse "when either a movie or a user does not exist"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (rfwr removeFromWatchlistResource) RemoveFromWatchlist(w http.ResponseWriter, r *http.Request) {

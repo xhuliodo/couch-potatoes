@@ -25,6 +25,8 @@ type contentBasedRecView struct {
 // @produce json
 // @success 200 {object} common_http.SuccessResponse{data=contentBasedRecView} "api response"
 // @failure 400 {object} common_http.ErrorResponse "when there are no more recommendations to give"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when the user has yet to be registered in the database"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (cbrr contentBasedRecResource) GetContentBasedRecommendation(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)

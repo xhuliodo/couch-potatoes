@@ -38,7 +38,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		c := r.Context()
 		stringToken := c.Value(jwtMiddleware.Options.UserProperty)
-		token := stringToken.(*jwt.Token)
+		token, bool := stringToken.(*jwt.Token)
+		if !bool {
+			return
+		}
 		tokenClaims := token.Claims.(jwt.MapClaims)
 		userId := tokenClaims["sub"]
 		isAdmin := getIsAdmin(tokenClaims)

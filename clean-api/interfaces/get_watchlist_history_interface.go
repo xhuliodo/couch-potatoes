@@ -14,12 +14,16 @@ type watchlistHistoryView struct {
 }//@name WatchlistHistoryResponse
 
 // @router /watchlist/history [get]
+// @param skip query int false "skip" default(0)
+// @param limit query int false "limit" default(5)
 // @param authorization header string true "Bearer token"
 // @summary get all movies in a user's watchlist history
 // @tags watchlists
 // @produce  json
 // @success 200 {object} common_http.SuccessResponse{data=watchlistHistoryView} "api response"
-// @failure 404 {object} common_http.ErrorResponse "when either a movie of a user does not exist"
+// @failure 400 {object} common_http.ErrorResponse "when the skip query param gets too big"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when there are no movies in the user's watchlist"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (gwr getWatchlistResource) GetWatchlistHistory(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)

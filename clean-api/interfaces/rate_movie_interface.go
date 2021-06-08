@@ -32,7 +32,8 @@ type inputRateMovie struct {
 // @produce  json
 // @success 201 {object} ResourceCreatedView "api response"
 // @failure 400 {object} common_http.ErrorResponse "when the input provided was not in the specified json format"
-// @failure 404 {object} common_http.ErrorResponse "when the movie provided does not exist"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when the movie provided does not exist or when the user has yet to be registered in the database"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (rs ratingResource) RateMovie(w http.ResponseWriter, r *http.Request) {
 	var inputRateMovie inputRateMovie
@@ -62,7 +63,7 @@ func (rs ratingResource) RateMovie(w http.ResponseWriter, r *http.Request) {
 }
 
 func isInputEmpty(input inputRateMovie) bool {
-	if input.MovieId == "" || input.Rating == 0 {
+	if input.MovieId == "" {
 		return true
 	}
 	return false

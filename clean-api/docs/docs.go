@@ -65,6 +65,12 @@ var doc = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "503": {
                         "description": "when the api cannot connect to the database",
                         "schema": {
@@ -125,6 +131,18 @@ var doc = `{
                             "$ref": "#/definitions/ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the user has yet to be registered in the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "503": {
                         "description": "when the api cannot connect to the database",
                         "schema": {
@@ -145,21 +163,18 @@ var doc = `{
                 "summary": "get most popular movies based on provided genre preferences",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
                         "default": 0,
                         "description": "skip",
                         "name": "skip",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "default": 5,
                         "description": "limit",
                         "name": "limit",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -190,6 +205,18 @@ var doc = `{
                     },
                     "400": {
                         "description": "when the skip query param gets too big",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the user has yet to be registered in the database",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -254,6 +281,18 @@ var doc = `{
                             "$ref": "#/definitions/ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the user has yet to be registered in the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "503": {
                         "description": "when the api cannot connect to the database",
                         "schema": {
@@ -302,6 +341,18 @@ var doc = `{
                     },
                     "400": {
                         "description": "when either a genre provided does not exist or the minumum number of genre preferences have not been given",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the user making the request has not been registered in the database yet",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -355,8 +406,14 @@ var doc = `{
                             "$ref": "#/definitions/ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "404": {
-                        "description": "when the movie provided does not exist",
+                        "description": "when the movie provided does not exist or when the user has yet to be registered in the database",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -407,6 +464,18 @@ var doc = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the user making the request has not been registered in the database yet",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "503": {
                         "description": "when the api cannot connect to the database",
                         "schema": {
@@ -448,6 +517,18 @@ var doc = `{
                             "$ref": "#/definitions/ResourceCreatedResponse"
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "when the user making the request has not been registered in the database yet",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "503": {
                         "description": "when the api cannot connect to the database",
                         "schema": {
@@ -467,6 +548,20 @@ var doc = `{
                 ],
                 "summary": "get all movies in a user's watchlist",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "skip",
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Bearer token",
@@ -494,8 +589,20 @@ var doc = `{
                             ]
                         }
                     },
+                    "400": {
+                        "description": "when the skip query param gets too big",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "404": {
-                        "description": "when either a movie of a user does not exist",
+                        "description": "when there are no movies in the user's watchlist",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -519,6 +626,20 @@ var doc = `{
                 ],
                 "summary": "get all movies in a user's watchlist history",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "skip",
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Bearer token",
@@ -546,8 +667,20 @@ var doc = `{
                             ]
                         }
                     },
+                    "400": {
+                        "description": "when the skip query param gets too big",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "404": {
-                        "description": "when either a movie of a user does not exist",
+                        "description": "when there are no movies in the user's watchlist",
                         "schema": {
                             "$ref": "#/definitions/ErrorResponse"
                         }
@@ -593,6 +726,12 @@ var doc = `{
                             "$ref": "#/definitions/ResourceCreatedResponse"
                         }
                     },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "when either a movie or a user does not exist",
                         "schema": {
@@ -636,6 +775,12 @@ var doc = `{
                         "description": "no response it it's successful",
                         "schema": {
                             "$ref": "#/definitions/EmptyResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "when a request without a valid Bearer token is provided",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
                         }
                     },
                     "404": {
@@ -759,6 +904,9 @@ var doc = `{
                 },
                 "message": {
                     "type": "string"
+                },
+                "ratingsGiven": {
+                    "type": "integer"
                 },
                 "step": {
                     "type": "integer"

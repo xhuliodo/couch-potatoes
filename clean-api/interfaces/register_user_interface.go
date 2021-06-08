@@ -20,6 +20,8 @@ type registerResource struct {
 // @tags users
 // @produce json
 // @success 201 {object} ResourceCreatedView "api response"
+// @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
+// @failure 404 {object} common_http.ErrorResponse "when the user making the request has not been registered in the database yet"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (rs registerResource) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "userId")

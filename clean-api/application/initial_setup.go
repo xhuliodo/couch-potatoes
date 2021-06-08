@@ -69,9 +69,10 @@ func Find(slice []domain.Genre, val string) (domain.Genre, bool) {
 }
 
 type SetupStep struct {
-	Step     uint
-	Finished bool
-	Message  string
+	Step         uint
+	Finished     bool
+	Message      string
+	RatingsGiven uint
 }
 
 const (
@@ -110,17 +111,19 @@ func (ss SetupService) GetSetupStep(userId string) (
 
 	if ratedMoviesCount < leastRequiredRatingNr {
 		sp = SetupStep{
-			Step:     2,
-			Finished: false,
-			Message:  "user has not given enough ratings to get to know him yet",
+			Step:         2,
+			Finished:     false,
+			Message:      "user has not given enough ratings to get to know him yet",
+			RatingsGiven: ratedMoviesCount,
 		}
 		return sp, nil
 	}
 
 	sp = SetupStep{
-		Step:     3,
-		Finished: true,
-		Message:  "user has finished the setup process",
+		Step:         3,
+		Finished:     true,
+		Message:      "user has finished the setup process",
+		RatingsGiven: ratedMoviesCount,
 	}
 
 	return sp, nil
