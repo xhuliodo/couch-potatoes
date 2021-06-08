@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := swagger
+.DEFAULT_GOAL := create_docs
 
 install_swag:
 	go get -u github.com/swaggo/swag/cmd/swag
