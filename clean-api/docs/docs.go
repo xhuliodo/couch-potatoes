@@ -80,6 +80,56 @@ var doc = `{
                 }
             }
         },
+        "/healthcheck": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "get api and it's dependencies health status",
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "$ref": "#/definitions/InfoResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ready": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthcheck"
+                ],
+                "summary": "get api health status",
+                "responses": {
+                    "200": {
+                        "description": "api response",
+                        "schema": {
+                            "$ref": "#/definitions/InfoResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "when the api cannot connect to the database",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/recommendations/content-based": {
             "get": {
                 "produces": [
@@ -336,7 +386,7 @@ var doc = `{
                     "201": {
                         "description": "api response",
                         "schema": {
-                            "$ref": "#/definitions/ResourceCreatedResponse"
+                            "$ref": "#/definitions/InfoResponse"
                         }
                     },
                     "400": {
@@ -397,7 +447,7 @@ var doc = `{
                     "201": {
                         "description": "api response",
                         "schema": {
-                            "$ref": "#/definitions/ResourceCreatedResponse"
+                            "$ref": "#/definitions/InfoResponse"
                         }
                     },
                     "400": {
@@ -514,7 +564,7 @@ var doc = `{
                     "201": {
                         "description": "api response",
                         "schema": {
-                            "$ref": "#/definitions/ResourceCreatedResponse"
+                            "$ref": "#/definitions/InfoResponse"
                         }
                     },
                     "401": {
@@ -723,7 +773,7 @@ var doc = `{
                     "201": {
                         "description": "api response",
                         "schema": {
-                            "$ref": "#/definitions/ResourceCreatedResponse"
+                            "$ref": "#/definitions/InfoResponse"
                         }
                     },
                     "401": {
@@ -849,6 +899,19 @@ var doc = `{
                 }
             }
         },
+        "InfoResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "a comment when necessary",
+                    "type": "string"
+                },
+                "statusCode": {
+                    "description": "http response status code",
+                    "type": "integer"
+                }
+            }
+        },
         "MovieResponse": {
             "type": "object",
             "properties": {
@@ -888,14 +951,6 @@ var doc = `{
                 }
             }
         },
-        "ResourceCreatedResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "SetupStepResponse": {
             "type": "object",
             "properties": {
@@ -919,10 +974,6 @@ var doc = `{
                 "data": {
                     "description": "any kind of success payload",
                     "$ref": "#/definitions/data"
-                },
-                "message": {
-                    "description": "a comment when necessary",
-                    "type": "string"
                 },
                 "statusCode": {
                     "description": "http response status code",

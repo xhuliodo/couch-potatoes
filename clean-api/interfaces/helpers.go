@@ -6,11 +6,6 @@ import (
 	"strconv"
 )
 
-// A ResourceCreatedView is an response that is used when the resource creation was successful
-type ResourceCreatedView struct {
-	Message string `json:"message"`
-} //@name ResourceCreatedResponse
-
 type EmptyView struct {}//@name EmptyResponse
 
 const (

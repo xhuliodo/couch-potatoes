@@ -12,8 +12,7 @@ type Payload interface{} //@name data
 // A SuccessResponse is a response that is used when a request has a payload
 type SuccessResponse struct {
 	HTTPStatusCode int     `json:"statusCode"`        // http response status code
-	Message        string  `json:"message,omitempty"` // a comment when necessary
-	Payload        Payload `json:"data,omitempty"`    // any kind of success payload
+	Payload        Payload `json:"data"`    // any kind of success payload
 } //@name SuccessResponse
 
 func (e *SuccessResponse) Render(w http.ResponseWriter, r *http.Request) error {
@@ -26,21 +25,5 @@ func SendPayload(payload Payload) render.Renderer {
 	return &SuccessResponse{
 		HTTPStatusCode: http.StatusOK,
 		Payload:        payload,
-	}
-}
-
-// when a new rescource (movie,genre,user) was created
-func ResourceCreated(message string) render.Renderer {
-	return &SuccessResponse{
-		HTTPStatusCode: http.StatusCreated,
-		Message:        message,
-	}
-}
-
-// when there are no more recommendations at
-// the moment
-func NoContent() render.Renderer {
-	return &SuccessResponse{
-		HTTPStatusCode: http.StatusNoContent,
 	}
 }

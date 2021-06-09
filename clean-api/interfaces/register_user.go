@@ -19,7 +19,7 @@ type registerResource struct {
 // @summary registering a user to the app, it can be done only through users with the role admin
 // @tags users
 // @produce json
-// @success 201 {object} ResourceCreatedView "api response"
+// @success 201 {object} common_http.InfoResponse "api response"
 // @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
 // @failure 404 {object} common_http.ErrorResponse "when the user making the request has not been registered in the database yet"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
@@ -32,5 +32,5 @@ func (rs registerResource) RegisterUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	render.Render(w, r, common_http.ResourceCreated("user has been successfully created"))
+	render.Render(w, r, common_http.Info("user has been successfully created"))
 }

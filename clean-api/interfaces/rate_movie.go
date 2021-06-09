@@ -30,7 +30,7 @@ type inputRateMovie struct {
 // @summary user rates a movie
 // @tags users
 // @produce  json
-// @success 201 {object} ResourceCreatedView "api response"
+// @success 201 {object} common_http.InfoResponse "api response"
 // @failure 400 {object} common_http.ErrorResponse "when the input provided was not in the specified json format"
 // @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
 // @failure 404 {object} common_http.ErrorResponse "when the movie provided does not exist or when the user has yet to be registered in the database"
@@ -59,7 +59,7 @@ func (rs ratingResource) RateMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	successMsg := fmt.Sprintf("you just %s the movie with id: %s", ratingMeasure, inputRateMovie.MovieId)
-	render.Render(w, r, common_http.ResourceCreated(successMsg))
+	render.Render(w, r, common_http.Info(successMsg))
 }
 
 func isInputEmpty(input inputRateMovie) bool {

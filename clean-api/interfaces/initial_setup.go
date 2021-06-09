@@ -56,7 +56,7 @@ type inputSaveGenrePref struct {
 // @tags users
 // @accept json
 // @produce json
-// @success 201 {object} ResourceCreatedView "api response"
+// @success 201 {object} common_http.InfoResponse "api response"
 // @failure 400 {object} common_http.ErrorResponse "when either a genre provided does not exist or the minumum number of genre preferences have not been given"
 // @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
 // @failure 404 {object} common_http.ErrorResponse "when the user making the request has not been registered in the database yet"
@@ -77,7 +77,7 @@ func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	render.Render(w, r, common_http.ResourceCreated("genre preferences have been saved"))
+	render.Render(w, r, common_http.Info("genre preferences have been saved"))
 }
 
 type setupStepView struct {

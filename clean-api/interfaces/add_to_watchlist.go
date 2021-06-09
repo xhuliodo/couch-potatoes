@@ -24,7 +24,7 @@ func NewAddToWatchlistResource(addToWatchlistService application.AddToWatchlistS
 // @summary add a movie to a user's watchlist
 // @tags watchlists
 // @produce  json
-// @success 201 {object} ResourceCreatedView "api response"
+// @success 201 {object} common_http.InfoResponse "api response"
 // @failure 401 {object} common_http.ErrorResponse "when a request without a valid Bearer token is provided"
 // @failure 404 {object} common_http.ErrorResponse "when either a movie or a user does not exist"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
@@ -38,5 +38,5 @@ func (atwr addToWatchlistResource) AddToWatchlist(w http.ResponseWriter, r *http
 	}
 
 	successMsg := fmt.Sprintf("you just added to watchlist the movie with id: %s", movieId)
-	render.Render(w, r, common_http.ResourceCreated(successMsg))
+	render.Render(w, r, common_http.Info(successMsg))
 }

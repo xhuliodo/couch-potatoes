@@ -32,6 +32,15 @@ definitions:
       name:
         type: string
     type: object
+  InfoResponse:
+    properties:
+      message:
+        description: a comment when necessary
+        type: string
+      statusCode:
+        description: http response status code
+        type: integer
+    type: object
   MovieResponse:
     properties:
       moreInfoLink:
@@ -57,11 +66,6 @@ definitions:
       rating:
         type: integer
     type: object
-  ResourceCreatedResponse:
-    properties:
-      message:
-        type: string
-    type: object
   SetupStepResponse:
     properties:
       finished:
@@ -78,9 +82,6 @@ definitions:
       data:
         $ref: '#/definitions/data'
         description: any kind of success payload
-      message:
-        description: a comment when necessary
-        type: string
       statusCode:
         description: http response status code
         type: integer
@@ -151,6 +152,38 @@ paths:
       summary: get all genres
       tags:
       - movies
+  /healthcheck:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            $ref: '#/definitions/InfoResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get api and it's dependencies health status
+      tags:
+      - healthcheck
+  /ready:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: api response
+          schema:
+            $ref: '#/definitions/InfoResponse'
+        "503":
+          description: when the api cannot connect to the database
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get api health status
+      tags:
+      - healthcheck
   /recommendations/content-based:
     get:
       parameters:
@@ -309,7 +342,7 @@ paths:
         "201":
           description: api response
           schema:
-            $ref: '#/definitions/ResourceCreatedResponse'
+            $ref: '#/definitions/InfoResponse'
         "401":
           description: when a request without a valid Bearer token is provided
           schema:
@@ -350,7 +383,7 @@ paths:
         "201":
           description: api response
           schema:
-            $ref: '#/definitions/ResourceCreatedResponse'
+            $ref: '#/definitions/InfoResponse'
         "400":
           description: when either a genre provided does not exist or the minumum
             number of genre preferences have not been given
@@ -392,7 +425,7 @@ paths:
         "201":
           description: api response
           schema:
-            $ref: '#/definitions/ResourceCreatedResponse'
+            $ref: '#/definitions/InfoResponse'
         "400":
           description: when the input provided was not in the specified json format
           schema:
@@ -551,7 +584,7 @@ paths:
         "201":
           description: api response
           schema:
-            $ref: '#/definitions/ResourceCreatedResponse'
+            $ref: '#/definitions/InfoResponse'
         "401":
           description: when a request without a valid Bearer token is provided
           schema:
