@@ -27,4 +27,7 @@ type Repository interface {
 	RemoveFromWatchlist(userId, movieId string) error
 	GetWatchlist(userId string) (UserWatchlist, error)
 	GetWatchlistHistory(userId string) (UserWatchlist, error)
+
+	// healthcheck
+	Healthcheck() error
 }

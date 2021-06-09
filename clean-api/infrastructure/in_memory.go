@@ -189,3 +189,7 @@ func (imr *InMemoryRepository) GetWatchlistHistory(userId string) (domain.UserWa
 	emptyWatchlist := domain.UserWatchlist{}
 	return emptyWatchlist, nil
 }
+
+func (imr *InMemoryRepository) Healthcheck() error {
+	return nil
+}

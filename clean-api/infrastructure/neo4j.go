@@ -670,3 +670,12 @@ func (nr *Neo4jRepository) GetWatchlistHistory(userId string) (
 
 	return watchlistHistory, nil
 }
+
+func (nr *Neo4jRepository) Healthcheck() error {
+	err := nr.Driver.VerifyConnectivity()
+	if err != nil {
+		cause := errors.New("db_connection")
+		return errors.Wrap(cause, err.Error())
+	}
+	return nil
+}

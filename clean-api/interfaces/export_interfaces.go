@@ -49,3 +49,8 @@ func NewGetWatchlistInterface(repo domain.Repository) getWatchlistResource {
 	getWatchlistService := application.NewGetWatchlistService(repo)
 	return getWatchlistResource{getWatchlistService}
 }
+
+func NewHealthcheckInterface(repo domain.Repository) healthcheckResource {
+	healthcheckService := application.NewHealthcheckService(repo)
+	return healthcheckResource{healthcheckService}
+}
