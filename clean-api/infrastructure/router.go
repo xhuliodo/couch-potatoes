@@ -1,8 +1,6 @@
 package infrastructure
 
 import (
-	"flag"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -20,8 +18,6 @@ func CreateRouter() *chi.Mux {
 	return r
 }
 
-var routes = flag.Bool("routes", false, "Generate router documentation")
-
 func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	initialSetupInterface := interfaces.NewInitialSetupInterface(repo)
 	rateMovieInterface := interfaces.NewRateMovieInterface(repo)
@@ -32,6 +28,7 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 	addToWatchlistInterface := interfaces.NewAddToWatchlistInterface(repo)
 	removeFromWatchlistInterface := interfaces.NewRemoveFromWatchlistInterface(repo)
 	getWatchlistInterface := interfaces.NewGetWatchlistInterface(repo)
+	healthcheckInterface := interfaces.NewHealthcheckInterface(repo)
 
 	// movie routes
 	router.Route("/genres", func(r chi.Router) {
@@ -65,21 +62,8 @@ func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
 		r.Get("/history", getWatchlistInterface.GetWatchlistHistory)
 	})
 
-	router.Mount("/swagger", httpSwagger.WrapHandler)
+	router.Mount("/docs", httpSwagger.WrapHandler)
 
-	// opts := docsMiddleware.RedocOpts{SpecURL: "/swagger.yaml"}
-	// sh := docsMiddleware.Redoc(opts, nil)
-
-	// router.Handle("/docs", sh)
-	// router.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
-
-	// if *routes {
-	// 	// fmt.Println(docgen.JSONRoutesDoc(r))
-	// 	fmt.Println(docgen.MarkdownRoutesDoc(router, docgen.MarkdownOpts{
-	// 		ProjectPath: "github.com/go-chi/chi/v5",
-	// 		Intro:       "Welcome to the chi/_examples/rest generated docs.",
-	// 	}))
-	// 	return
-	// }
-
+	router.Get("/healthcheck", healthcheckInterface.GetHealthcheck)
+	router.Get("/ready", healthcheckInterface.GetReady)
 }
