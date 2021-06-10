@@ -1,6 +1,7 @@
 // DONE
 // IMPORTANT: content based rec
 
+
 // step: get users all liked movies
 match (u:User {userId:$cypherParams.userId})-[r:RATED{rating:1}]->(m:Movie)
 with u, m
