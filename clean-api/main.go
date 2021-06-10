@@ -7,8 +7,10 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"github.com/sirupsen/logrus"
 	"github.com/xhuliodo/couch-potatoes/clean-api/common/commands"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
 )
 
 // @title Couch Potatoes clean API
@@ -38,7 +40,9 @@ func main() {
 		log.Fatal("db config is fucked up")
 	}
 
-	router := createApp(driver)
+	accessLogger := logger.NewLogger("access")
+
+	router := createApp(driver, accessLogger)
 	server := &http.Server{Addr: ":4000", Handler: router}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
@@ -55,10 +59,10 @@ func main() {
 	}
 }
 
-func createApp(driver neo4j.Driver) (r *chi.Mux) {
+func createApp(driver neo4j.Driver, logger *logrus.Logger) (r *chi.Mux) {
 	repo := infrastructure.NewNeo4jRepository(driver)
 
-	r = infrastructure.CreateRouter()
+	r = infrastructure.CreateRouter(logger)
 
 	infrastructure.CreateRoutes(r, repo)
 

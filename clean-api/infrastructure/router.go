@@ -2,17 +2,20 @@ package infrastructure
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
 	_ "github.com/xhuliodo/couch-potatoes/clean-api/docs"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/auth"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
 	"github.com/xhuliodo/couch-potatoes/clean-api/interfaces"
 )
 
-func CreateRouter() *chi.Mux {
+func CreateRouter(logrus *logrus.Logger) *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	r.Use(logger.NewStructuredLogger(logrus))
+	// r.Use(NewStru)
+	// r.Use(middleware.Logger)
 	// r.Use(middleware.Recoverer)
 
 	return r
