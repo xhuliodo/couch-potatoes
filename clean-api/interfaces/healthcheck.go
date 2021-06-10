@@ -6,15 +6,13 @@ import (
 	"github.com/go-chi/render"
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
+	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
 type healthcheckResource struct {
 	getHealthcheck application.HealthcheckService
+	errLog         domain.ErrorLoggerInterface
 }
-
-type healthcheckView struct {
-	Message string `json:"message"`
-} //@name HealthcheckResponse
 
 // @router /healthcheck [get]
 // @summary get api and it's dependencies health status
@@ -26,6 +24,7 @@ func (hr healthcheckResource) GetHealthcheck(w http.ResponseWriter, r *http.Requ
 	err := hr.getHealthcheck.Heathcheck()
 	if err != nil {
 		_ = render.Render(w, r, common_http.DetermineErr(err))
+		hr.errLog.Log(err)
 		return
 	}
 

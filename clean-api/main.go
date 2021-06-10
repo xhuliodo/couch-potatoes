@@ -40,9 +40,10 @@ func main() {
 		log.Fatal("db config is fucked up")
 	}
 
-	accessLogger := logger.NewLogger("access")
+	accessLogger := logger.NewAccessLogger()
+	errorLogger := logger.NewErrorLogger()
 
-	router := createApp(driver, accessLogger)
+	router := createApp(driver, accessLogger, errorLogger)
 	server := &http.Server{Addr: ":4000", Handler: router}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
@@ -59,12 +60,12 @@ func main() {
 	}
 }
 
-func createApp(driver neo4j.Driver, logger *logrus.Logger) (r *chi.Mux) {
+func createApp(driver neo4j.Driver, accessLogger *logrus.Logger, errorLogger *logger.ErrorLogger) (r *chi.Mux) {
 	repo := infrastructure.NewNeo4jRepository(driver)
 
-	r = infrastructure.CreateRouter(logger)
+	r = infrastructure.CreateRouter(accessLogger)
 
-	infrastructure.CreateRoutes(r, repo)
+	infrastructure.CreateRoutes(r, repo, errorLogger)
 
 	return r
 }

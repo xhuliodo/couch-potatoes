@@ -11,27 +11,26 @@ import (
 	"github.com/xhuliodo/couch-potatoes/clean-api/interfaces"
 )
 
-func CreateRouter(logrus *logrus.Logger) *chi.Mux {
+func CreateRouter(accessLogger *logrus.Logger) *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(logger.NewStructuredLogger(logrus))
-	// r.Use(NewStru)
+	r.Use(logger.NewAccessLoggerMiddleware(accessLogger))
 	// r.Use(middleware.Logger)
 	// r.Use(middleware.Recoverer)
 
 	return r
 }
 
-func CreateRoutes(router *chi.Mux, repo *Neo4jRepository) {
-	initialSetupInterface := interfaces.NewInitialSetupInterface(repo)
-	rateMovieInterface := interfaces.NewRateMovieInterface(repo)
-	registerUserInterface := interfaces.NewRegisterUserInterface(repo)
-	popularMoviesInterface := interfaces.NewPopularMoviesInterface(repo)
-	userBasedRecInterface := interfaces.NewUserBasedRecInterface(repo)
-	contentBasedRecInterface := interfaces.NewContentBasedRecInterface(repo)
-	addToWatchlistInterface := interfaces.NewAddToWatchlistInterface(repo)
-	removeFromWatchlistInterface := interfaces.NewRemoveFromWatchlistInterface(repo)
-	getWatchlistInterface := interfaces.NewGetWatchlistInterface(repo)
-	healthcheckInterface := interfaces.NewHealthcheckInterface(repo)
+func CreateRoutes(router *chi.Mux, repo *Neo4jRepository, errorLogger *logger.ErrorLogger) {
+	initialSetupInterface := interfaces.NewInitialSetupInterface(repo, errorLogger)
+	rateMovieInterface := interfaces.NewRateMovieInterface(repo, errorLogger)
+	registerUserInterface := interfaces.NewRegisterUserInterface(repo, errorLogger)
+	popularMoviesInterface := interfaces.NewPopularMoviesInterface(repo, errorLogger)
+	userBasedRecInterface := interfaces.NewUserBasedRecInterface(repo, errorLogger)
+	contentBasedRecInterface := interfaces.NewContentBasedRecInterface(repo, errorLogger)
+	addToWatchlistInterface := interfaces.NewAddToWatchlistInterface(repo, errorLogger)
+	removeFromWatchlistInterface := interfaces.NewRemoveFromWatchlistInterface(repo, errorLogger)
+	getWatchlistInterface := interfaces.NewGetWatchlistInterface(repo, errorLogger)
+	healthcheckInterface := interfaces.NewHealthcheckInterface(repo, errorLogger)
 
 	// movie routes
 	router.Route("/genres", func(r chi.Router) {
