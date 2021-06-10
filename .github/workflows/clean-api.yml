@@ -4,11 +4,16 @@ on:
   workflow_dispatch:
   push:
     branches: 
-    - master/clean-api/**
+    - master
+    paths:
+      - "clean-api/**"
+    
   pull_request:
     branches: 
-    - master/clean-api/**
-
+    - master
+    paths:
+      - "clean-api/**"
+      
 jobs:
   ci:
     env:
