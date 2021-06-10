@@ -7,6 +7,7 @@ import (
 	_ "github.com/xhuliodo/couch-potatoes/clean-api/docs"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/auth"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/db"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
 	"github.com/xhuliodo/couch-potatoes/clean-api/interfaces"
 )
@@ -20,7 +21,7 @@ func CreateRouter(accessLogger *logrus.Logger) *chi.Mux {
 	return r
 }
 
-func CreateRoutes(router *chi.Mux, repo *Neo4jRepository, errorLogger *logger.ErrorLogger) {
+func CreateRoutes(router *chi.Mux, repo *db.Neo4jRepository, errorLogger *logger.ErrorLogger) {
 	initialSetupInterface := interfaces.NewInitialSetupInterface(repo, errorLogger)
 	rateMovieInterface := interfaces.NewRateMovieInterface(repo, errorLogger)
 	registerUserInterface := interfaces.NewRegisterUserInterface(repo, errorLogger)

@@ -11,6 +11,7 @@ import (
 	"github.com/xhuliodo/couch-potatoes/clean-api/common/commands"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/db"
 )
 
 // @title Couch Potatoes clean API
@@ -61,7 +62,7 @@ func main() {
 }
 
 func createApp(driver neo4j.Driver, accessLogger *logrus.Logger, errorLogger *logger.ErrorLogger) (r *chi.Mux) {
-	repo := infrastructure.NewNeo4jRepository(driver)
+	repo := db.NewNeo4jRepository(driver)
 
 	r = infrastructure.CreateRouter(accessLogger)
 
