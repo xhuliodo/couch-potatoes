@@ -10,8 +10,9 @@ on:
     - master/clean-api/**
 
 jobs:
-
-  build:
+  ci:
+    env:
+      working-directory: ./clean-api
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,12 +24,17 @@ jobs:
 
     - name: Get dependencies
       run: go get
+      working-directory: ${{working-directory}}
 
     - name: Build
       run: go build -v ./...
+      working-directory: ${{working-directory}}
 
     - name: Test
       run: go test -v ./...
-      
+      working-directory: ${{working-directory}}
+
     - name: Docs
       run: make install_swag && make create_docs
+      working-directory: ${{working-directory}}
+
