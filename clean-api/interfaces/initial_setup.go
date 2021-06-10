@@ -77,7 +77,7 @@ func (sr setupResource) SaveGenrePreferences(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	render.Render(w, r, common_http.Info("genre preferences have been saved"))
+	render.Render(w, r, common_http.ResourceCreated("genre preferences have been saved"))
 }
 
 type setupStepView struct {

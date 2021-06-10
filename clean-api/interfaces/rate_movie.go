@@ -59,12 +59,9 @@ func (rs ratingResource) RateMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	successMsg := fmt.Sprintf("you just %s the movie with id: %s", ratingMeasure, inputRateMovie.MovieId)
-	render.Render(w, r, common_http.Info(successMsg))
+	render.Render(w, r, common_http.ResourceCreated(successMsg))
 }
 
 func isInputEmpty(input inputRateMovie) bool {
-	if input.MovieId == "" {
-		return true
-	}
-	return false
+	return input.MovieId == ""
 }

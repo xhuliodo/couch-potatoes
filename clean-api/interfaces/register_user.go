@@ -32,5 +32,5 @@ func (rs registerResource) RegisterUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	render.Render(w, r, common_http.Info("user has been successfully created"))
+	render.Render(w, r, common_http.ResourceCreated("user has been successfully created"))
 }

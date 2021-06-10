@@ -38,5 +38,5 @@ func (atwr addToWatchlistResource) AddToWatchlist(w http.ResponseWriter, r *http
 	}
 
 	successMsg := fmt.Sprintf("you just added to watchlist the movie with id: %s", movieId)
-	render.Render(w, r, common_http.Info(successMsg))
+	render.Render(w, r, common_http.ResourceCreated(successMsg))
 }
