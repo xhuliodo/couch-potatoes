@@ -1,6 +1,8 @@
 package application
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+)
 
 const (
 	defaultLimit uint = 5
@@ -9,7 +11,7 @@ const (
 
 func handlePagination(len, skip, limit uint) (begin, end uint, err error) {
 	if skip != defaultSkip {
-		maxSkip := maxSkip(uint(len), limit)
+		maxSkip := maxSkip(uint(len), skip)
 		if skip > maxSkip {
 			cause := errors.New("bad_request")
 			return 0, 0, errors.Wrap(cause, "you've all caught up, can't skip anymore than this")
@@ -29,9 +31,9 @@ func handlePagination(len, skip, limit uint) (begin, end uint, err error) {
 
 }
 
-func maxSkip(total uint, limit uint) uint {
-	if limit == 0 {
-		limit = defaultLimit
+func maxSkip(total uint, skip uint) uint {
+	if skip == 0 {
+		skip = defaultSkip
 	}
-	return ((total - 1) / limit) * limit
+	return (total - 1)
 }
