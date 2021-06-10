@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/xhuliodo/couch-potatoes/clean-api/application"
-	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/db"
 )
 
 func TestFilterBasedOnRatingCount(t *testing.T) {
 
-	repo := infrastructure.NewInMemoryRepository()
+	repo := db.NewInMemoryRepository()
 	contentBasedRecService := application.NewContentBasedRecommendationService(repo)
 
 	userId := "7"
