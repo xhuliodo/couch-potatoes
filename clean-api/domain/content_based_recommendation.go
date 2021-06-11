@@ -64,7 +64,7 @@ func CalculateJaccard(ulm UsersLikedMovies, similarMovies SimilarMoviesToLikedOn
 	for _, likedMovie := range ulm {
 		for similarMovieId, similarMovie := range similarMovies {
 			intersection := []string{}
-			union := similarMovie.AllCast
+			union := getLikedMoviesCast(likedMovie)
 			for _, castId := range similarMovie.AllCast {
 				if ok := likedMovie.AllCast[castId]; !ok {
 					union = append(union, castId)
@@ -72,6 +72,7 @@ func CalculateJaccard(ulm UsersLikedMovies, similarMovies SimilarMoviesToLikedOn
 					intersection = append(intersection, castId)
 				}
 			}
+
 			unionCount := float64(len(union))
 			intersectionCount := float64(len(intersection))
 			var jaccard float64
@@ -91,6 +92,13 @@ func CalculateJaccard(ulm UsersLikedMovies, similarMovies SimilarMoviesToLikedOn
 		return recs, errors.Wrap(cause, noSimilarMovies)
 	}
 	return recs, nil
+}
+
+func getLikedMoviesCast(likedMovie UsersLikedMovie) (castIds []string) {
+	for castId := range likedMovie.AllCast {
+		castIds = append(castIds, castId)
+	}
+	return castIds
 }
 
 func (cbr ContentBasedRecommendations) RemoveDuplicates() ContentBasedRecommendations {
