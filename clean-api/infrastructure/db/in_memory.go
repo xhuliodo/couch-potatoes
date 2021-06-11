@@ -9,55 +9,87 @@ import (
 type InMemoryRepository struct {
 	movies map[string]domain.Movie
 	users  map[string]domain.User
+	genres map[string]domain.Genre
 }
 
 func NewInMemoryRepository() *InMemoryRepository {
-	ids := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"}
-	inMemRepo := InMemoryRepository{movies: map[string]domain.Movie{}, users: map[string]domain.User{}}
+	inMemRepo := InMemoryRepository{movies: map[string]domain.Movie{}, users: map[string]domain.User{}, genres: map[string]domain.Genre{}}
 	// populate mock movies
-	inMemRepo.movies[ids[0]] = domain.Movie{
+	inMemRepo.movies["1"] = domain.Movie{
 		Title:        "Toy Story",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
 		PeopleInvolved: []domain.Cast{
-			{Id: ids[1]},
-			{Id: ids[2]},
+			{Id: "2"},
+			{Id: "3"},
 		},
 	}
-	inMemRepo.movies[ids[3]] = domain.Movie{
+	inMemRepo.movies["4"] = domain.Movie{
 		Title:        "Social Network",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
 		PeopleInvolved: []domain.Cast{
-			{Id: ids[7]},
-			{Id: ids[4]},
+			{Id: "8"},
+			{Id: "5"},
 		},
 	}
-	inMemRepo.movies[ids[5]] = domain.Movie{
+	inMemRepo.movies["6"] = domain.Movie{
 		Title:        "Nocturnal Animals",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
 		PeopleInvolved: []domain.Cast{
-			{Id: ids[1]},
-			{Id: ids[2]},
+			{Id: "2"},
+			{Id: "3"},
 		},
 	}
 
-	inMemRepo.movies[ids[6]] = domain.Movie{
+	inMemRepo.movies["7"] = domain.Movie{
 		Title:        "Batman Begins",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
 		PeopleInvolved: []domain.Cast{
-			{Id: ids[1]},
-			{Id: ids[2]},
-			{Id: ids[4]},
+			{Id: "2"},
+			{Id: "3"},
+			{Id: "5"},
 		},
 	}
 	// populate users
-	inMemRepo.users[ids[6]] = domain.User{
+	inMemRepo.users["7"] = domain.User{
+		FavoriteGenres: []domain.Genre{
+			{Id: "100"}, {Id: "101"}, {Id: "102"},
+		},
 		RatedMovies: []domain.RatedMovie{
-			{Movie: domain.Movie{Id: ids[0]}, Rating: 1},
-			{Movie: domain.Movie{Id: ids[3]}, Rating: 1},
+			{Movie: domain.Movie{Id: "1"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+		},
+	}
+
+	inMemRepo.users["10"] = domain.User{
+		FavoriteGenres: []domain.Genre{},
+		RatedMovies:    []domain.RatedMovie{},
+	}
+
+	inMemRepo.users["11"] = domain.User{
+		FavoriteGenres: []domain.Genre{
+			{Id: "100"}, {Id: "101"}, {Id: "102"},
+		},
+		RatedMovies: []domain.RatedMovie{
+			{Movie: domain.Movie{Id: "1"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
+			{Movie: domain.Movie{Id: "4"}, Rating: 1},
 		},
 	}
 
@@ -98,7 +130,9 @@ func (imr *InMemoryRepository) RegisterNewUser(userId string) error {
 }
 
 func (imr *InMemoryRepository) GetGenrePreferencesCount(userId string) (uint, error) {
-	return 0, nil
+	user := imr.users[userId]
+	genrePrefCount := len(user.FavoriteGenres)
+	return uint(genrePrefCount), nil
 }
 
 func (imr *InMemoryRepository) GetAllRatingsForMoviesInGenre(userId string) (domain.PopularMovies, error) {
@@ -107,8 +141,9 @@ func (imr *InMemoryRepository) GetAllRatingsForMoviesInGenre(userId string) (dom
 }
 
 func (imr *InMemoryRepository) GetUserRatingsCount(userId string) (uint, error) {
-	emptyCount := 0
-	return uint(emptyCount), nil
+	user := imr.users[userId]
+	ratingCount := len(user.RatedMovies)
+	return uint(ratingCount), nil
 }
 
 func (imr *InMemoryRepository) GetSimilairUsersAndTheirAvgRating(userId string) (domain.UsersToCompare, error) {

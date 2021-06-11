@@ -36,14 +36,9 @@ func (ss SetupService) SaveGenrePreferences(userId string, genres []string) erro
 		return errStack
 	}
 
-	genresToAdd := []domain.Genre{}
-	for _, genre := range genres {
-		g, found := Find(currentGenres, genre)
-		if !found {
-			cause := errors.New("bad_request")
-			return errors.Wrapf(cause, "genre with id %s does not exist", genre)
-		}
-		genresToAdd = append(genresToAdd, g)
+	genresToAdd, err := areGenreIdsValid(currentGenres, genres)
+	if err != nil {
+		return err
 	}
 
 	if err := user.GiveGenrePreferences(genresToAdd); err != nil {
@@ -57,6 +52,20 @@ func (ss SetupService) SaveGenrePreferences(userId string, genres []string) erro
 	}
 
 	return nil
+}
+
+func areGenreIdsValid(currentGenres []domain.Genre, genres []string) (
+	genresToAdd []domain.Genre, err error,
+) {
+	for _, genre := range genres {
+		g, found := Find(currentGenres, genre)
+		if !found {
+			cause := errors.New("bad_request")
+			return genresToAdd, errors.Wrapf(cause, "genre with id %s does not exist", genre)
+		}
+		genresToAdd = append(genresToAdd, g)
+	}
+	return genresToAdd, nil
 }
 
 func Find(slice []domain.Genre, val string) (domain.Genre, bool) {
