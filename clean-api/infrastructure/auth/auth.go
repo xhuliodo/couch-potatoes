@@ -17,7 +17,7 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(t *jwt.Token) (interface{}, error) {
 		pemCert, err := GetPemCert(t)
 		if err != nil {
-			panic(err.Error())
+			return pemCert, err
 		}
 		cert, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(pemCert))
 		return cert, nil
