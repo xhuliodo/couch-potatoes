@@ -120,8 +120,10 @@ func calculateScore(users domain.UsersToCompare, moviesAndRatings domain.Scoring
 	// pearson * rating for each user
 	for movieId, movie := range moviesAndRatings {
 		var score float64
+		var howManyRatedIt float64
 		for userId, rating := range movie.Ratings {
 			score += users[userId].PearsonCoefficient * rating
+			howManyRatedIt += 1
 		}
 		// append it into a slice that can be sorted out
 		moviesScored = append(moviesScored, domain.UserBasedRecommendation{
@@ -131,7 +133,7 @@ func calculateScore(users domain.UsersToCompare, moviesAndRatings domain.Scoring
 				ReleaseYear:  movie.ReleaseYear,
 				MoreInfoLink: movie.MoreInfoLink,
 			},
-			Score: score,
+			Score: score / howManyRatedIt,
 		})
 	}
 
