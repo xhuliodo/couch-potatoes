@@ -15,10 +15,9 @@ on:
       - "clean-api/**"
       
 jobs:
-  ci:
-    env:
-      working-directory: ./clean-api
+  docker-ci: 
     runs-on: ubuntu-latest
+    
     steps:
     - name: Checkout
     - uses: actions/checkout@v2
