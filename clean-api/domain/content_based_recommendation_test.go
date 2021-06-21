@@ -27,6 +27,7 @@ func TestCalculateJaccard(t *testing.T) {
 	if !reflect.DeepEqual(jacResWithNoDupes, expectedRes) {
 		t.Errorf("\n got %+v \n want %+v", jacResWithNoDupes, expectedRes)
 	}
+	
 }
 
 func populateWithStubUsersLikedMovies(ulm *domain.UsersLikedMovies) {
