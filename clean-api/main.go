@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -10,15 +11,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/xhuliodo/couch-potatoes/clean-api/common/commands"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure"
-	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/auth"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/db"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
 )
 
 // @title Couch Potatoes clean API
 // @version 1.0
 // @description more movie more problems
 // host api.cp.dev.cloudapp.al
-// @host localhost:4000
+// @host localhost:4001
 // @basepath /
 // schemes https
 // @schemes http
@@ -32,7 +34,7 @@ func main() {
 	log.Println("po ngrihet avioni...")
 	ctx := commands.Context()
 
-	driver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth("neo4j", "letmein", "neo4j"), func(c *neo4j.Config) {
+	driver, err := neo4j.NewDriver(os.Getenv("NEO4J_URI"), neo4j.BasicAuth(os.Getenv("NEO4J_USER"), os.Getenv("NEO4J_PASSWORD"), "neo4j"), func(c *neo4j.Config) {
 		time := time.Second * 5
 		c.ConnectionAcquisitionTimeout = time
 		c.MaxTransactionRetryTime = time * 2
@@ -45,7 +47,10 @@ func main() {
 	errorLogger := logger.NewErrorLogger()
 
 	router := createApp(driver, accessLogger, errorLogger)
-	server := &http.Server{Addr: ":4000", Handler: router}
+	server := &http.Server{Addr: os.Getenv("API_LISTEN_PORT"), Handler: router}
+
+	auth.CacheJwksCert(errorLogger)
+
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
 			panic(err)

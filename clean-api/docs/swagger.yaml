@@ -111,7 +111,7 @@ definitions:
     type: object
   data:
     type: object
-host: localhost:4000
+host: localhost:4001
 info:
   contact:
     email: xhuliodo@gmail.com

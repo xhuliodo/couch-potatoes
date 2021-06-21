@@ -17,14 +17,29 @@ services:
       # - NEO4J_apoc_import_file_enabled=true
       # - NEO4J_apoc_export_file_enabled=true
       # - NEO4J_dbms_shell_enabled=true
-    volumes: 
-    # - "./db/conf:/conf"
-    - "./db/data:/data"
-    - "./db/import:/import"
+    volumes:
+      # - "./db/conf:/conf"
+      - "./db/data:/data"
+      - "./db/import:/import"
+
+  # # nodejs graphql api
+  # cp-api:
+  #   build: ./api
+  #   container_name: cp-api
+  #   ports:
+  #     - 4001:4001
+  #   environment:
+  #     - NEO4J_URI=bolt://cp-db:7687
+  #     - NEO4J_USER=neo4j
+  #     - NEO4J_PASSWORD=letmein
+  #     - GRAPHQL_LISTEN_PORT=4001
+  #     - GRAPHQL_URI=http://cp-api:4001/graphql
+  #   depends_on:
+  #     - cp-db
   
-  # nodejs graphql api
+  # golang clean api
   cp-api:
-    build: ./api
+    build: ./clean-api
     container_name: cp-api
     ports:
       - 4001:4001
@@ -32,31 +47,31 @@ services:
       - NEO4J_URI=bolt://cp-db:7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=letmein
-      - GRAPHQL_LISTEN_PORT=4001
-      - GRAPHQL_URI=http://cp-api:4001/graphql
+      - API_LISTEN_PORT=:4001
+      - JWKS_URL=https://dev-ps5dqqis.eu.auth0.com/.well-known/jwks.json
     depends_on:
       - cp-db
 
   # react client
   cp-client:
-    container_name: cp-client 
-    build: 
+    container_name: cp-client
+    build:
       context: ./client
       dockerfile: Dockerfile
-      args: 
+      args:
         REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
         REACT_APP_DOMAIN: ${REACT_APP_DOMAIN}
     ports:
       - 4000:80
   # thumbnails static serving
   cp-thumbnails:
-    container_name: cp-thumbnails 
-    build: 
+    container_name: cp-thumbnails
+    build:
       context: ./thumbnails
       dockerfile: Dockerfile
     ports:
       - 4003:80
-    volumes: 
+    volumes:
       - "./thumbnails/img:/var/www/thumbnails"
 
 # networks:

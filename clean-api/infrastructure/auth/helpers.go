@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/pkg/errors"
+	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
 )
 
 type Jwks struct {
@@ -29,26 +31,12 @@ func GetPemCert(token *jwt.Token) (
 ) {
 	var jwks = Jwks{}
 
-	data, err := ioutil.ReadFile("./infrastructure/auth/jwks.json")
+	data, err := ioutil.ReadFile("/auth/jwks.json")
 	if err != nil {
-		err = getCertPemFromOnline(&jwks)
-		if err != nil {
-			return cert, err
-		}
-
-		err = cacheCertPem(jwks)
-		if err != nil {
-			return cert, err
-		}
+		os.Exit(0)
 	}
 
-	if len(data) != 0 {
-		err = json.Unmarshal(data, &jwks)
-		if err!=nil{
-			return cert, err
-		}
-	}
-
+	err = json.Unmarshal(data, &jwks)
 	if err != nil {
 		fmt.Println("if fucks up even though you get the cert online, with err: ", err)
 		return cert, err
@@ -68,26 +56,43 @@ func GetPemCert(token *jwt.Token) (
 	return cert, nil
 }
 
-func getCertPemFromOnline(jwks *Jwks) (err error) {
-	resp, err := http.Get("https://dev-ps5dqqis.eu.auth0.com/.well-known/jwks.json")
+func CacheJwksCert(errorLogger *logger.ErrorLogger) {
+	jwks := Jwks{}
+
+	resp, err := http.Get(os.Getenv("JWKS_URL"))
 	if err != nil {
-		return err
+		cause := errors.New("check jwks url, the one provided does send back any response")
+		errStack := errors.Wrap(cause, err.Error())
+		errorLogger.Log(errStack)
+		log.Fatal(errStack)
+		os.Exit(0)
 	}
 	defer resp.Body.Close()
 
 	err = json.NewDecoder(resp.Body).Decode(&jwks)
 	if err != nil {
-		return err
+		cause := errors.New("check jwks json format, the one provided is not standard")
+		errStack := errors.Wrap(cause, err.Error())
+		errorLogger.Log(errStack)
+		log.Fatal(errStack)
+		os.Exit(0)
 	}
 
-	return nil
-}
-
-func cacheCertPem(jwks Jwks) error {
-	certFromOnline, _ := json.Marshal(jwks)
-	err := ioutil.WriteFile("./infrastructure/auth/jwks.json", certFromOnline, os.ModePerm)
+	certFromOnline, err := json.MarshalIndent(jwks, "", " ")
 	if err != nil {
-		return err
+		cause := errors.New("could not marshall the json")
+		errStack := errors.Wrap(cause, err.Error())
+		errorLogger.Log(errStack)
+		log.Fatal(errStack)
+		os.Exit(0)
 	}
-	return nil
+
+	err = ioutil.WriteFile("/auth/jwks.json", certFromOnline, os.ModePerm)
+	if err != nil {
+		cause := errors.New("could not cache cert to container")
+		errStack := errors.Wrap(cause, err.Error())
+		errorLogger.Log(errStack)
+		log.Fatal(errStack)
+		os.Exit(0)
+	}
 }

@@ -13,7 +13,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:4000",
+    "host": "localhost:4001",
     "basePath": "/",
     "paths": {
         "/genres": {

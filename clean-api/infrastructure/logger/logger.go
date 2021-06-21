@@ -7,7 +7,7 @@ import (
 )
 
 func NewAccessLogger() (logger *logrus.Logger) {
-	accessLogFile := openLogFiles("./logs/access.log")
+	accessLogFile := openLogFiles("/logs/access.log")
 	logger = createLogger(accessLogFile)
 	logger.Formatter = &logrus.JSONFormatter{}
 
@@ -15,7 +15,7 @@ func NewAccessLogger() (logger *logrus.Logger) {
 }
 
 func NewErrorLogger() *ErrorLogger {
-	errorLogFile := openLogFiles("./logs/error.log")
+	errorLogFile := openLogFiles("/logs/error.log")
 	logger := createLogger(errorLogFile)
 	logger.Formatter = &logrus.JSONFormatter{}
 
