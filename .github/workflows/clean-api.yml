@@ -45,7 +45,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: ./clean-api
-        file: ./Dockerfile
+        file: ./clean-api/Dockerfile
         builder: ${{ steps.buildx.outputs.name }}
         push: true
         tags: xhuliodo/couch-potatoes-api:latest
