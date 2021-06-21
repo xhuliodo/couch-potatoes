@@ -1,4 +1,4 @@
-FROM golang:alpine3.13
+FROM golang:1.16 as test_and_build
 
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
@@ -6,8 +6,8 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64
 
-# Move to working directory /build
-WORKDIR /build
+# Move to working directory /test_and_build
+WORKDIR /test_and_build
 
 # Copy and download dependency using go mod
 COPY go.mod .
@@ -17,21 +17,26 @@ RUN go mod download
 # Copy the code into the container
 COPY . .
 
+# Command to run unit testing
+RUN go test -v ./...
+
+# Generate latest docs
+RUN make install_swag
+RUN make create_docs
+
 # Build the application
-RUN go build -o main .
+RUN go build -o api .
 
-# Move to /dist directory as the place for resulting binary folder
-WORKDIR /dist
-
-# Copy binary from build to main folder
-RUN cp /build/main .
+# production environment
+FROM alpine:3.12.0
+WORKDIR /app
+COPY --from=test_and_build /test_and_build/api .
 
 # Create logs and auth cache folder
-RUN mkdir /logs
-RUN mkdir /auth
+RUN mkdir /logs && mkdir /auth
 
 # Export necessary port
 EXPOSE 4001
 
 # Command to run when starting the container
-CMD ["/dist/main"]
+CMD ["./api"]

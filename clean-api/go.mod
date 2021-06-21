@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/auth0/go-jwt-middleware v1.0.0
-	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-chi/chi/v5 v5.0.3
@@ -16,7 +15,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/neo4j/neo4j-go-driver/v4 v4.2.4
 	github.com/pkg/errors v0.9.1
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/swaggo/http-swagger v1.0.0
 	github.com/swaggo/swag v1.7.0
