@@ -15,8 +15,8 @@ func TestCalculateJaccard(t *testing.T) {
 	populateWithStubSimilarMoviesToLikedOnes(&gotSimilarMoviesToLikedOnes)
 
 	jacRes, _ := domain.CalculateJaccard(gotUsersLikedMovie, gotSimilarMoviesToLikedOnes)
-	jacRes.SortByScoreDesc()
 	jacResWithNoDupes := jacRes.RemoveDuplicates()
+	jacResWithNoDupes.SortByScoreDesc()
 
 	expectedRes := domain.ContentBasedRecommendations{
 		{domain.Movie{Id: "8"}, 1},
@@ -27,7 +27,7 @@ func TestCalculateJaccard(t *testing.T) {
 	if !reflect.DeepEqual(jacResWithNoDupes, expectedRes) {
 		t.Errorf("\n got %+v \n want %+v", jacResWithNoDupes, expectedRes)
 	}
-	
+
 }
 
 func populateWithStubUsersLikedMovies(ulm *domain.UsersLikedMovies) {
