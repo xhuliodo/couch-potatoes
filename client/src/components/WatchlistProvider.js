@@ -30,6 +30,7 @@ export default function WatchlistProvider({
       // console.log("data", { data, skip });
       setMovies([...movies, ...data]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, isError, isLoading, skip, statusCode]);
   const increaseSkip = () => {
     setSkip(skip + limit);

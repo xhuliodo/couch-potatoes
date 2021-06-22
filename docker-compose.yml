@@ -53,26 +53,26 @@ services:
       - cp-db
 
   # react client
-  # cp-client:
-  #   container_name: cp-client
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile
-  #     args:
-  #       REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
-  #       REACT_APP_DOMAIN: ${REACT_APP_DOMAIN}
-  #   ports:
-  #     - 4000:80
+  cp-client:
+    container_name: cp-client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_ENDPOINT: ${REACT_APP_API_ENDPOINT}
+        REACT_APP_DOMAIN: ${REACT_APP_DOMAIN}
+    ports:
+      - 4000:80
   # thumbnails static serving
-  # cp-thumbnails:
-  #   container_name: cp-thumbnails
-  #   build:
-  #     context: ./thumbnails
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 4003:80
-  #   volumes:
-  #     - "./thumbnails/img:/var/www/thumbnails"
+  cp-thumbnails:
+    container_name: cp-thumbnails
+    build:
+      context: ./thumbnails
+      dockerfile: Dockerfile
+    ports:
+      - 4003:80
+    volumes:
+      - "./thumbnails/img:/var/www/thumbnails"
 
 # networks:
 #   couch_potatoes:
