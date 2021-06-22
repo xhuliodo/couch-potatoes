@@ -7,7 +7,6 @@ import {
   useTheme,
 } from "@material-ui/core";
 import {
-  LibraryAddOutlined,
   Movie,
   MovieOutlined,
   People,
@@ -18,8 +17,7 @@ import {
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import AuthLoading from "../components/AuthLoading";
 import { useQuery } from "react-query";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
+import { useAxiosClient } from "../utils/useAxiosClient";
 import { useMovieStore } from "../context/movies";
 import SwipeableViews from "react-swipeable-views";
 import ContentBasedRec from "../components/ContentBasedRec";
@@ -43,44 +41,13 @@ export const Solo = (props) => {
     setNav(index);
   };
 
-  const graphqlClient = useGraphqlClient();
+  const axiosClient = useAxiosClient();
 
-  // redirect rule for people who have not finished the setup
-  const useSetupRedirect = () => {
-    return useQuery("setupRedirect", async () => {
-      const finishedSetup = localStorage.getItem("finishedSetup");
-      if (!finishedSetup) {
-        const stepOne = (await graphqlClient).request(
-          gql`
-            query {
-              isSetupStepOneDone
-            }
-          `
-        );
-        const { isSetupStepOneDone } = await stepOne;
-        if (isSetupStepOneDone < 2) {
-          props.history.push("/getting-to-know-1");
-          return;
-        }
-        const stepTwo = (await graphqlClient).request(
-          gql`
-            query {
-              isSetupStepTwoDone
-            }
-          `
-        );
-        const { isSetupStepTwoDone } = await stepTwo;
-
-        if (isSetupStepTwoDone < requiredMovies) {
-          props.history.push("/getting-to-know-2");
-        } else {
-          localStorage.setItem("finishedSetup", "true");
-        }
-      }
-    });
-  };
-
-  const { isLoading, isError } = useSetupRedirect();
+  const { isLoading, isError } = useSetupRedirect({
+    axiosClient,
+    requiredMovies,
+    props,
+  });
 
   return (
     <Paper elevation={0}>
@@ -161,3 +128,32 @@ const useStyles = makeStyles((theme) => ({
 export default withAuthenticationRequired(Solo, {
   onRedirecting: () => <AuthLoading />,
 });
+
+// redirect rule for people who have not finished the setup
+const useSetupRedirect = ({ axiosClient, props }) => {
+  return useQuery("setupRedirect", async () => {
+    const finishedSetup = localStorage.getItem("finishedSetup");
+    if (!finishedSetup) {
+      const resp = await (await axiosClient).get("/users/setup");
+      const {
+        data: {
+          data: { step, finished, message, ratingsGiven },
+        },
+      } = resp;
+
+      switch (step) {
+        case 1:
+          props.history.push("/getting-to-know-1");
+          return;
+        case 2:
+          props.history.push("/getting-to-know-2");
+          return;
+        case 3:
+          localStorage.setItem("finishedSetup", finished);
+          break;
+        default:
+          break;
+      }
+    }
+  });
+};

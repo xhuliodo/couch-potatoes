@@ -1,5 +1,4 @@
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
+import { useAxiosClient } from "../utils/useAxiosClient";
 import { useQuery } from "react-query";
 
 import { useMovieStore } from "../context/movies";
@@ -10,30 +9,13 @@ import DataStateMovieCard from "./DataStateMovieCard";
 export default function GenreBasedRec({ skip, setSkip }) {
   const { limit } = useMovieStore();
 
-  const graphqlClient = useGraphqlClient();
+  const axiosClient = useAxiosClient();
 
-  const useMovies = ({ limit }) => {
-    return useQuery(["movies", limit], async () => {
-      const data = (await graphqlClient).request(
-        gql`
-        query {
-          recommendPopularMoviesBasedOnGenre(
-            limit: ${limit}, 
-            skip: ${skip}) {
-              movieId
-              title
-              releaseYear
-              imdbLink
-          }
-        }
-      `
-      );
-      const { recommendPopularMoviesBasedOnGenre } = await data;
-      return recommendPopularMoviesBasedOnGenre;
-    });
-  };
-
-  const { isLoading, isError, data, refetch } = useMovies({ limit });
+  const { isLoading, isError, data, refetch } = useMovies({
+    axiosClient,
+    limit,
+    skip,
+  });
 
   return isLoading ? (
     <DataStateMovieCard message="Fetching movies..." type="loading" />
@@ -43,3 +25,17 @@ export default function GenreBasedRec({ skip, setSkip }) {
     <MovieCard skip={skip} setSkip={setSkip} refetch={refetch} movies={data} />
   );
 }
+
+const useMovies = ({ axiosClient, limit, skip }) => {
+  return useQuery(["movies", limit, skip], async () => {
+    const resp = (await axiosClient).get(
+      `/recommendations/popular?limit=${limit}&skip=${skip}`
+    );
+
+    const {
+      data: { data: popularMovie },
+    } = await resp;
+
+    return popularMovie;
+  });
+};
