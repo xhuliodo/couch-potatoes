@@ -1,7 +1,10 @@
 package infrastructure
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	"github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
 	_ "github.com/xhuliodo/couch-potatoes/clean-api/docs"
@@ -15,10 +18,24 @@ import (
 func CreateRouter(accessLogger *logrus.Logger) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(logger.NewAccessLoggerMiddleware(accessLogger))
+	r.Use(cors.Handler(cors.Options{
+		AllowOriginFunc:  AllowOriginFunc,
+		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 	// r.Use(middleware.Logger)
 	// r.Use(middleware.Recoverer)
 
 	return r
+}
+
+func AllowOriginFunc(r *http.Request, origin string) bool {
+	if origin == "http://localhost:3000" || origin == "https://cp.dev.cloudapp.al" {
+		return true
+	}
+	return false
 }
 
 func CreateRoutes(router *chi.Mux, repo *db.Neo4jRepository, errorLogger *logger.ErrorLogger) {
