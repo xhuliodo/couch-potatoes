@@ -13,52 +13,39 @@ import { DoneOutline } from "@material-ui/icons";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 
 import { useMutation, useQuery } from "react-query";
-import { gql } from "graphql-request";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { useAxiosClient } from "../utils/useAxiosClient";
 
 import SelectingGenre from "../components/SelectingGenre";
 import AuthLoading from "../components/AuthLoading";
 
 export const SelectingGenrePage = (props) => {
   const classes = useStyle();
-  const useGenres = () => {
-    return useQuery("genres", async () => {
-      const data = (await graphqlClient).request(
-        gql`
-          query {
-            Genre {
-              genreId
-              name
-            }
-          }
-        `
-      );
-      const { Genre } = await data;
-      return Genre;
-    });
-  };
+
   const { status, data, error } = useGenres();
-  const graphqlClient = useGraphqlClient();
+  const axiosClient = useAxiosClient();
 
   const [selectedGenres, setSelectedGenres] = useState([]);
 
   const handleSubmit = useMutation(async ({ genres }) => {
-    const data = await (await graphqlClient).request(
-      gql`
-        mutation {
-          setFavoriteGenres(
-            genres: [${genres.map((g) => `"${g}"`)}]
-          ) {
-            userId
-          }
+    (await axiosClient)
+      .post("/users/genres", {
+        // genres:[`${genres.map((g) => `"${g}"`)}`],
+        genres,
+      })
+      .then((resp) => {
+        const { statusCode, message } = resp;
+        if (!statusCode && !message) {
+          console.log("the watchlist did not get filled 😏");
         }
-      `
-    );
-
-    const { setFavoriteGenres } = data;
-    if (setFavoriteGenres.userId !== null) {
-      props.history.push("/getting-to-know-2");
-    }
+        if (status === 201) {
+          props.history.push("/getting-to-know-2");
+        } else {
+          console.log(message);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   });
 
   const doneIcon = useMemo(
@@ -117,3 +104,17 @@ const useStyle = makeStyles(() => ({
     fontSize: "1.2rem",
   },
 }));
+
+const useGenres = ({ axiosClient }) => {
+  return useQuery("genres", async () => {
+    (await axiosClient)
+      .get(`/genres`)
+      .then((resp) => {
+        const { data } = resp;
+        return data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+};

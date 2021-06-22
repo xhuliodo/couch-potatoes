@@ -1,6 +1,5 @@
 import { useQuery } from "react-query";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
+import { useAxiosClient } from "../utils/useAxiosClient";
 import { useMovieStore } from "../context/movies";
 import MovieCard from "./MovieCard";
 import "../components/MovieCard.scss";
@@ -8,10 +7,10 @@ import DataStateMovieCard from "./DataStateMovieCard";
 
 export default function ContentBasedRec() {
   const { limit } = useMovieStore();
-  const graphqlClient = useGraphqlClient();
+  const axiosClient = useAxiosClient();
 
   const { isLoading, isError, data, refetch } = useContentBasedRec({
-    graphqlClient,
+    axiosClient,
     limit,
   });
 
@@ -29,23 +28,32 @@ export default function ContentBasedRec() {
   );
 }
 
-const useContentBasedRec = ({ graphqlClient, limit: moviesToRecommend }) => {
+const useContentBasedRec = ({ axiosClient, limit: moviesToRecommend }) => {
   return useQuery(["contentBasedRec", moviesToRecommend], async () => {
-    const data = (await graphqlClient).request(
-      gql`
-          query {
-            recommendFromOtherLikedMovies(
-              moviesToRecommend: ${moviesToRecommend}
-            ) {
-              movieId
-              title
-              releaseYear
-              imdbLink
-            }
-          }
-        `
-    );
-    const { recommendFromOtherLikedMovies } = await data;
-    return recommendFromOtherLikedMovies;
+    (await axiosClient)
+      .get(`/recommendations/content-based?limit=${moviesToRecommend}`)
+      .then((resp) => {
+        const { data } = resp;
+        return data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // .request(
+    //   gql`
+    //       query {
+    //         recommendFromOtherLikedMovies(
+    //           moviesToRecommend: ${moviesToRecommend}
+    //         ) {
+    //           movieId
+    //           title
+    //           releaseYear
+    //           imdbLink
+    //         }
+    //       }
+    //     `
+    // );
+    // const { recommendFromOtherLikedMovies } = await data;
+    // return recommendFromOtherLikedMovies;
   });
 };

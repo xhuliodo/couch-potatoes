@@ -11,9 +11,8 @@ import { openRateFeedbackExported } from "./RateFeedback";
 import RateFeedback from "./RateFeedback";
 import { waitingForMore } from "../utils/waitingForMore";
 import { useMutation } from "react-query";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
+import { useAxiosClient } from "../utils/useAxiosClient";
 import { rateMovie } from "../utils/rateMovie";
-import { gql } from "graphql-request";
 import { useMovieStore } from "../context/movies";
 
 export default function MovieCard({
@@ -26,10 +25,10 @@ export default function MovieCard({
 }) {
   const { increaseRatedMovies } = useMovieStore();
 
-  const graphqlClient = useGraphqlClient();
+  const axiosClient = useAxiosClient();
 
   const rate = useMutation((mutationData) =>
-    rateMovie(mutationData, graphqlClient)
+    rateMovie(mutationData, axiosClient)
   );
 
   const handleRate = (action) => {
@@ -37,7 +36,7 @@ export default function MovieCard({
       console.log("patience is a virtue");
     } else {
       const mutationData = {
-        movieId: movies[0].movieId,
+        movieId: movies[0].movie?.movieId,
         action,
         successFunc: () => successFunc(action),
       };
@@ -48,27 +47,21 @@ export default function MovieCard({
     if (movies.length === 0) {
       console.log("patience is a virtue");
     } else {
-      const data = (await graphqlClient).request(
-        gql`
-        mutation {
-          addToWatchlist(movieId: ${movieId}) {
-            movieId
+      (await axiosClient)
+        .post(`/watchlist/${movieId}`)
+        .then((resp) => {
+          const { statusCode, message } = resp;
+          if (!statusCode && !message) {
+            console.log("the watchlist did not get filled 😏");
+          } else {
+            console.log(message);
+            openRateFeedbackExported("watchlater");
+            nextMovie();
           }
-        }
-      `
-      );
-
-      const { addToWatchlist } = await data;
-      if (addToWatchlist === null) {
-        console.log("the watchlist did not get filled 😏");
-      } else {
-        console.log(
-          "you added to playlist the movie with id",
-          addToWatchlist.movieId
-        );
-        openRateFeedbackExported("watchlater");
-        nextMovie();
-      }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   });
   const successFunc = (action) => {
@@ -86,7 +79,7 @@ export default function MovieCard({
   };
   const handleWatchLater = () => {
     const mutationData = {
-      movieId: movies[0]?.movieId,
+      movieId: movies[0]?.movie?.movieId,
     };
     addToWatchlist.mutate(mutationData);
   };
@@ -178,18 +171,21 @@ export default function MovieCard({
     <CardWrapper addEndCard={waitingForMore} style={{ paddingTop: "0px" }}>
       {movies.map((m) => (
         <Card
-          key={compName + m.movieId}
+          key={compName + m.movie?.movieId}
           onSwipeLeft={() => handleRate("hate")}
           onSwipeRight={() => handleRate("love")}
           swipeSensitivity={50}
           style={{
-            backgroundImage: `url(https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg)`,
+            backgroundImage: `url(https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movie?.movieId}.jpg)`,
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
           }}
         >
-          <MovieTitle title={m.title} releaseYear={m.releaseYear} />
+          <MovieTitle
+            title={m.movie?.title}
+            releaseYear={m.movie?.releaseYear}
+          />
         </Card>
       ))}
       <RateFeedback />

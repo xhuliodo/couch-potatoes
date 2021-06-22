@@ -2,8 +2,7 @@ import { useState } from "react";
 
 import { useMovieStore } from "../context/movies";
 import { useQuery } from "react-query";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
+import { useAxiosClient } from "../utils/useAxiosClient";
 import WatchlistProvider from "./WatchlistProvider";
 
 export default function WatchlistUnrated() {
@@ -11,17 +10,17 @@ export default function WatchlistUnrated() {
 
   // get data
   const { limit } = useMovieStore();
-  const graphqlClient = useGraphqlClient();
+  const axiosClient = useAxiosClient();
   const [skip, setSkip] = useState(0);
   const { isLoading, isError, data } = useGetWatchlistMovies({
-    graphqlClient,
+    axiosClient,
     limit,
     skip,
   });
 
   return (
     <WatchlistProvider
-      graphqlClient={graphqlClient}
+      axiosClient={axiosClient}
       isLoading={isLoading}
       isError={isError}
       data={data}
@@ -32,24 +31,33 @@ export default function WatchlistUnrated() {
   );
 }
 
-const useGetWatchlistMovies = ({ graphqlClient, skip, limit }) => {
+const useGetWatchlistMovies = ({ axiosClient, skip, limit }) => {
   return useQuery(
     ["getWatchlistMovies", skip, limit],
     async () => {
-      const data = (await graphqlClient).request(
-        gql`
-        query {
-          watchlist(skip:${skip}, limit:${limit}) {
-            movieId
-            title
-            releaseYear
-            imdbLink
-          }
-        }
-      `
-      );
-      const { watchlist } = await data;
-      return watchlist;
+      (await axiosClient)
+        .get(`/watchlist?limit=${limit}&skip=${skip}`)
+        .then((resp) => {
+          const { data } = resp;
+          return data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // .request(
+      //   gql`
+      //   query {
+      //     watchlist(skip:${skip}, limit:${limit}) {
+      //       movieId
+      //       title
+      //       releaseYear
+      //       imdbLink
+      //     }
+      //   }
+      // `
+      // );
+      // const { watchlist } = await data;
+      // return watchlist;
     },
     { cacheTime: 0 }
   );

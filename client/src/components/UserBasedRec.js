@@ -1,20 +1,21 @@
 import { useQuery } from "react-query";
-import { useGraphqlClient } from "../utils/useGraphqlClient";
-import { gql } from "graphql-request";
+import { useAxiosClient } from "../utils/useAxiosClient";
 import { useMovieStore } from "../context/movies";
 import MovieCard from "./MovieCard";
 import "../components/MovieCard.scss";
 import DataStateMovieCard from "./DataStateMovieCard";
 
 export default function UserBasedRec() {
-  const { peopleToCompare, limit, requiredMovies } = useMovieStore();
-  const minimumRatings = requiredMovies / 1.5;
-  const graphqlClient = useGraphqlClient();
+  const {
+    // peopleToCompare,
+    limit,
+    //  requiredMovies
+  } = useMovieStore();
+  // const minimumRatings = requiredMovies / 1.5;
+  const axiosClient = useAxiosClient();
 
   const { isLoading, isError, data, refetch } = useUserBasedRec({
-    graphqlClient,
-    minimumRatings,
-    peopleToCompare,
+    axiosClient,
     limit,
   });
 
@@ -32,33 +33,37 @@ export default function UserBasedRec() {
   );
 }
 
-const useUserBasedRec = ({
-  graphqlClient,
-  minimumRatings,
-  peopleToCompare,
-  limit: moviesToRecommend,
-}) => {
+const useUserBasedRec = ({ axiosClient, limit: moviesToRecommend }) => {
   return useQuery(
-    ["userBasedRec", minimumRatings, peopleToCompare, moviesToRecommend],
+    ["userBasedRec", axiosClient, moviesToRecommend],
     async () => {
-      const data = (await graphqlClient).request(
-        gql`
-          query{
-            recommendFromOtherUsers( 
-              minimumRatings: ${minimumRatings} 
-              peopleToCompare: ${peopleToCompare} 
-              moviesToRecommend: ${moviesToRecommend} 
-              ) { 
-                movieId 
-                title 
-                releaseYear
-                imdbLink 
-                } 
-            }
-        `
-      );
-      const { recommendFromOtherUsers } = await data;
-      return recommendFromOtherUsers;
+      (await axiosClient)
+        .get(`/recommendations/user-based?limit=${moviesToRecommend}`)
+        .then((resp) => {
+          const { data } = resp;
+          return data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // const data = (await graphqlClient).request(
+      //   gql`
+      //     query{
+      //       recommendFromOtherUsers(
+      //         minimumRatings: ${minimumRatings}
+      //         peopleToCompare: ${peopleToCompare}
+      //         moviesToRecommend: ${moviesToRecommend}
+      //         ) {
+      //           movieId
+      //           title
+      //           releaseYear
+      //           imdbLink
+      //           }
+      //       }
+      //   `
+      // );
+      // const { recommendFromOtherUsers } = await data;
+      // return recommendFromOtherUsers;
     }
   );
 };
