@@ -30,14 +30,14 @@ export default function MovieCardWatchlist({
   const classes = useStyles();
   const theme = useTheme();
 
-  const image = `https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movieId}.jpg`;
+  const image = `https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movie.movieId}.jpg`;
   const rating = m?.rating;
 
   return (
     <Slide
       timeout={{ enter: 0, exit: 250 }}
       direction={animation}
-      in={!deleted?.includes(m.movieId)}
+      in={!deleted?.includes(m.movie.movieId)}
       unmountOnExit
     >
       <Card ref={lastElementRef} elevation={3} className={classes.root}>
@@ -46,15 +46,15 @@ export default function MovieCardWatchlist({
           <div style={{ display: "flex", flexDirection: "row" }}>
             <CardContent style={{ flex: "auto" }}>
               <Typography>
-                <strong>{m.title}</strong>
+                <strong>{m.movie.title}</strong>
               </Typography>
               <Typography variant="subtitle1" color="textSecondary">
-                {m.releaseYear}
+                {m.movie.releaseYear}
               </Typography>
             </CardContent>
             <div className={classes.infoDiv}>
               <Tooltip title="IMDB Link" arrow placement="top">
-                <Link href={m.imdbLink} rel="noreferrer" target="_blank">
+                <Link href={m.movie.moreInfoLink} rel="noreferrer" target="_blank">
                   <Info color="action" className={classes.infoIcon} />
                 </Link>
               </Tooltip>
@@ -71,7 +71,7 @@ export default function MovieCardWatchlist({
                     }
                   : null
               }
-              onClick={() => handleRate(m.movieId, "hate")}
+              onClick={() => handleRate(m.movie.movieId, "hate")}
               variant="contained"
               color="secondary"
             >
@@ -89,7 +89,7 @@ export default function MovieCardWatchlist({
                   : null
               }
               disabled={rating === undefined ? false : true}
-              onClick={() => handleRate(m.movieId, "love")}
+              onClick={() => handleRate(m.movie.movieId, "love")}
               variant="contained"
               color="primary"
               className={classes.buttonContainer}
@@ -102,7 +102,7 @@ export default function MovieCardWatchlist({
 
             <div className={classes.trash}>
               <IconButton
-                onClick={() => handleRemove(m.movieId)}
+                onClick={() => handleRemove(m.movie.movieId)}
                 variant="contained"
               >
                 <Delete className={classes.trashColor} />

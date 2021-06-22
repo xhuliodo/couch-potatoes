@@ -47,21 +47,17 @@ export default function MovieCard({
     if (movies.length === 0) {
       console.log("patience is a virtue");
     } else {
-      (await axiosClient)
-        .post(`/watchlist/${movieId}`)
-        .then((resp) => {
-          const { statusCode, message } = resp;
-          if (!statusCode && !message) {
-            console.log("the watchlist did not get filled 😏");
-          } else {
-            console.log(message);
-            openRateFeedbackExported("watchlater");
-            nextMovie();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const resp = (await axiosClient).post(`/watchlist/${movieId}`);
+      const {
+        data: { statusCode, message },
+      } = await resp;
+      if (!(statusCode === 201) && !message) {
+        console.log("the watchlist did not get filled 😏");
+      } else {
+        console.log(message);
+        openRateFeedbackExported("watchlater");
+        nextMovie();
+      }
     }
   });
   const successFunc = (action) => {
@@ -70,9 +66,11 @@ export default function MovieCard({
     increaseRatedMovies();
   };
   const handleSkip = () => {
-    setSkip(skip + 1);
-    nextMovie();
-    openRateFeedbackExported("skip");
+    if (movies.length) {
+      setSkip(skip + 1);
+      nextMovie();
+      openRateFeedbackExported("skip");
+    }
   };
   const nextMovie = () => {
     movies.shift();
@@ -88,7 +86,7 @@ export default function MovieCard({
     if (movies.length === 0) {
       refetch();
     }
-  }, [skip, setSkip, movies, rate, refetch]);
+  }, [movies.length, refetch]);
 
   const ActionButtons = () => {
     const newProps = {};

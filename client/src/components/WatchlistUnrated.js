@@ -21,9 +21,10 @@ export default function WatchlistUnrated() {
   return (
     <WatchlistProvider
       axiosClient={axiosClient}
+      statusCode={data?.statusCode}
       isLoading={isLoading}
       isError={isError}
-      data={data}
+      data={data?.watchlist}
       skip={skip}
       setSkip={setSkip}
       limit={limit}
@@ -35,29 +36,27 @@ const useGetWatchlistMovies = ({ axiosClient, skip, limit }) => {
   return useQuery(
     ["getWatchlistMovies", skip, limit],
     async () => {
-      (await axiosClient)
-        .get(`/watchlist?limit=${limit}&skip=${skip}`)
-        .then((resp) => {
-          const { data } = resp;
-          return data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      // .request(
-      //   gql`
-      //   query {
-      //     watchlist(skip:${skip}, limit:${limit}) {
-      //       movieId
-      //       title
-      //       releaseYear
-      //       imdbLink
-      //     }
-      //   }
-      // `
-      // );
-      // const { watchlist } = await data;
-      // return watchlist;
+      let ulala;
+      try {
+        const resp = (await axiosClient).get(
+          `/watchlist?limit=${limit}&skip=${skip}`
+        );
+        const {
+          data: { data: watchlist, statusCode },
+        } = await resp;
+        ulala = {
+          watchlist,
+          statusCode,
+        };
+      } catch (e) {
+        const {
+          response: {
+            data: { statusCode },
+          },
+        } = e;
+        ulala = { watchlist: [], statusCode };
+      }
+      return ulala;
     },
     { cacheTime: 0 }
   );

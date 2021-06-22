@@ -30,15 +30,14 @@ export default function ContentBasedRec() {
 
 const useContentBasedRec = ({ axiosClient, limit: moviesToRecommend }) => {
   return useQuery(["contentBasedRec", moviesToRecommend], async () => {
-    (await axiosClient)
-      .get(`/recommendations/content-based?limit=${moviesToRecommend}`)
-      .then((resp) => {
-        const { data } = resp;
-        return data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const resp = (await axiosClient).get(
+      `/recommendations/content-based?limit=${moviesToRecommend}`
+    );
+
+    const {
+      data: { data: contentBasedRec },
+    } = await resp;
+    return contentBasedRec;
     // .request(
     //   gql`
     //       query {

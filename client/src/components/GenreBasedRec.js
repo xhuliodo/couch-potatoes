@@ -27,7 +27,7 @@ export default function GenreBasedRec({ skip, setSkip }) {
 }
 
 const useMovies = ({ axiosClient, limit, skip }) => {
-  return useQuery(["movies", limit, skip], async () => {
+  return useQuery("movies", async () => {
     const resp = (await axiosClient).get(
       `/recommendations/popular?limit=${limit}&skip=${skip}`
     );

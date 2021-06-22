@@ -34,36 +34,14 @@ export default function UserBasedRec() {
 }
 
 const useUserBasedRec = ({ axiosClient, limit: moviesToRecommend }) => {
-  return useQuery(
-    ["userBasedRec", axiosClient, moviesToRecommend],
-    async () => {
-      (await axiosClient)
-        .get(`/recommendations/user-based?limit=${moviesToRecommend}`)
-        .then((resp) => {
-          const { data } = resp;
-          return data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      // const data = (await graphqlClient).request(
-      //   gql`
-      //     query{
-      //       recommendFromOtherUsers(
-      //         minimumRatings: ${minimumRatings}
-      //         peopleToCompare: ${peopleToCompare}
-      //         moviesToRecommend: ${moviesToRecommend}
-      //         ) {
-      //           movieId
-      //           title
-      //           releaseYear
-      //           imdbLink
-      //           }
-      //       }
-      //   `
-      // );
-      // const { recommendFromOtherUsers } = await data;
-      // return recommendFromOtherUsers;
-    }
-  );
+  return useQuery("userBasedRec", async () => {
+    const resp = (await axiosClient).get(
+      `/recommendations/user-based?limit=${moviesToRecommend}`
+    );
+
+    const {
+      data: { data: userBasedRec },
+    } = await resp;
+    return userBasedRec;
+  });
 };

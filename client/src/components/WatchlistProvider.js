@@ -11,7 +11,8 @@ import { rateMovie } from "../utils/rateMovie";
 import WatchlistCard from "./WatchlistCard";
 
 export default function WatchlistProvider({
-  graphqlClient,
+  axiosClient,
+  statusCode,
   isLoading,
   isError,
   data,
@@ -24,12 +25,12 @@ export default function WatchlistProvider({
   // infinite scrolling
   const [movies, setMovies] = useState([]);
   useEffect(() => {
-    if (!isLoading && !isError) {
-      console.log("movies", { movies, skip });
-      console.log("data", { data, skip });
+    if (!isLoading && !isError && statusCode === 200) {
+      // console.log("movies", { movies, skip });
+      // console.log("data", { data, skip });
       setMovies([...movies, ...data]);
     }
-  }, [data, isError, isLoading]);
+  }, [data, isError, isLoading, skip, statusCode]);
   const increaseSkip = () => {
     setSkip(skip + limit);
   };
@@ -42,7 +43,10 @@ export default function WatchlistProvider({
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && data.length === limit) {
+          if (
+            (entries[0].isIntersecting && data.length === limit) ||
+            statusCode === 200
+          ) {
             increaseSkip();
           }
         },
@@ -56,7 +60,7 @@ export default function WatchlistProvider({
 
   // actions user can take
   const rate = useMutation((mutationData) =>
-    rateMovie(mutationData, graphqlClient)
+    rateMovie(mutationData, axiosClient)
   );
 
   const handleRate = (movieId, action) => {
@@ -69,7 +73,7 @@ export default function WatchlistProvider({
   };
 
   const remove = useMutation((mutationData) =>
-    removeFromWatchlist(mutationData, graphqlClient)
+    removeFromWatchlist(mutationData, axiosClient)
   );
 
   const handleRemove = (movieId) => {
@@ -102,7 +106,7 @@ export default function WatchlistProvider({
       {movies.map((m, index) => (
         <WatchlistCard
           lastElementRef={movies.length === index + 1 ? lastElementRef : null}
-          key={m.movieId}
+          key={m.movie.movieId}
           m={m}
           handleRate={handleRate}
           handleRemove={handleRemove}
