@@ -4,8 +4,7 @@ go 1.16
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/auth0/go-jwt-middleware v1.0.0
-	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-chi/chi/v5 v5.0.3
 	github.com/go-chi/cors v1.2.0

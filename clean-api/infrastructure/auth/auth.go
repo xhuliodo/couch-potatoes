@@ -5,26 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	"github.com/form3tech-oss/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/render"
 	"github.com/pkg/errors"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"
 )
-
-var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
-	ValidationKeyGetter: func(t *jwt.Token) (interface{}, error) {
-		pemCert, err := GetPemCert(t)
-		if err != nil {
-			return pemCert, err
-		}
-		cert, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(pemCert))
-		return cert, nil
-	},
-	SigningMethod: jwt.SigningMethodRS256,
-	ErrorHandler:  onUnauthorizedReq,
-})
 
 func onUnauthorizedReq(w http.ResponseWriter, r *http.Request, errString string) {
 	cause := errors.New("not_authenticated")
@@ -34,15 +21,18 @@ func onUnauthorizedReq(w http.ResponseWriter, r *http.Request, errString string)
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		jwtMiddleware.CheckJWT(rw, r)
+		encodedToken := r.Header.Get("authorization")
+		encodedToken = strings.Replace(encodedToken, "Bearer ", "", -1)
+		decodedToken, _ := jwt.Parse(encodedToken, nil)
 
-		c := r.Context()
-		stringToken := c.Value(jwtMiddleware.Options.UserProperty)
-		token, bool := stringToken.(*jwt.Token)
-		if !bool {
+		if err := validateToken(decodedToken, encodedToken); err != nil {
+			onUnauthorizedReq(rw, r, err.Error())
 			return
 		}
-		tokenClaims := token.Claims.(jwt.MapClaims)
+
+		c := r.Context()
+
+		tokenClaims := decodedToken.Claims.(jwt.MapClaims)
 		userId := tokenClaims["sub"]
 		isAdmin := getIsAdmin(tokenClaims)
 
@@ -53,6 +43,31 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(rw, r)
 	})
+}
+
+func validateToken(token *jwt.Token, stringToken string) error {
+	_, err := jwt.Parse(stringToken, func(token *jwt.Token) (interface{}, error) {
+		pemCert, err := GetPemCert(token)
+		if err != nil {
+			return nil, err
+		}
+		cert, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pemCert))
+		if err != nil {
+			return nil, err
+		}
+		return cert, nil
+	})
+	
+	if err != nil {
+		if err != nil {
+			e, ok := err.(*jwt.ValidationError)
+			if !ok || ok && e.Errors&jwt.ValidationErrorIssuedAt == 0 { // Don't report error that token used before issued.
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func getIsAdmin(claims jwt.MapClaims) bool {

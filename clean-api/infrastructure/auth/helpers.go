@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/form3tech-oss/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/infrastructure/logger"
 )
@@ -59,7 +59,7 @@ func GetPemCert(token *jwt.Token) (
 func CacheJwksCert(errorLogger *logger.ErrorLogger) {
 	jwks := Jwks{}
 
-	resp, err := http.Get(os.Getenv("JWKS_URL"))
+	resp, err := http.Get(getenv("JWKS_URL", "https://dev-ps5dqqis.eu.auth0.com/.well-known/jwks.json"))
 	if err != nil {
 		cause := errors.New("check jwks url, the one provided does send back any response")
 		errStack := errors.Wrap(cause, err.Error())
@@ -95,4 +95,12 @@ func CacheJwksCert(errorLogger *logger.ErrorLogger) {
 		log.Fatal(errStack)
 		os.Exit(0)
 	}
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }

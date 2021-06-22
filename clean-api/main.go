@@ -34,11 +34,16 @@ func main() {
 	log.Println("po ngrihet avioni...")
 	ctx := commands.Context()
 
-	driver, err := neo4j.NewDriver(os.Getenv("NEO4J_URI"), neo4j.BasicAuth(os.Getenv("NEO4J_USER"), os.Getenv("NEO4J_PASSWORD"), "neo4j"), func(c *neo4j.Config) {
-		time := time.Second * 5
-		c.ConnectionAcquisitionTimeout = time
-		c.MaxTransactionRetryTime = time * 2
-	})
+	driver, err := neo4j.NewDriver(
+		getenv("NEO4J_URI", "bolt://localhost:7687"),
+		neo4j.BasicAuth(
+			getenv("NEO4J_USER", "neo4j"),
+			getenv("NEO4J_PASSWORD", "letmein"),
+			"neo4j"), func(c *neo4j.Config) {
+			time := time.Second * 5
+			c.ConnectionAcquisitionTimeout = time
+			c.MaxTransactionRetryTime = time * 2
+		})
 	if err != nil {
 		log.Fatal("db config is fucked up")
 	}
@@ -47,7 +52,7 @@ func main() {
 	errorLogger := logger.NewErrorLogger()
 
 	router := createApp(driver, accessLogger, errorLogger)
-	server := &http.Server{Addr: os.Getenv("API_LISTEN_PORT"), Handler: router}
+	server := &http.Server{Addr: getenv("API_LISTEN_PORT", ":4001"), Handler: router}
 
 	auth.CacheJwksCert(errorLogger)
 
@@ -74,4 +79,12 @@ func createApp(driver neo4j.Driver, accessLogger *logrus.Logger, errorLogger *lo
 	infrastructure.CreateRoutes(r, repo, errorLogger)
 
 	return r
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }
