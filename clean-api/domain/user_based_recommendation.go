@@ -37,15 +37,18 @@ type UserBasedRecommendation struct {
 }
 
 const (
-	requiredRatingsCompatibility int    = 10
-	noSimilarUsersYet            string = "there are no similiar user to you yet, keep rating some more"
+	requiredRatingsCompatibility      int    = 10
+	leastRequiredRatingsCompatibility int    = requiredRatingsCompatibility / 2
+	noSimilarUsersYet                 string = "there are no similiar user to you yet, keep rating some more"
 )
 
 func (utc *UsersToCompare) FilterBasedOnRatingsCount() error {
 	for i, userToCompare := range *utc {
 		ratingsInCommonCount := len(userToCompare.RatingsInCommon)
 		if ratingsInCommonCount < requiredRatingsCompatibility {
-			delete(*utc, i)
+			if ratingsInCommonCount < leastRequiredRatingsCompatibility {
+				delete(*utc, i)
+			}
 		}
 	}
 
@@ -97,7 +100,7 @@ func (uc *UsersToCompare) RemoveLowPearson(remainingUserIds *[]string) error {
 			delete(*uc, u)
 		}
 	}
-	
+
 	if len(*uc) < 1 {
 		cause := errors.New("not_found")
 		return errors.Wrap(cause, noSimilarUsersYet)
