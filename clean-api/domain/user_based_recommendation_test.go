@@ -19,7 +19,7 @@ func TestFilterBasedOnRatingCount(t *testing.T) {
 		},
 		"2": &domain.UserToCompare{
 			RatingsInCommon: []domain.RatingInCommon{
-				{r, r}, {r, r}, {r, r}, {r, r}, {r, r},
+				{r, r}, {r, r}, {r, r}, {r, r},
 			},
 		},
 		"3": &domain.UserToCompare{
