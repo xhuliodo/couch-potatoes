@@ -1,4 +1,4 @@
-name: Go
+name: clean-api
 
 on:
   workflow_dispatch:
