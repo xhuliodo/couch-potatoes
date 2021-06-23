@@ -19,11 +19,11 @@ import (
 // @title Couch Potatoes clean API
 // @version 1.0
 // @description more movie more problems
-// host api.cp.dev.cloudapp.al
-// @host localhost:4001
+// @host api.cp.dev.cloudapp.al
+// host localhost:4001
 // @basepath /
-// schemes https
-// @schemes http
+// @schemes https
+// schemes http
 // @accept json
 // @produce json
 // @contact.name Xhulio Doda
