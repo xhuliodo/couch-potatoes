@@ -5,12 +5,12 @@
 Most people hear of new movies either from friends or from online articles reviewing them. After getting a wind of an interesting movie, you have to do the homework researching who's the director, writer or who's in the cast and then asking friends with similar movies, who might have watched it, if the movie it's worth giving a try. To simplify this process, Couch Potatoes was made to provide personalised movie recommendations.
 
 The personalised part was made possible using a graph database (Neo4j), following two strategies:
-- Content-based (similarity between movies)
-- User-based (similarity between users)
+- **Content-based** (similarity between movies)
+- **User-based** (similarity between users)
 
-The API was build using Golang, following the Clean Architecture principles laid by Uncle Bob.
+The API was build using Golang, following the **Clean Architecture principles** laid by Uncle Bob.
 
-Interfaces were built using React and the main component is inspired by tinder's swiping cards.
+Interfaces were built using React and the **main component is inspired by tinder's swiping cards**.
 
 ## Getting started
 
@@ -19,5 +19,3 @@ After that you have to wait for a couple of minutes, till the seeding process fi
 (To get the full experience, you might also want to get the thumbnails which you can find the steps in the /dataset folder. It's a crawling script that downloads the thumbnails from imdb's site.)
 
 That's all, enjoy swiping and getting some good movie recommendations.
-
-contact: xhuliodo@gmail.com
