@@ -21,7 +21,7 @@ func TestSaveGenrePreferencesPersistsOnUser(t *testing.T) {
 		t.Fatalf("want user to start at step 1, got %d", before.Step)
 	}
 
-	if err := setupService.SaveGenrePreferences("10", []string{"1", "2", "3"}); err != nil {
+	if err := setupService.SaveGenrePreferences("10", []string{"100", "101", "102"}); err != nil {
 		t.Fatalf("could not save genre preferences: %s", err)
 	}
 

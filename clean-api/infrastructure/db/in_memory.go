@@ -102,7 +102,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 
 func (imr *InMemoryRepository) GetAllGenres() ([]domain.Genre, error) {
 	genres := []domain.Genre{
-		{Id: "1"}, {Id: "2"}, {Id: "3"}, {Id: "4"}, {Id: "5"},
+		{Id: "100"}, {Id: "101"}, {Id: "102"},
 	}
 	return genres, nil
 }
