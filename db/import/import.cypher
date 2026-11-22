@@ -1,3 +1,11 @@
+// Index the keys the import merges on; without these every row scans the label
+CREATE INDEX IF NOT EXISTS FOR (m:Movie) ON (m.movieId);
+CREATE INDEX IF NOT EXISTS FOR (m:Movie) ON (m.imdbId);
+CREATE INDEX IF NOT EXISTS FOR (g:Genre) ON (g.name);
+CREATE INDEX IF NOT EXISTS FOR (c:Cast) ON (c.name);
+CREATE INDEX IF NOT EXISTS FOR (u:User) ON (u.userId);
+CALL db.awaitIndexes();
+
 // Load movies
 LOAD CSV WITH HEADERS FROM "file:///movies.csv" AS row
 MERGE (m:Movie {movieId: row.movieId})
