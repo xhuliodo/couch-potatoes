@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -30,6 +32,10 @@ import (
 // @contact.url https://www.linkedin.com/in/xhulio-doda-745b41164/
 // @contact.email xhuliodo@gmail.com
 
+// gracefulShutdownTimeout bounds how long in-flight requests may finish after
+// SIGINT/SIGTERM before the process exits.
+const gracefulShutdownTimeout = 10 * time.Second
+
 func main() {
 	log.Println("po ngrihet avioni...")
 	ctx := commands.Context()
@@ -53,6 +59,7 @@ func main() {
 
 	router := createApp(driver, accessLogger, errorLogger)
 	server := &http.Server{Addr: getenv("API_LISTEN_PORT", ":4001"), Handler: router}
+	serverErr := make(chan error, 1)
 
 	if err := auth.CacheJwksCert(); err != nil {
 		errorLogger.Log(err)
@@ -60,18 +67,31 @@ func main() {
 	}
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			panic(err)
-		}
+		serverErr <- server.ListenAndServe()
 	}()
 	log.Printf("App is listening on port: %s", server.Addr)
 
-	<-ctx.Done()
+	select {
+	case err := <-serverErr:
+		if !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("api server failed: %v", err)
+		}
+	case <-ctx.Done():
+	}
+
 	log.Println("App is shutting down")
 
-	if err := server.Close(); err != nil {
-		panic(err)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		errorLogger.Log(err)
 	}
+
+	if err := driver.Close(); err != nil {
+		errorLogger.Log(err)
+	}
+
+	log.Println("App stopped")
 }
 
 func createApp(driver neo4j.Driver, accessLogger *logrus.Logger, errorLogger *logger.ErrorLogger) (r *chi.Mux) {
