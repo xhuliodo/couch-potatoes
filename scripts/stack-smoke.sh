@@ -145,13 +145,20 @@ clean_db_data() {
     return 0
   fi
 
-  # Neo4j writes into this bind mount as its own user; on hosts where the
-  # daemon owns the files, fall back to a throwaway container as root.
-  find "$ROOT_DIR/db/data" -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null ||
+  # Neo4j writes into this bind mount as its own user, so the files here are
+  # not always deletable by the caller. When that happens, clean up from a
+  # throwaway container as root and hand the directory back to the host user.
+  if ! {
+    find "$ROOT_DIR/db/data" -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null &&
+      touch "$ROOT_DIR/db/data/.gitkeep" 2>/dev/null
+  }; then
+    log "db/data is owned by the database user; resetting it from a root container"
     docker run --rm --volume "$ROOT_DIR/db/data:/data" alpine:3.24 \
-      sh -c 'find /data -mindepth 1 ! -name .gitkeep -exec rm -rf {} +'
+      sh -c "find /data -mindepth 1 ! -name .gitkeep -exec rm -rf {} +; touch /data/.gitkeep; chown -R $(id -u):$(id -g) /data" ||
+      log "could not fully reset db/data; clear it by hand if the next start looks stale"
+  fi
 
-  touch "$ROOT_DIR/db/data/.gitkeep"
+  touch "$ROOT_DIR/db/data/.gitkeep" 2>/dev/null || true
 }
 
 teardown() {
