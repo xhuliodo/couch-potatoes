@@ -55,6 +55,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 	// populate users
 	inMemRepo.users["7"] = domain.User{
+		Id: "7",
 		FavoriteGenres: []domain.Genre{
 			{Id: "100"}, {Id: "101"}, {Id: "102"},
 		},
@@ -65,11 +66,13 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 
 	inMemRepo.users["10"] = domain.User{
+		Id:             "10",
 		FavoriteGenres: []domain.Genre{},
 		RatedMovies:    []domain.RatedMovie{},
 	}
 
 	inMemRepo.users["11"] = domain.User{
+		Id: "11",
 		FavoriteGenres: []domain.Genre{
 			{Id: "100"}, {Id: "101"}, {Id: "102"},
 		},
@@ -98,8 +101,10 @@ func NewInMemoryRepository() *InMemoryRepository {
 }
 
 func (imr *InMemoryRepository) GetAllGenres() ([]domain.Genre, error) {
-	emptyGenres := []domain.Genre{}
-	return emptyGenres, nil
+	genres := []domain.Genre{
+		{Id: "1"}, {Id: "2"}, {Id: "3"}, {Id: "4"}, {Id: "5"},
+	}
+	return genres, nil
 }
 
 func (imr *InMemoryRepository) GetUserById(userId string) (domain.User, error) {
@@ -112,11 +117,12 @@ func (imr *InMemoryRepository) GetUserById(userId string) (domain.User, error) {
 }
 
 func (imr *InMemoryRepository) SaveGenrePreferences(userId string, genres []domain.Genre) error {
-	for _, user := range imr.users {
-		if user.Id == userId {
-			user.FavoriteGenres = append(user.FavoriteGenres, genres...)
-		}
+	user, found := imr.users[userId]
+	if !found {
+		return errors.New("user does not exist")
 	}
+	user.FavoriteGenres = append(user.FavoriteGenres, genres...)
+	imr.users[userId] = user
 	return nil
 }
 
