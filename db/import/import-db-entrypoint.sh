@@ -88,7 +88,11 @@ shutdown() {
   if kill -0 "$NEO4J_PID" 2>/dev/null; then
     log_info "IMPORT-SCRIPT: Forwarding shutdown signal to Neo4j"
     kill -TERM "$NEO4J_PID" 2>/dev/null || true
+    # Wait for Neo4j to finish its shutdown hook; exiting now would tear the
+    # container down and kill it before it can flush.
+    wait "$NEO4J_PID"
   fi
+  exit $?
 }
 trap shutdown TERM INT
 
