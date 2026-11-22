@@ -39,6 +39,12 @@ func (hr healthcheckResource) GetHealthcheck(w http.ResponseWriter, r *http.Requ
 // @success 200 {object} common_http.InfoResponse "api response"
 // @failure 503 {object} common_http.ErrorResponse "when the api cannot connect to the database"
 func (hr healthcheckResource) GetReady(w http.ResponseWriter, r *http.Request) {
+	if err := hr.getHealthcheck.Heathcheck(); err != nil {
+		_ = render.Render(w, r, common_http.DetermineErr(err))
+		hr.errLog.Log(err)
+		return
+	}
+
 	message := "api is up and running"
 	render.Render(w, r, common_http.Info(message))
 }
