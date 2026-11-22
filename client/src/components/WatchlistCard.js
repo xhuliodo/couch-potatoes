@@ -15,9 +15,12 @@ import {
 import {
   Delete,
   Info,
+  MovieOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
 } from "@material-ui/icons";
+import { thumbnailUrl } from "../utils/config";
+import usePosterFallback from "./usePosterFallback";
 
 export default function MovieCardWatchlist({
   m,
@@ -30,7 +33,9 @@ export default function MovieCardWatchlist({
   const classes = useStyles();
   const theme = useTheme();
 
-  const image = `https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movie.movieId}.jpg`;
+  const image = m.movie.movieId ? thumbnailUrl(m.movie.movieId) : null;
+  const { showFallback: posterFailed, onError: handlePosterError } =
+    usePosterFallback(image);
   const rating = m?.rating;
 
   return (
@@ -41,7 +46,24 @@ export default function MovieCardWatchlist({
       unmountOnExit
     >
       <Card ref={lastElementRef} elevation={3} className={classes.root}>
-        <CardMedia className={classes.cover} image={image} />
+        {posterFailed ? (
+          <div
+            className={`${classes.cover} ${classes.posterless}`}
+            aria-label="Poster unavailable"
+          >
+            <MovieOutlined className={classes.posterlessIcon} />
+          </div>
+        ) : (
+          <CardMedia className={classes.cover} image={image} />
+        )}
+        {!posterFailed && (
+          <img
+            src={image}
+            alt=""
+            onError={handlePosterError}
+            style={{ display: "none" }}
+          />
+        )}
         <div className={classes.details}>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <CardContent style={{ flex: "auto" }}>
@@ -129,6 +151,17 @@ const useStyles = makeStyles((theme) => ({
   cover: {
     minWidth: 50,
     width: 110,
+  },
+  posterless: {
+    background: "linear-gradient(135deg, #505874 0%, #8e72a7 100%)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#fff",
+  },
+  posterlessIcon: {
+    fontSize: 32,
+    opacity: 0.8,
   },
   rateIcons: {
     height: 24,
