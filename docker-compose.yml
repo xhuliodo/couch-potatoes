@@ -9,12 +9,9 @@ services:
       - "7687:7687"
     environment:
       # NEO4J_AUTH is the user/password pair Neo4j starts with; the import
-      # entrypoint and the health check read the same split values.
+      # entrypoint splits it back into NEO4J_USER and NEO4J_PASSWORD.
       NEO4J_AUTH: "${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-letmein}"
-      NEO4J_USER: "${NEO4J_USER:-neo4j}"
-      NEO4J_PASSWORD: "${NEO4J_PASSWORD:-letmein}"
       NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
-      NEO4J_dbms_connector_bolt_tls_level: OPTIONAL
     volumes:
       - "./db/data:/data"
       - "./db/import:/import"
@@ -22,7 +19,7 @@ services:
       # cypher-shell proves Bolt is up with the configured credentials, not
       # just that the HTTP browser port answered. Seeding can take a while, so
       # keep the start period generous.
-      test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u \"$$NEO4J_USER\" -p \"$$NEO4J_PASSWORD\" 'RETURN 1' >/dev/null 2>&1"]
+      test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u \"$${NEO4J_AUTH%%/*}\" -p \"$${NEO4J_AUTH#*/}\" 'RETURN 1' >/dev/null 2>&1"]
       interval: 10s
       timeout: 10s
       retries: 30
@@ -50,7 +47,8 @@ services:
     healthcheck:
       # /healthcheck verifies database connectivity, so healthy means the API
       # is up and can reach Neo4j.
-      test: ["CMD-SHELL", "wget -q -O /dev/null \"http://localhost$${API_LISTEN_PORT:-:4001}/healthcheck\""]
+      # 127.0.0.1 avoids busybox wget trying the IPv6 ::1 address first.
+      test: ["CMD-SHELL", "wget -q -O /dev/null \"http://127.0.0.1$${API_LISTEN_PORT:-:4001}/healthcheck\""]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -77,7 +75,7 @@ services:
       cp-api:
         condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/"]
       interval: 10s
       timeout: 5s
       retries: 6
@@ -95,7 +93,7 @@ services:
     volumes:
       - "./thumbnails/img:/var/www/thumbnails"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost/healthz"]
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/healthz"]
       interval: 10s
       timeout: 5s
       retries: 6
