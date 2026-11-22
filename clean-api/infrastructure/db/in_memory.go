@@ -16,6 +16,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 	inMemRepo := InMemoryRepository{movies: map[string]domain.Movie{}, users: map[string]domain.User{}, genres: map[string]domain.Genre{}}
 	// populate mock movies
 	inMemRepo.movies["1"] = domain.Movie{
+		Id:           "1",
 		Title:        "Toy Story",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -25,6 +26,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 		},
 	}
 	inMemRepo.movies["4"] = domain.Movie{
+		Id:           "4",
 		Title:        "Social Network",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -34,6 +36,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 		},
 	}
 	inMemRepo.movies["6"] = domain.Movie{
+		Id:           "6",
 		Title:        "Nocturnal Animals",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -44,6 +47,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 
 	inMemRepo.movies["7"] = domain.Movie{
+		Id:           "7",
 		Title:        "Batman Begins",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",

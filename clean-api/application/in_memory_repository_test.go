@@ -42,6 +42,7 @@ func TestGetMovieByIdReturnsStoredMovieOrNotFound(t *testing.T) {
 		t.Fatalf("could not get known movie: %s", err)
 	}
 	want := domain.Movie{
+		Id:             "1",
 		Title:          "Toy Story",
 		ReleaseYear:    2000,
 		MoreInfoLink:   "nana",
