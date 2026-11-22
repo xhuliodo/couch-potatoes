@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button, Grid, Paper, Typography } from "@material-ui/core";
 import {
   MovieOutlined,
@@ -15,6 +15,7 @@ import { useMutation } from "react-query";
 import { useAxiosClient } from "../utils/useAxiosClient";
 import { rateMovie } from "../utils/rateMovie";
 import { thumbnailUrl } from "../utils/config";
+import usePosterFallback from "./usePosterFallback";
 import { useMovieStore } from "../context/movies";
 
 export default function MovieCard({
@@ -185,7 +186,8 @@ export default function MovieCard({
 
 function SwipeableMovieCard({ movie, onSwipeLeft, onSwipeRight }) {
   const image = movie?.movieId ? thumbnailUrl(movie.movieId) : null;
-  const [posterFailed, setPosterFailed] = useState(!image);
+  const { showFallback: posterFailed, onError: handlePosterError } =
+    usePosterFallback(image);
 
   return (
     <Card
@@ -212,7 +214,7 @@ function SwipeableMovieCard({ movie, onSwipeLeft, onSwipeRight }) {
         <img
           src={image}
           alt=""
-          onError={() => setPosterFailed(true)}
+          onError={handlePosterError}
           style={{ display: "none" }}
         />
       )}

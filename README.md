@@ -133,8 +133,11 @@ nodes** and 100,600 rating relationships:
 - 610 dataset users and about 100,600 ratings
 - about 23,700 people (actors, directors, writers)
 
-Seeding runs inside `cp-db` only when the graph is empty. A seed marker is
-written on success, so later starts skip the import and come up quickly. The
+Seeding runs inside `cp-db`. On first start there is no seed marker, so the
+entrypoint imports the dataset and writes a `SeedMarker` node on success. Later
+starts find the marker and skip the import, coming up quickly. If an import
+fails the marker is left unset, so the next start re-runs the idempotent import
+even when the graph already holds a partial import — the safe recovery path. The
 graph persists in the `db/data` bind mount across `docker compose down` and
 `docker compose up`.
 

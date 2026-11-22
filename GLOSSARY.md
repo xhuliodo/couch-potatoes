@@ -62,8 +62,10 @@ movies they both rated. A higher coefficient means more similar taste; users
 with too few ratings in common are excluded before ranking.
 
 **Seed data** — The MovieLens small dataset imported into Neo4j on first start:
-movies, genres, people, users, and decimal ratings. It is imported only when the
-graph is empty and persists in `db/data`.
+movies, genres, people, users, and decimal ratings. The entrypoint imports it
+when the `SeedMarker` node is absent, then writes that marker; later starts skip
+the import. A failed import leaves the marker unset, so the next start retries
+the idempotent import. It persists in `db/data`.
 
 **Thumbnail / poster** — The image for a movie, served by `cp-thumbnails` at
 `thumbnail_<movieId>.jpg`. Posters are optional and filled by
