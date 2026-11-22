@@ -109,7 +109,8 @@ docker compose up -d --build cp-client
 ## Authentication
 
 The app uses the existing Auth0 tenant. These are the settings it expects; the
-tenant already allows them, so **no Auth0 dashboard change is needed**.
+tenant already allows the local URLs, so **no dashboard change is needed to run
+locally**.
 
 | Setting | Value |
 | --- | --- |
@@ -119,6 +120,14 @@ tenant already allows them, so **no Auth0 dashboard change is needed**.
 | Allowed Callback URLs | `http://localhost:3000/solo` |
 | Allowed Logout URLs | `http://localhost:3000/` |
 | Allowed Web Origins | `http://localhost:3000` |
+
+The tenant's Universal Login page offers email/password (including a **Sign up**
+link) and Google. The Google social connection currently points at a deleted
+Google OAuth client and fails with `Error 401: deleted_client`; use the
+email/password form instead. To restore Google sign-in, create a Google OAuth
+2.0 Web application client with the authorized redirect URI
+`https://dev-ps5dqqis.eu.auth0.com/login/callback`, then update the tenant's
+**Authentication → Social → Google** connection with its client ID and secret.
 
 The API validates tokens against the tenant's JWKS over HTTPS, so sign-in needs
 network access even though everything else is local.
@@ -251,6 +260,16 @@ These are configuration mismatches, not stack failures:
   `API_ALLOWED_ORIGINS` must contain `http://localhost:3000`.
 - After changing any `REACT_APP_*` value, rebuild the client:
   `docker compose up -d --build cp-client`.
+
+### Google sign-in shows "Access blocked: Authorization Error — deleted_client"
+
+This comes from Google, not from the stack: the Auth0 tenant's Google social
+connection uses a Google OAuth client that has been deleted. Use the
+email/password form on the Auth0 login page (or its **Sign up** link) to sign in.
+To repair Google sign-in, create a new Google OAuth 2.0 **Web application**
+client in Google Cloud Console with the authorized redirect URI
+`https://dev-ps5dqqis.eu.auth0.com/login/callback`, then paste its client ID and
+secret into Auth0 Dashboard → **Authentication → Social → Google**.
 
 ### API cannot fetch JWKS
 
