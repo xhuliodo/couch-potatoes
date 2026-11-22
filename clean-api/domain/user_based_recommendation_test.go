@@ -99,31 +99,29 @@ func TestRetainNearestNeighborsKeepsOnlyNearestNeighbors(t *testing.T) {
 	}
 }
 
-func TestRetainNearestNeighborsKeepsCandidatesAtCircleSize(t *testing.T) {
-	usersToCompare := newUsersToCompare("1", "2", "3")
-	nearestNeighbors := []string{"1", "2", "3"}
-
-	if err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+func TestRetainNearestNeighborsKeepsCandidatesWithinCircle(t *testing.T) {
+	cases := []struct {
+		name    string
+		userIds []string
+	}{
+		{name: "exactly circle size", userIds: []string{"1", "2", "3"}},
+		{name: "smaller than circle", userIds: []string{"1", "2"}},
 	}
 
-	want := newUsersToCompare("1", "2", "3")
-	if !reflect.DeepEqual(usersToCompare, want) {
-		t.Errorf("\n got: %v,\n want: %v", usersToCompare, want)
-	}
-}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			usersToCompare := newUsersToCompare(tc.userIds...)
+			nearestNeighbors := tc.userIds
 
-func TestRetainNearestNeighborsKeepsCandidatesSmallerThanCircle(t *testing.T) {
-	usersToCompare := newUsersToCompare("1", "2")
-	nearestNeighbors := []string{"1", "2"}
+			if err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors); err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
 
-	if err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors); err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	want := newUsersToCompare("1", "2")
-	if !reflect.DeepEqual(usersToCompare, want) {
-		t.Errorf("\n got: %v,\n want: %v", usersToCompare, want)
+			want := newUsersToCompare(tc.userIds...)
+			if !reflect.DeepEqual(usersToCompare, want) {
+				t.Errorf("\n got: %v,\n want: %v", usersToCompare, want)
+			}
+		})
 	}
 }
 
