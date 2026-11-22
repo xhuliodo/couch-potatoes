@@ -14,6 +14,11 @@ func NewRatingService(repo domain.Repository) RatingService {
 }
 
 func (rms RatingService) RateMovie(userId, movieId string, rating int) error {
+	if rating != 0 && rating != 1 {
+		cause := errors.New("bad_request")
+		return errors.Wrap(cause, "rating must be 1 (liked) or 0 (not liked)")
+	}
+
 	if _, err := rms.repo.GetUserById(userId); err != nil {
 		errStack := errors.Wrap(err, "a user with this identifier does not exist")
 		return errStack

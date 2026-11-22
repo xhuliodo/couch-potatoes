@@ -16,6 +16,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 	inMemRepo := InMemoryRepository{movies: map[string]domain.Movie{}, users: map[string]domain.User{}, genres: map[string]domain.Genre{}}
 	// populate mock movies
 	inMemRepo.movies["1"] = domain.Movie{
+		Id:           "1",
 		Title:        "Toy Story",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -25,6 +26,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 		},
 	}
 	inMemRepo.movies["4"] = domain.Movie{
+		Id:           "4",
 		Title:        "Social Network",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -34,6 +36,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 		},
 	}
 	inMemRepo.movies["6"] = domain.Movie{
+		Id:           "6",
 		Title:        "Nocturnal Animals",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -44,6 +47,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 
 	inMemRepo.movies["7"] = domain.Movie{
+		Id:           "7",
 		Title:        "Batman Begins",
 		ReleaseYear:  2000,
 		MoreInfoLink: "nana",
@@ -55,6 +59,7 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 	// populate users
 	inMemRepo.users["7"] = domain.User{
+		Id: "7",
 		FavoriteGenres: []domain.Genre{
 			{Id: "100"}, {Id: "101"}, {Id: "102"},
 		},
@@ -65,11 +70,13 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 
 	inMemRepo.users["10"] = domain.User{
+		Id:             "10",
 		FavoriteGenres: []domain.Genre{},
 		RatedMovies:    []domain.RatedMovie{},
 	}
 
 	inMemRepo.users["11"] = domain.User{
+		Id: "11",
 		FavoriteGenres: []domain.Genre{
 			{Id: "100"}, {Id: "101"}, {Id: "102"},
 		},
@@ -98,8 +105,10 @@ func NewInMemoryRepository() *InMemoryRepository {
 }
 
 func (imr *InMemoryRepository) GetAllGenres() ([]domain.Genre, error) {
-	emptyGenres := []domain.Genre{}
-	return emptyGenres, nil
+	genres := []domain.Genre{
+		{Id: "100"}, {Id: "101"}, {Id: "102"},
+	}
+	return genres, nil
 }
 
 func (imr *InMemoryRepository) GetUserById(userId string) (domain.User, error) {
@@ -112,17 +121,21 @@ func (imr *InMemoryRepository) GetUserById(userId string) (domain.User, error) {
 }
 
 func (imr *InMemoryRepository) SaveGenrePreferences(userId string, genres []domain.Genre) error {
-	for _, user := range imr.users {
-		if user.Id == userId {
-			user.FavoriteGenres = append(user.FavoriteGenres, genres...)
-		}
+	user, found := imr.users[userId]
+	if !found {
+		return errors.New("user does not exist")
 	}
+	user.FavoriteGenres = append(user.FavoriteGenres, genres...)
+	imr.users[userId] = user
 	return nil
 }
 
 func (imr *InMemoryRepository) GetMovieById(movieId string) (domain.Movie, error) {
-	emptyMovie := domain.Movie{}
-	return emptyMovie, nil
+	movie, found := imr.movies[movieId]
+	if !found {
+		return domain.Movie{}, errors.New("movie does not exist")
+	}
+	return movie, nil
 }
 
 func (imr *InMemoryRepository) RegisterNewUser(userId string) error {
@@ -160,6 +173,25 @@ func (imr *InMemoryRepository) GetRatedMoviesForUsersYetToBeConsidered(
 }
 
 func (imr *InMemoryRepository) RateMovie(userId, movieId string, rating int) error {
+	user, found := imr.users[userId]
+	if !found {
+		return errors.New("user does not exist")
+	}
+
+	for i, ratedMovie := range user.RatedMovies {
+		if ratedMovie.Id == movieId {
+			user.RatedMovies[i].Rating = float64(rating)
+			imr.users[userId] = user
+			return nil
+		}
+	}
+
+	user.RatedMovies = append(user.RatedMovies, domain.RatedMovie{
+		Movie:  domain.Movie{Id: movieId},
+		Rating: float64(rating),
+	})
+	imr.users[userId] = user
+
 	return nil
 }
 
