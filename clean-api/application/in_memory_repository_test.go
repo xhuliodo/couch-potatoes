@@ -55,3 +55,45 @@ func TestGetMovieByIdReturnsStoredMovieOrNotFound(t *testing.T) {
 		t.Error("want an error for an unknown movie id, got nil")
 	}
 }
+
+func TestRateMovieRecordsAndUpdatesRating(t *testing.T) {
+	repo := db.NewInMemoryRepository()
+	ratingService := application.NewRatingService(repo)
+	setupService := application.NewSetupService(repo)
+
+	if err := ratingService.RateMovie("7", "6", 1); err != nil {
+		t.Fatalf("could not rate a new movie: %s", err)
+	}
+	afterWrite, err := setupService.GetSetupStep("7")
+	if err != nil {
+		t.Fatalf("could not get setup step after rating: %s", err)
+	}
+	if afterWrite.RatingsGiven != 3 {
+		t.Errorf("want rating to be recorded, got %d ratings", afterWrite.RatingsGiven)
+	}
+	liked, err := repo.GetAllLikedMovies("7")
+	if err != nil {
+		t.Fatalf("could not get liked movies: %s", err)
+	}
+	if _, found := liked["6"]; !found {
+		t.Error("want a liked rating to count the movie as liked")
+	}
+
+	if err := ratingService.RateMovie("7", "6", 0); err != nil {
+		t.Fatalf("could not rate the same movie again: %s", err)
+	}
+	afterUpdate, err := setupService.GetSetupStep("7")
+	if err != nil {
+		t.Fatalf("could not get setup step after re-rating: %s", err)
+	}
+	if afterUpdate.RatingsGiven != 3 {
+		t.Errorf("want a re-rating to update, not duplicate, the stored rating, got %d ratings", afterUpdate.RatingsGiven)
+	}
+	liked, err = repo.GetAllLikedMovies("7")
+	if err != nil {
+		t.Fatalf("could not get liked movies after re-rating: %s", err)
+	}
+	if _, found := liked["6"]; found {
+		t.Error("want an updated not-liked rating to stop counting the movie as liked")
+	}
+}

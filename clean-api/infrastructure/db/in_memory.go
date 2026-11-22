@@ -169,6 +169,25 @@ func (imr *InMemoryRepository) GetRatedMoviesForUsersYetToBeConsidered(
 }
 
 func (imr *InMemoryRepository) RateMovie(userId, movieId string, rating int) error {
+	user, found := imr.users[userId]
+	if !found {
+		return errors.New("user does not exist")
+	}
+
+	for i, ratedMovie := range user.RatedMovies {
+		if ratedMovie.Id == movieId {
+			user.RatedMovies[i].Rating = float64(rating)
+			imr.users[userId] = user
+			return nil
+		}
+	}
+
+	user.RatedMovies = append(user.RatedMovies, domain.RatedMovie{
+		Movie:  domain.Movie{Id: movieId},
+		Rating: float64(rating),
+	})
+	imr.users[userId] = user
+
 	return nil
 }
 
