@@ -1,1 +1,1 @@
-# Couch Potatoes Client (React + Graphql)
+# Couch Potatoes Client (React)
