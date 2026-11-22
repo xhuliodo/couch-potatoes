@@ -54,7 +54,10 @@ func main() {
 	router := createApp(driver, accessLogger, errorLogger)
 	server := &http.Server{Addr: getenv("API_LISTEN_PORT", ":4001"), Handler: router}
 
-	auth.CacheJwksCert(errorLogger)
+	if err := auth.CacheJwksCert(); err != nil {
+		errorLogger.Log(err)
+		log.Fatalf("jwks bootstrap failed: %v", err)
+	}
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
