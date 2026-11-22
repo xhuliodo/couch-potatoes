@@ -127,8 +127,11 @@ func (imr *InMemoryRepository) SaveGenrePreferences(userId string, genres []doma
 }
 
 func (imr *InMemoryRepository) GetMovieById(movieId string) (domain.Movie, error) {
-	emptyMovie := domain.Movie{}
-	return emptyMovie, nil
+	movie, found := imr.movies[movieId]
+	if !found {
+		return domain.Movie{}, errors.New("movie does not exist")
+	}
+	return movie, nil
 }
 
 func (imr *InMemoryRepository) RegisterNewUser(userId string) error {
