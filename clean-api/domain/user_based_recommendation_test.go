@@ -85,11 +85,11 @@ func TestCalculatePearson(t *testing.T) {
 
 }
 
-func TestRemoveLowPearsonKeepsOnlyNearestNeighbors(t *testing.T) {
+func TestRetainNearestNeighborsKeepsOnlyNearestNeighbors(t *testing.T) {
 	usersToCompare := newUsersToCompare("1", "2", "3", "4", "5")
 	nearestNeighbors := []string{"1", "2", "3"}
 
-	if err := usersToCompare.RemoveLowPearson(&nearestNeighbors); err != nil {
+	if err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -99,11 +99,11 @@ func TestRemoveLowPearsonKeepsOnlyNearestNeighbors(t *testing.T) {
 	}
 }
 
-func TestRemoveLowPearsonKeepsCandidatesAtCircleSize(t *testing.T) {
+func TestRetainNearestNeighborsKeepsCandidatesAtCircleSize(t *testing.T) {
 	usersToCompare := newUsersToCompare("1", "2", "3")
 	nearestNeighbors := []string{"1", "2", "3"}
 
-	if err := usersToCompare.RemoveLowPearson(&nearestNeighbors); err != nil {
+	if err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -113,11 +113,11 @@ func TestRemoveLowPearsonKeepsCandidatesAtCircleSize(t *testing.T) {
 	}
 }
 
-func TestRemoveLowPearsonKeepsCandidatesSmallerThanCircle(t *testing.T) {
+func TestRetainNearestNeighborsKeepsCandidatesSmallerThanCircle(t *testing.T) {
 	usersToCompare := newUsersToCompare("1", "2")
 	nearestNeighbors := []string{"1", "2"}
 
-	if err := usersToCompare.RemoveLowPearson(&nearestNeighbors); err != nil {
+	if err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -127,11 +127,11 @@ func TestRemoveLowPearsonKeepsCandidatesSmallerThanCircle(t *testing.T) {
 	}
 }
 
-func TestRemoveLowPearsonEmptyRetainedSetReturnsNotFound(t *testing.T) {
+func TestRetainNearestNeighborsEmptyRetainedSetReturnsNotFound(t *testing.T) {
 	usersToCompare := newUsersToCompare("1", "2")
 	nearestNeighbors := []string{}
 
-	err := usersToCompare.RemoveLowPearson(&nearestNeighbors)
+	err := usersToCompare.RetainNearestNeighbors(&nearestNeighbors)
 
 	if err == nil {
 		t.Fatal("expected a not_found error, got nil")
