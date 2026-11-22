@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/xhuliodo/couch-potatoes/clean-api/domain"
 )
 
@@ -82,6 +83,73 @@ func TestCalculatePearson(t *testing.T) {
 		}
 	}
 
+}
+
+func TestRemoveLowPearsonKeepsOnlyNearestNeighbors(t *testing.T) {
+	usersToCompare := newUsersToCompare("1", "2", "3", "4", "5")
+	nearestNeighbors := []string{"1", "2", "3"}
+
+	if err := usersToCompare.RemoveLowPearson(&nearestNeighbors); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	want := newUsersToCompare("1", "2", "3")
+	if !reflect.DeepEqual(usersToCompare, want) {
+		t.Errorf("\n got: %v,\n want: %v", usersToCompare, want)
+	}
+}
+
+func TestRemoveLowPearsonKeepsCandidatesAtCircleSize(t *testing.T) {
+	usersToCompare := newUsersToCompare("1", "2", "3")
+	nearestNeighbors := []string{"1", "2", "3"}
+
+	if err := usersToCompare.RemoveLowPearson(&nearestNeighbors); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	want := newUsersToCompare("1", "2", "3")
+	if !reflect.DeepEqual(usersToCompare, want) {
+		t.Errorf("\n got: %v,\n want: %v", usersToCompare, want)
+	}
+}
+
+func TestRemoveLowPearsonKeepsCandidatesSmallerThanCircle(t *testing.T) {
+	usersToCompare := newUsersToCompare("1", "2")
+	nearestNeighbors := []string{"1", "2"}
+
+	if err := usersToCompare.RemoveLowPearson(&nearestNeighbors); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	want := newUsersToCompare("1", "2")
+	if !reflect.DeepEqual(usersToCompare, want) {
+		t.Errorf("\n got: %v,\n want: %v", usersToCompare, want)
+	}
+}
+
+func TestRemoveLowPearsonEmptyRetainedSetReturnsNotFound(t *testing.T) {
+	usersToCompare := newUsersToCompare("1", "2")
+	nearestNeighbors := []string{}
+
+	err := usersToCompare.RemoveLowPearson(&nearestNeighbors)
+
+	if err == nil {
+		t.Fatal("expected a not_found error, got nil")
+	}
+	if cause := errors.Cause(err); cause.Error() != "not_found" {
+		t.Errorf("\n got cause: %s,\n want: not_found", cause.Error())
+	}
+	if len(usersToCompare) != 0 {
+		t.Errorf("\n got %d retained users,\n want: 0", len(usersToCompare))
+	}
+}
+
+func newUsersToCompare(userIds ...string) domain.UsersToCompare {
+	usersToCompare := make(domain.UsersToCompare)
+	for _, userId := range userIds {
+		usersToCompare[userId] = &domain.UserToCompare{}
+	}
+	return usersToCompare
 }
 
 func populateWithStubUsersToCompare(utc *domain.UsersToCompare) {
