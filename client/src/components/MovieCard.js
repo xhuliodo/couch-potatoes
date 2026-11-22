@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, Grid, Paper, Typography } from "@material-ui/core";
 import {
+  MovieOutlined,
   SentimentDissatisfied,
   SentimentVerySatisfiedRounded,
   SkipNextOutlined,
@@ -13,6 +14,7 @@ import { waitingForMore } from "../utils/waitingForMore";
 import { useMutation } from "react-query";
 import { useAxiosClient } from "../utils/useAxiosClient";
 import { rateMovie } from "../utils/rateMovie";
+import { thumbnailUrl } from "../utils/config";
 import { useMovieStore } from "../context/movies";
 
 export default function MovieCard({
@@ -168,27 +170,60 @@ export default function MovieCard({
   return (
     <CardWrapper addEndCard={waitingForMore} style={{ paddingTop: "0px" }}>
       {movies.map((m) => (
-        <Card
+        <SwipeableMovieCard
           key={compName + m.movie?.movieId}
+          movie={m.movie}
           onSwipeLeft={() => handleRate("hate")}
           onSwipeRight={() => handleRate("love")}
-          swipeSensitivity={50}
-          style={{
-            backgroundImage: `url(https://thumb.cp.dev.cloudapp.al/thumbnail_${m.movie?.movieId}.jpg)`,
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-          }}
-        >
-          <MovieTitle
-            title={m.movie?.title}
-            releaseYear={m.movie?.releaseYear}
-          />
-        </Card>
+        />
       ))}
       <RateFeedback />
       <ActionButtons />
     </CardWrapper>
+  );
+}
+
+function SwipeableMovieCard({ movie, onSwipeLeft, onSwipeRight }) {
+  const image = movie?.movieId ? thumbnailUrl(movie.movieId) : null;
+  const [posterFailed, setPosterFailed] = useState(!image);
+
+  return (
+    <Card
+      onSwipeLeft={onSwipeLeft}
+      onSwipeRight={onSwipeRight}
+      swipeSensitivity={50}
+      style={
+        posterFailed
+          ? {
+              background: "linear-gradient(135deg, #505874 0%, #8e72a7 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }
+          : {
+              backgroundImage: `url(${image})`,
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+            }
+      }
+    >
+      {!posterFailed && (
+        <img
+          src={image}
+          alt=""
+          onError={() => setPosterFailed(true)}
+          style={{ display: "none" }}
+        />
+      )}
+      {posterFailed && (
+        <div style={{ color: "#fff", textAlign: "center", padding: "0 24px" }}>
+          <MovieOutlined style={{ fontSize: 64, opacity: 0.7 }} />
+          <Typography variant="subtitle1">Poster unavailable</Typography>
+        </div>
+      )}
+      <MovieTitle title={movie?.title} releaseYear={movie?.releaseYear} />
+    </Card>
   );
 }
 
