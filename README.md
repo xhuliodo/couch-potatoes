@@ -196,7 +196,7 @@ human.
       your ratings overlap enough with other users.
 - [ ] A movie can be added to **Watch later** and appears under
       **Movies waiting for you**; removing it makes it disappear.
-      **Your collection** shows movies you already rated.
+      **Your collection** shows watchlist movies you have already rated.
 - [ ] `docker compose down && docker compose up -d`, then sign in again: the
       watchlist is still there.
 - [ ] After `./scripts/backfill-posters.sh`, posters render on the cards; before
