@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   makeStyles,
   Card,
@@ -21,6 +20,7 @@ import {
   SentimentVerySatisfiedRounded,
 } from "@material-ui/icons";
 import { thumbnailUrl } from "../utils/config";
+import usePosterFallback from "./usePosterFallback";
 
 export default function MovieCardWatchlist({
   m,
@@ -34,7 +34,8 @@ export default function MovieCardWatchlist({
   const theme = useTheme();
 
   const image = m.movie.movieId ? thumbnailUrl(m.movie.movieId) : null;
-  const [posterFailed, setPosterFailed] = useState(!image);
+  const { showFallback: posterFailed, onError: handlePosterError } =
+    usePosterFallback(image);
   const rating = m?.rating;
 
   return (
@@ -59,7 +60,7 @@ export default function MovieCardWatchlist({
           <img
             src={image}
             alt=""
-            onError={() => setPosterFailed(true)}
+            onError={handlePosterError}
             style={{ display: "none" }}
           />
         )}

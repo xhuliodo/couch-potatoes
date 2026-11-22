@@ -111,7 +111,7 @@ definitions:
     type: object
   data:
     type: object
-host: api.cp.dev.cloudapp.al
+host: localhost:4001
 info:
   contact:
     email: xhuliodo@gmail.com
@@ -643,5 +643,5 @@ paths:
       tags:
       - watchlists
 schemes:
-- https
+- http
 swagger: "2.0"

@@ -55,7 +55,7 @@ func (ubrs UserBasedRecommendationService) GetUserBasedRecommendation(userId str
 	similairUser := usersSorted[:end]
 
 	userIds := getIdsFromSimilairUser(&similairUser)
-	if err := usersToCompare.RemoveLowPearson(&userIds); err != nil {
+	if err := usersToCompare.RetainNearestNeighbors(&userIds); err != nil {
 		return recs, err
 	}
 

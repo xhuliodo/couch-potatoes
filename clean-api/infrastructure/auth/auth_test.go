@@ -22,7 +22,7 @@ const testKid = "key-1"
 
 // writeTestJwks generates a signing key and a JWKS cache holding its
 // self-signed certificate, mirroring the Auth0 response shape.
-func writeTestJwks(t *testing.T) (*rsa.PrivateKey, string) {
+func writeTestJwks(t *testing.T) *rsa.PrivateKey {
 	t.Helper()
 
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -59,7 +59,7 @@ func writeTestJwks(t *testing.T) (*rsa.PrivateKey, string) {
 	}
 	t.Setenv("JWKS_CACHE_PATH", path)
 
-	return key, path
+	return key
 }
 
 func signRS256(t *testing.T, key *rsa.PrivateKey, kid string, claims jwt.MapClaims) string {
@@ -74,7 +74,7 @@ func signRS256(t *testing.T, key *rsa.PrivateKey, kid string, claims jwt.MapClai
 }
 
 func TestAuthMiddlewareAcceptsValidToken(t *testing.T) {
-	key, _ := writeTestJwks(t)
+	key := writeTestJwks(t)
 
 	var gotUserID interface{}
 	var gotIsAdmin interface{}
@@ -107,7 +107,7 @@ func TestAuthMiddlewareAcceptsValidToken(t *testing.T) {
 }
 
 func TestAuthMiddlewareRejectsInvalidTokens(t *testing.T) {
-	key, _ := writeTestJwks(t)
+	key := writeTestJwks(t)
 	otherKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		t.Fatalf("generate other key: %v", err)

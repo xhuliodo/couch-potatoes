@@ -1035,9 +1035,9 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "api.cp.dev.cloudapp.al",
+	Host:        "localhost:4001",
 	BasePath:    "/",
-	Schemes:     []string{"https"},
+	Schemes:     []string{"http"},
 	Title:       "Couch Potatoes clean API",
 	Description: "more movie more problems",
 }
