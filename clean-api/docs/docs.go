@@ -138,7 +138,7 @@ var doc = `{
                 "tags": [
                     "recommendations"
                 ],
-                "summary": "get users based recommendation from similar users",
+                "summary": "get content based recommendation from previously liked movies",
                 "parameters": [
                     {
                         "type": "integer",
@@ -168,7 +168,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/UserBasedRecommendationResponse"
+                                            "$ref": "#/definitions/ContentBasedRecommendationResponse"
                                         }
                                     }
                                 }
@@ -288,7 +288,7 @@ var doc = `{
                 "tags": [
                     "recommendations"
                 ],
-                "summary": "get content based recommendation from previously liked movies",
+                "summary": "get users based recommendation from similar users",
                 "parameters": [
                     {
                         "type": "integer",
@@ -318,7 +318,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/ContentBasedRecommendationResponse"
+                                            "$ref": "#/definitions/UserBasedRecommendationResponse"
                                         }
                                     }
                                 }
@@ -1035,9 +1035,9 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "localhost:4001",
+	Host:        "api.cp.dev.cloudapp.al",
 	BasePath:    "/",
-	Schemes:     []string{"http"},
+	Schemes:     []string{"https"},
 	Title:       "Couch Potatoes clean API",
 	Description: "more movie more problems",
 }
