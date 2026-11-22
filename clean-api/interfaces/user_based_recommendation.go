@@ -17,7 +17,7 @@ type userBasedRecView struct {
 	Score float64   `json:"score"`
 } //@name UserBasedRecommendationResponse
 
-// @router /recommendations/content-based [get]
+// @router /recommendations/user-based [get]
 // @param limit query int true "limit" default(5)
 // @param authorization header string true "Bearer token"
 // @summary get users based recommendation from similar users

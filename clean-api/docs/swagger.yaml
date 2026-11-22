@@ -208,7 +208,7 @@ paths:
             - $ref: '#/definitions/SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/UserBasedRecommendationResponse'
+                  $ref: '#/definitions/ContentBasedRecommendationResponse'
               type: object
         "400":
           description: when there are no more recommendations to give
@@ -226,7 +226,7 @@ paths:
           description: when the api cannot connect to the database
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: get users based recommendation from similar users
+      summary: get content based recommendation from previously liked movies
       tags:
       - recommendations
   /recommendations/popular:
@@ -302,7 +302,7 @@ paths:
             - $ref: '#/definitions/SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/ContentBasedRecommendationResponse'
+                  $ref: '#/definitions/UserBasedRecommendationResponse'
               type: object
         "400":
           description: when there are no more recommendations to give
@@ -320,7 +320,7 @@ paths:
           description: when the api cannot connect to the database
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: get content based recommendation from previously liked movies
+      summary: get users based recommendation from similar users
       tags:
       - recommendations
   /users/{userId}:
@@ -348,16 +348,14 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when the user making the request has not been registered in
-            the database yet
+          description: when the user making the request has not been registered in the database yet
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":
           description: when the api cannot connect to the database
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: registering a user to the app, it can be done only through users with
-        the role admin
+      summary: registering a user to the app, it can be done only through users with the role admin
       tags:
       - users
   /users/genres:
@@ -370,8 +368,7 @@ paths:
         name: authorization
         required: true
         type: string
-      - description: an array of genre ids (minimum number of genreId's required is
-          3)
+      - description: an array of genre ids (minimum number of genreId's required is 3)
         in: body
         name: genres
         required: true
@@ -385,8 +382,7 @@ paths:
           schema:
             $ref: '#/definitions/InfoResponse'
         "400":
-          description: when either a genre provided does not exist or the minumum
-            number of genre preferences have not been given
+          description: when either a genre provided does not exist or the minumum number of genre preferences have not been given
           schema:
             $ref: '#/definitions/ErrorResponse'
         "401":
@@ -394,8 +390,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when the user making the request has not been registered in
-            the database yet
+          description: when the user making the request has not been registered in the database yet
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":
@@ -435,8 +430,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when the movie provided does not exist or when the user has
-            yet to be registered in the database
+          description: when the movie provided does not exist or when the user has yet to be registered in the database
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":
@@ -471,8 +465,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
         "404":
-          description: when the user making the request has not been registered in
-            the database yet
+          description: when the user making the request has not been registered in the database yet
           schema:
             $ref: '#/definitions/ErrorResponse'
         "503":

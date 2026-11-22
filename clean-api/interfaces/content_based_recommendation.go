@@ -17,7 +17,7 @@ type contentBasedRecView struct {
 	Score float64   `json:"score"`
 }//@name ContentBasedRecommendationResponse
 
-// @router /recommendations/user-based [get]
+// @router /recommendations/content-based [get]
 // @param limit query int true "limit" default(5)
 // @param authorization header string true "Bearer token"
 // @summary get content based recommendation from previously liked movies
