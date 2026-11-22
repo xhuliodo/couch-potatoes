@@ -1,0 +1,5 @@
+# Local environment files can hold machine-specific values; only the
+# documented template is tracked.
+.env
+.env.*
+!.env.example
