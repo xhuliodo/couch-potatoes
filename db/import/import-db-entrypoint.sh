@@ -1,42 +1,102 @@
 #!/bin/bash
+set -m
 
 # Log the info with the same format as NEO4J outputs
 log_info() {
-  # https://www.howtogeek.com/410442/how-to-display-the-date-and-time-in-the-linux-terminal-and-use-it-in-bash-scripts/
-  printf '%s %s\n' "$(date -u +"%Y-%m-%d %H:%M:%S:%3N%z") INFO  Wrapper: $1"
-  return
+  printf '%s INFO  Wrapper: %s\n' "$(date -u +"%Y-%m-%d %H:%M:%S:%3N%z")" "$1"
 }
 
-# Adapted from https://github.com/neo4j/docker-neo4j/issues/166#issuecomment-486890785
-# Alpine is not supported anymore, so this is newer
-# Refactoring: Marcello.deSales+github@gmail.com
+# Credentials come from the environment as NEO4J_AUTH (user/password) or as
+# NEO4J_USER and NEO4J_PASSWORD; otherwise use the development defaults.
+if [ -z "${NEO4J_AUTH:-}" ]; then
+  NEO4J_USER="${NEO4J_USER:-neo4j}"
+  NEO4J_PASSWORD="${NEO4J_PASSWORD:-letmein}"
+  NEO4J_AUTH="${NEO4J_USER}/${NEO4J_PASSWORD}"
+else
+  NEO4J_USER="${NEO4J_USER:-${NEO4J_AUTH%%/*}}"
+  NEO4J_PASSWORD="${NEO4J_PASSWORD:-${NEO4J_AUTH#*/}}"
+fi
+export NEO4J_AUTH NEO4J_USER NEO4J_PASSWORD
 
-# turn on bash's job control
-# https://stackoverflow.com/questions/11821378/what-does-bashno-job-control-in-this-shell-mean/46829294#46829294
-set -m
+IMPORT_FILE="${IMPORT_FILE:-/import/import.cypher}"
+NEO4J_IMPORT_WAIT_SECONDS="${NEO4J_IMPORT_WAIT_SECONDS:-300}"
+SEED_MARKER_ID="couch-potatoes-seed-v1"
 
-# Start the primary process and put it in the background
-/docker-entrypoint.sh neo4j &
+cypher_shell() {
+  cypher-shell -a bolt://localhost:7687 -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" "$@"
+}
 
-# wait for Neo4j
-log_info "IMPORT-SCRIPT: Waiting until neo4j stats at :7474 ..."
-wget --quiet --tries=10 --waitretry=2 -O /dev/null https://localhost:7474
+# Plain format prints a header and then the value; return the last line.
+last_plain_value() {
+  tail -n 1 | tr -d '[:space:]'
+}
 
-if [ -e "/import/import.cypher" ]; 
-  then
-    log_info  "IMPORT-SCRIPT: Confirmed import script"
-    log_info  "IMPORT-SCRIPT: Starting importing, you might have to wait a while depending on vm specs"
+node_count() {
+  cypher_shell --format plain "MATCH (n) RETURN count(n) AS count" 2>/dev/null | last_plain_value
+}
 
-    cypher-shell -u neo4j -p letmein -f /import/import.cypher
-    
-    log_info "IMPORT-SCRIPT: Done importing"
-    TOTAL_CHANGES=$(cypher-shell --format plain "MATCH (n) RETURN count(n) AS count")
-    # https://stackoverflow.com/questions/15520339/how-to-remove-carriage-return-and-newline-from-a-variable-in-shell-script/15520508#15520508
-    log_info "IMPORT-SCRIPT: Changes $(echo ${TOTAL_CHANGES} | sed -e 's/[\r\n]//g')"
+already_seeded() {
+  local count
+  count=$(cypher_shell --format plain \
+    "MATCH (s:SeedMarker {id: '$SEED_MARKER_ID'}) RETURN count(s) AS count" 2>/dev/null | last_plain_value)
+  [ "$count" = "1" ]
+}
+
+wait_for_neo4j() {
+  local deadline=$((SECONDS + NEO4J_IMPORT_WAIT_SECONDS))
+  while [ "$SECONDS" -lt "$deadline" ]; do
+    if ! kill -0 "$NEO4J_PID" 2>/dev/null; then
+      log_info "IMPORT-SCRIPT: Neo4j exited before becoming ready"
+      return 1
+    fi
+    if cypher_shell --format plain "RETURN 1 AS ok" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 2
+  done
+  log_info "IMPORT-SCRIPT: Timed out after ${NEO4J_IMPORT_WAIT_SECONDS}s waiting for Neo4j"
+  return 1
+}
+
+seed_if_needed() {
+  if [ ! -f "$IMPORT_FILE" ]; then
+    log_info "IMPORT-SCRIPT: No import script found at ${IMPORT_FILE}"
+    return
+  fi
+
+  if already_seeded; then
+    log_info "IMPORT-SCRIPT: Graph already seeded, skipping import"
+    return
+  fi
+
+  log_info "IMPORT-SCRIPT: Starting import, you might have to wait a while depending on vm specs"
+  if cypher_shell -f "$IMPORT_FILE"; then
+    cypher_shell --format plain \
+      "MERGE (s:SeedMarker {id: '$SEED_MARKER_ID'}) SET s.seededAt = timestamp()" >/dev/null
+    log_info "IMPORT-SCRIPT: Done importing, graph has $(node_count) nodes"
   else
-    log_info "IMPORT-SCRIPT: No import script found"
+    log_info "IMPORT-SCRIPT: Import failed, leaving the seed marker unset so the next start retries"
+  fi
+}
+
+# Start the primary process in the background so the import can talk to it.
+/docker-entrypoint.sh neo4j &
+NEO4J_PID=$!
+
+shutdown() {
+  trap - TERM INT
+  if kill -0 "$NEO4J_PID" 2>/dev/null; then
+    log_info "IMPORT-SCRIPT: Forwarding shutdown signal to Neo4j"
+    kill -TERM "$NEO4J_PID" 2>/dev/null || true
+  fi
+}
+trap shutdown TERM INT
+
+log_info "IMPORT-SCRIPT: Waiting until neo4j stats at :7474 ..."
+if wait_for_neo4j; then
+  seed_if_needed
 fi
 
-# now we bring the primary process back into the foreground
-# and leave it there
-fg %1
+# Bring the primary process back into the foreground and propagate its exit code.
+wait "$NEO4J_PID"
+exit $?
