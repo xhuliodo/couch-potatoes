@@ -56,5 +56,8 @@
   },
   "devDependencies": {
     "source-map-explorer": "^2.5.2"
+  },
+  "resolutions": {
+    "**/workbox-build/source-map": "0.7.6"
   }
 }
