@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -80,18 +81,22 @@ func main() {
 	}
 
 	log.Println("App is shutting down")
+	shutdownServer(server, driver)
+	log.Println("App stopped")
+}
 
+// shutdownServer gives in-flight requests up to gracefulShutdownTimeout to
+// finish, then closes the database driver.
+func shutdownServer(server *http.Server, driver io.Closer) {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
 	defer cancel()
+
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		errorLogger.Log(err)
+		log.Printf("graceful shutdown did not complete: %v", err)
 	}
-
 	if err := driver.Close(); err != nil {
-		errorLogger.Log(err)
+		log.Printf("could not close database driver: %v", err)
 	}
-
-	log.Println("App stopped")
 }
 
 func createApp(driver neo4j.Driver, accessLogger *logrus.Logger, errorLogger *logger.ErrorLogger) (r *chi.Mux) {
