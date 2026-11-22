@@ -1,7 +1,8 @@
 package infrastructure
 
 import (
-	"net/http"
+	"os"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -19,7 +20,7 @@ func CreateRouter(accessLogger *logrus.Logger) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(logger.NewAccessLoggerMiddleware(accessLogger))
 	r.Use(cors.Handler(cors.Options{
-		AllowOriginFunc:  AllowOriginFunc,
+		AllowedOrigins:   allowedOriginsFromEnv(),
 		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
@@ -31,11 +32,30 @@ func CreateRouter(accessLogger *logrus.Logger) *chi.Mux {
 	return r
 }
 
-func AllowOriginFunc(r *http.Request, origin string) bool {
-	if origin == "http://localhost:3000" || origin == "https://cp.dev.cloudapp.al" {
-		return true
+const (
+	defaultAllowedOrigin = "http://localhost:3000"
+	allowedOriginsEnv    = "API_ALLOWED_ORIGINS"
+)
+
+// allowedOriginsFromEnv reads the comma-separated cross-origin allowlist.
+// An unset or blank value falls back to the local client origin.
+func allowedOriginsFromEnv() []string {
+	raw := os.Getenv(allowedOriginsEnv)
+	if strings.TrimSpace(raw) == "" {
+		return []string{defaultAllowedOrigin}
 	}
-	return false
+
+	origins := []string{}
+	for _, origin := range strings.Split(raw, ",") {
+		if origin = strings.TrimSpace(origin); origin != "" {
+			origins = append(origins, origin)
+		}
+	}
+	if len(origins) == 0 {
+		return []string{defaultAllowedOrigin}
+	}
+
+	return origins
 }
 
 func CreateRoutes(router *chi.Mux, repo *db.Neo4jRepository, errorLogger *logger.ErrorLogger) {
