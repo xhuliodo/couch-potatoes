@@ -1,0 +1,58 @@
+name: ci
+
+# Proves the repository instead of publishing images: Go vet and tests, a
+# client production build, and a full dockerized-stack smoke check. Nothing is
+# published, so no credentials are required.
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go vet and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.27.x"
+          cache-dependency-path: clean-api/go.sum
+
+      - name: Vet
+        working-directory: clean-api
+        run: go vet ./...
+
+      - name: Test
+        working-directory: clean-api
+        run: go test ./...
+
+  client:
+    name: Client production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the production bundle in its container
+        run: docker compose --env-file .env.example build cp-client
+
+  stack:
+    name: Stack smoke check
+    runs-on: ubuntu-latest
+    needs:
+      - go
+      - client
+    steps:
+      - uses: actions/checkout@v4
+
+      # The script bounds its own waits (300s for seeding, then HTTP probes)
+      # and dumps `docker compose ps` plus container logs on failure, so no
+      # job-level timeout is used: a cancelled job would skip that dump.
+      - name: Build, seed, and probe the whole stack
+        run: ./scripts/stack-smoke.sh

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/go-chi/render"
 	"github.com/pkg/errors"
 	common_http "github.com/xhuliodo/couch-potatoes/clean-api/common/http"

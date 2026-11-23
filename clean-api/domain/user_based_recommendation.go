@@ -90,14 +90,18 @@ func (uc *UsersToCompare) CalculatePearson() error {
 	return nil
 }
 
-func (uc *UsersToCompare) RemoveLowPearson(remainingUserIds *[]string) error {
+func (uc *UsersToCompare) RetainNearestNeighbors(remainingUserIds *[]string) error {
+	nearestNeighbors := make(map[string]struct{}, len(*remainingUserIds))
 	for _, u := range *remainingUserIds {
-		_, ok := (*uc)[u]
-		if !ok {
+		nearestNeighbors[u] = struct{}{}
+	}
+
+	for u := range *uc {
+		if _, ok := nearestNeighbors[u]; !ok {
 			delete(*uc, u)
 		}
 	}
-	
+
 	if len(*uc) < 1 {
 		cause := errors.New("not_found")
 		return errors.Wrap(cause, noSimilarUsersYet)

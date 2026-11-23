@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"errors"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -19,16 +22,18 @@ import (
 // @title Couch Potatoes clean API
 // @version 1.0
 // @description more movie more problems
-// @host api.cp.dev.cloudapp.al
-// host localhost:4001
+// @host localhost:4001
 // @basepath /
-// @schemes https
-// schemes http
+// @schemes http
 // @accept json
 // @produce json
 // @contact.name Xhulio Doda
 // @contact.url https://www.linkedin.com/in/xhulio-doda-745b41164/
 // @contact.email xhuliodo@gmail.com
+
+// gracefulShutdownTimeout bounds how long in-flight requests may finish after
+// SIGINT/SIGTERM before the process exits.
+const gracefulShutdownTimeout = 10 * time.Second
 
 func main() {
 	log.Println("po ngrihet avioni...")
@@ -53,21 +58,42 @@ func main() {
 
 	router := createApp(driver, accessLogger, errorLogger)
 	server := &http.Server{Addr: getenv("API_LISTEN_PORT", ":4001"), Handler: router}
+	serverErr := make(chan error, 1)
 
-	auth.CacheJwksCert(errorLogger)
+	if err := auth.CacheJwksCert(); err != nil {
+		errorLogger.Log(err)
+		log.Fatalf("jwks bootstrap failed: %v", err)
+	}
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			panic(err)
-		}
+		serverErr <- server.ListenAndServe()
 	}()
 	log.Printf("App is listening on port: %s", server.Addr)
 
-	<-ctx.Done()
-	log.Println("App is shutting down")
+	select {
+	case err := <-serverErr:
+		if !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("api server failed: %v", err)
+		}
+	case <-ctx.Done():
+	}
 
-	if err := server.Close(); err != nil {
-		panic(err)
+	log.Println("App is shutting down")
+	shutdownServer(server, driver)
+	log.Println("App stopped")
+}
+
+// shutdownServer gives in-flight requests up to gracefulShutdownTimeout to
+// finish, then closes the database driver.
+func shutdownServer(server *http.Server, driver io.Closer) {
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), gracefulShutdownTimeout)
+	defer cancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Printf("graceful shutdown did not complete: %v", err)
+	}
+	if err := driver.Close(); err != nil {
+		log.Printf("could not close database driver: %v", err)
 	}
 }
 
